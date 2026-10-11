@@ -11,11 +11,14 @@ export interface StoryContent {
   dateLabel: string // ex. „Luni, 13 octombrie”
   hours: string // ex. „12:00 – 16:00”
   headline: string | null
-  items: string[]
+  // grupuri cu etichetă, ex. { label: 'CIORBĂ', items: [...] }; label null = fără etichetă
+  sections: { label: string | null; items: string[] }[]
   price: string | null
   // ex. „Livrare prin Glovo · Wolt” — null dacă nu se afișează
   delivery: string | null
   logo: HTMLImageElement | null
+  // varianta pentru fundal închis; fără ea, logo-ul principal stă pe un card alb
+  logoDark: HTMLImageElement | null
   photo: HTMLImageElement | null
 }
 
@@ -183,20 +186,35 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
     })
     gap(56)
 
-    const itemFont = px(c.items.length > 4 ? 50 : 58)
+    const count = c.sections.reduce((n, s) => n + s.items.length, 0)
+    const itemFont = px(count > 4 ? 50 : 58)
     const itemLine = itemFont * 1.22
-    c.items.forEach((item, idx) => {
-      ctx.font = `500 ${itemFont}px ${SERIF}`
-      const lines = wrap(ctx, item, maxWidth)
-      blocks.push({
-        height: lines.length * itemLine,
-        draw: (y) => {
-          ctx.font = `500 ${itemFont}px ${SERIF}`
-          ctx.fillStyle = p.text
-          lines.forEach((l, i) => ctx.fillText(l, x, y + itemFont + i * itemLine))
-        },
+    const labelFont = px(28)
+    c.sections.forEach((section, si) => {
+      if (section.label) {
+        blocks.push({
+          height: labelFont + px(16),
+          draw: (y) => {
+            ctx.font = `700 ${labelFont}px ${SANS}`
+            ctx.fillStyle = p.accent
+            spaced(ctx, section.label!, x, y + labelFont, px(6), align)
+          },
+        })
+      }
+      section.items.forEach((item, idx) => {
+        ctx.font = `500 ${itemFont}px ${SERIF}`
+        const lines = wrap(ctx, item, maxWidth)
+        blocks.push({
+          height: lines.length * itemLine,
+          draw: (y) => {
+            ctx.font = `500 ${itemFont}px ${SERIF}`
+            ctx.fillStyle = p.text
+            lines.forEach((l, i) => ctx.fillText(l, x, y + itemFont + i * itemLine))
+          },
+        })
+        if (idx < section.items.length - 1) gap(14)
       })
-      if (idx < c.items.length - 1) gap(30)
+      if (si < c.sections.length - 1) gap(44)
     })
 
     if (c.price?.trim()) {
@@ -281,22 +299,24 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
 
   // semnătura: logo sau numele brandului
   const footerY = SAFE_BOTTOM - footerHeight + (c.logo ? 50 : 20)
-  if (c.logo) {
+  const darkBg = c.style !== 'light'
+  const logo = darkBg && c.logoDark ? c.logoDark : c.logo
+  if (logo) {
     const maxW = 400
     const maxH = 160
-    const s = Math.min(maxW / c.logo.naturalWidth, maxH / c.logo.naturalHeight)
-    const w = c.logo.naturalWidth * s
-    const h = c.logo.naturalHeight * s
+    const s = Math.min(maxW / logo.naturalWidth, maxH / logo.naturalHeight)
+    const w = logo.naturalWidth * s
+    const h = logo.naturalHeight * s
     const left = align === 'center' ? x - w / 2 : x
-    // logo-ul are fundal alb: pe fundal închis sau pe poză stă pe un card alb
-    if (c.style !== 'light') {
+    // fără variantă pentru fundal închis, logo-ul principal stă pe un card alb
+    if (darkBg && !c.logoDark) {
       const pad = 26
       ctx.fillStyle = '#ffffff'
       ctx.beginPath()
       ctx.roundRect(left - pad, footerY - pad, w + pad * 2, h + pad * 2, 28)
       ctx.fill()
     }
-    ctx.drawImage(c.logo, left, footerY, w, h)
+    ctx.drawImage(logo, left, footerY, w, h)
   } else {
     ctx.font = `600 54px ${SERIF}`
     ctx.fillStyle = p.text

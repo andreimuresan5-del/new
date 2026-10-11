@@ -183,7 +183,7 @@ const PROFILE_FIELDS: { key: keyof BrandInput; label: string; placeholder: strin
 function ProfileTab({ brand }: { brand: Brand }) {
   const save = useSaveBrand()
   const [form, setForm] = useState<BrandInput>(() => {
-    const { id: _id, name: _name, logo_url: _logo, ...rest } = brand
+    const { id: _id, name: _name, logo_url: _logo, logo_dark_url: _logoDark, ...rest } = brand
     return rest
   })
   const [saved, setSaved] = useState(false)

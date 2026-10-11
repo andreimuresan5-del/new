@@ -10,6 +10,36 @@ const STYLES: { key: StoryStyle; label: string }[] = [
   { key: 'photo', label: 'Cu poză' },
 ]
 
+// Meniul zilei Astur: o ciorbă, o supă cremă și 3 feluri principale la alegere.
+// În DB se salvează ca text pe linii „Ciorbă: …”, ușor de citit și pentru agent.
+interface MenuFields {
+  ciorba: string
+  supa: string
+  mains: [string, string, string]
+}
+const EMPTY: MenuFields = { ciorba: '', supa: '', mains: ['', '', ''] }
+const PREFIX = { ciorba: 'Ciorbă: ', supa: 'Supă cremă: ', main: 'Fel principal: ' }
+
+function serialize(m: MenuFields): string {
+  return [
+    m.ciorba.trim() && PREFIX.ciorba + m.ciorba.trim(),
+    m.supa.trim() && PREFIX.supa + m.supa.trim(),
+    ...m.mains.map((x) => x.trim() && PREFIX.main + x.trim()),
+  ].filter(Boolean).join('\n')
+}
+
+function parse(text: string | undefined): MenuFields {
+  const m: MenuFields = { ciorba: '', supa: '', mains: ['', '', ''] }
+  const mains: string[] = []
+  for (const line of (text ?? '').split('\n').map((l) => l.trim()).filter(Boolean)) {
+    if (line.startsWith(PREFIX.ciorba)) m.ciorba = line.slice(PREFIX.ciorba.length)
+    else if (line.startsWith(PREFIX.supa)) m.supa = line.slice(PREFIX.supa.length)
+    else mains.push(line.startsWith(PREFIX.main) ? line.slice(PREFIX.main.length) : line)
+  }
+  mains.slice(0, 3).forEach((x, i) => (m.mains[i] = x))
+  return m
+}
+
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 
 // zilele lucrătoare din săptămâna curentă (sâmbătă/duminică → săptămâna viitoare)
@@ -49,13 +79,14 @@ export function StoryTab({ brand }: { brand: Brand }) {
   const uploadLogo = useUploadLogo()
 
   const [date, setDate] = useState(days.includes(todayIso) ? todayIso : days[0])
-  const [items, setItems] = useState('')
+  const [menu, setMenu] = useState<MenuFields>(EMPTY)
   const [price, setPrice] = useState('')
   const [headline, setHeadline] = useState('')
   const [style, setStyle] = useState<StoryStyle>('warm')
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null)
   const [delivery, setDelivery] = useState(true)
   const [logo, setLogo] = useState<HTMLImageElement | null>(null)
+  const [logoDark, setLogoDark] = useState<HTMLImageElement | null>(null)
   const [fontsReady, setFontsReady] = useState(false)
   const [caption, setCaption] = useState<string | null>(null)
   const [shareError, setShareError] = useState<string | null>(null)
@@ -64,7 +95,7 @@ export function StoryTab({ brand }: { brand: Brand }) {
   // la schimbarea zilei, încarcă meniul salvat (dacă există)
   const saved = menus?.find((m) => m.menu_date === date)
   useEffect(() => {
-    setItems(saved?.items ?? '')
+    setMenu(parse(saved?.items))
     setPrice(saved?.price ?? '')
     setHeadline(saved?.headline ?? '')
     headlines.reset()
@@ -80,7 +111,25 @@ export function StoryTab({ brand }: { brand: Brand }) {
     loadImage(brand.logo_url, true).then(setLogo, () => setLogo(null))
   }, [brand.logo_url])
 
-  const itemList = items.split('\n').map((l) => l.trim()).filter(Boolean)
+  useEffect(() => {
+    if (!brand.logo_dark_url) return setLogoDark(null)
+    loadImage(brand.logo_dark_url, true).then(setLogoDark, () => setLogoDark(null))
+  }, [brand.logo_dark_url])
+
+  const itemsText = serialize(menu)
+  const mains = menu.mains.map((x) => x.trim()).filter(Boolean)
+  const hasMenu = !!(menu.ciorba.trim() || menu.supa.trim() || mains.length)
+  const sections = hasMenu
+    ? [
+        menu.ciorba.trim() && { label: 'CIORBĂ', items: [menu.ciorba.trim()] },
+        menu.supa.trim() && { label: 'SUPĂ CREMĂ', items: [menu.supa.trim()] },
+        mains.length > 0 && { label: mains.length > 1 ? 'FEL PRINCIPAL · LA ALEGERE' : 'FEL PRINCIPAL', items: mains },
+      ].filter((x): x is { label: string; items: string[] } => !!x)
+    : [
+        { label: 'CIORBĂ', items: ['Ciorba zilei'] },
+        { label: 'SUPĂ CREMĂ', items: ['Supa cremă a zilei'] },
+        { label: 'FEL PRINCIPAL · LA ALEGERE', items: ['Primul fel', 'Al doilea fel', 'Al treilea fel'] },
+      ]
   const place = brand.address?.split(/[(,]/)[0].trim() || null
 
   useEffect(() => {
@@ -92,10 +141,11 @@ export function StoryTab({ brand }: { brand: Brand }) {
       dateLabel: dateLabel(date),
       hours: HOURS,
       headline: headline || null,
-      items: itemList.length ? itemList : ['Supa zilei', 'Felul principal', 'Desert'],
+      sections,
       price: price || null,
       delivery: delivery ? 'Livrare prin Glovo · Wolt' : null,
       logo,
+      logoDark,
       photo,
     })
   })
@@ -107,11 +157,11 @@ export function StoryTab({ brand }: { brand: Brand }) {
   }
 
   const persist = () =>
-    saveMenu.mutateAsync({ brandId: brand.id, menu_date: date, items: itemList.join('\n'), price: price.trim() || null, headline: headline.trim() || null })
+    saveMenu.mutateAsync({ brandId: brand.id, menu_date: date, items: itemsText, price: price.trim() || null, headline: headline.trim() || null })
 
   async function share() {
     setShareError(null)
-    if (!itemList.length) return setShareError('Scrie întâi felurile din meniu.')
+    if (!hasMenu) return setShareError('Scrie întâi felurile din meniu.')
     await persist()
     const blob = await new Promise<Blob | null>((r) => canvas.current!.toBlob(r, 'image/png'))
     if (!blob) return setShareError('Nu am putut genera imaginea.')
@@ -153,23 +203,31 @@ export function StoryTab({ brand }: { brand: Brand }) {
       </div>
 
       <div className="space-y-2 rounded-lg border border-gray-300 bg-white p-4">
-        <textarea
-          value={items}
-          onChange={(e) => setItems(e.target.value)}
-          rows={4}
-          placeholder={'Un fel pe linie, ex.:\nCiorbă de perișoare\nPulpe de pui sous vide cu piure\nPapanași'}
-          className={inputClass}
-        />
-        <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Preț (ex. 39 lei) — opțional" className={inputClass} />
+        <input value={menu.ciorba} onChange={(e) => setMenu({ ...menu, ciorba: e.target.value })} placeholder="Ciorba (ex. Ciorbă de perișoare)" className={inputClass} />
+        <input value={menu.supa} onChange={(e) => setMenu({ ...menu, supa: e.target.value })} placeholder="Supa cremă (ex. Supă cremă de dovleac)" className={inputClass} />
+        {menu.mains.map((m, i) => (
+          <input
+            key={i}
+            value={m}
+            onChange={(e) => {
+              const next = [...menu.mains] as MenuFields['mains']
+              next[i] = e.target.value
+              setMenu({ ...menu, mains: next })
+            }}
+            placeholder={`Fel principal ${i + 1}`}
+            className={inputClass}
+          />
+        ))}
+        <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Preț meniu (ex. 39 lei) — opțional" className={inputClass} />
         <div className="flex gap-2">
           <input value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="Titlu (opțional)" className={inputClass} />
           <button
             type="button"
             className="whitespace-nowrap rounded-md border border-gray-300 px-3 text-sm font-medium text-gray-700 disabled:opacity-50"
-            disabled={headlines.isPending || !itemList.length}
+            disabled={headlines.isPending || !hasMenu}
             onClick={() =>
               void headlines
-                .mutateAsync({ brandId: brand.id, menu_date: date, items: itemList.join('\n'), price: price.trim() || null })
+                .mutateAsync({ brandId: brand.id, menu_date: date, items: itemsText, price: price.trim() || null })
                 .then((r) => setCaption(r.caption))
             }
           >

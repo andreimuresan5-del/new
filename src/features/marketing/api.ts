@@ -14,6 +14,7 @@ export interface Brand {
   competition: string | null
   event_info: string | null
   logo_url: string | null
+  logo_dark_url: string | null
   address: string | null
   opening_hours: string | null
   website_url: string | null
@@ -24,7 +25,7 @@ export interface Brand {
   weekly_plan_enabled: boolean
 }
 
-export type BrandInput = Omit<Brand, 'id' | 'name' | 'logo_url'>
+export type BrandInput = Omit<Brand, 'id' | 'name' | 'logo_url' | 'logo_dark_url'>
 
 export interface MarketingItem {
   id: string
@@ -456,7 +457,9 @@ export function useUploadLogo() {
       const { error } = await supabase.storage.from('brand-assets').upload(path, file, { contentType: file.type, upsert: true })
       if (error) throw error
       const { data } = supabase.storage.from('brand-assets').getPublicUrl(path)
-      const { error: updateError } = await supabase.from('marketing_brands').update({ logo_url: data.publicUrl }).eq('id', brandId)
+      // un logo nou încărcat nu are variantă pentru fundal închis → story-ul îl pune pe card alb
+      const { error: updateError } = await supabase.from('marketing_brands')
+        .update({ logo_url: data.publicUrl, logo_dark_url: null }).eq('id', brandId)
       if (updateError) throw updateError
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketing_brands'] }),
