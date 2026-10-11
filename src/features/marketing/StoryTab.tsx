@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDailyMenus, useSaveDailyMenu, useStoryHeadlines, useUploadLogo, type Brand } from './api'
 import { inputClass, primaryButton } from './ItemCard'
-import { loadStoryFonts, renderStory, type StoryStyle } from './storyRenderer'
+import { COLOR_SCHEMES, loadStoryFonts, renderStory, type ColorScheme, type StoryStyle } from './storyRenderer'
 
 const HOURS = '12:00 – 16:00'
 const STYLES: { key: StoryStyle; label: string }[] = [
@@ -136,6 +136,9 @@ export function StoryTab({ brand }: { brand: Brand }) {
     if (!canvas.current || !fontsReady) return
     renderStory(canvas.current, {
       style,
+      scheme: (brand.color_scheme in COLOR_SCHEMES ? brand.color_scheme : 'clasic') as ColorScheme,
+      // logo-ul Astur inclus în aplicație se desenează ca text, în culorile schemei
+      wordmark: !!brand.logo_url?.startsWith('/brand/astur-logo'),
       brandName: brand.name,
       place,
       dateLabel: dateLabel(date),

@@ -4,8 +4,46 @@
 
 export type StoryStyle = 'warm' | 'light' | 'photo'
 
+interface Tones {
+  bg: string
+  text: string
+  muted: string
+  accent: string
+  onAccent: string
+}
+
+// Scheme de culori pentru brand: fiecare are o variantă deschisă și una închisă
+// (stilul „închis” și cel „cu poză” folosesc varianta închisă).
+export const COLOR_SCHEMES = {
+  clasic: {
+    label: 'Clasic (negru, alb, roșu)',
+    light: { bg: '#ffffff', text: '#141414', muted: '#5c5c5c', accent: '#dc2000', onAccent: '#ffffff' },
+    dark: { bg: '#121212', text: '#ffffff', muted: '#bdbdbd', accent: '#dc2000', onAccent: '#ffffff' },
+  },
+  teracota: {
+    label: 'Teracotă (cremă, espresso, cărămiziu)',
+    light: { bg: '#f4eee4', text: '#2b211c', muted: '#7a6a5e', accent: '#c8553d', onAccent: '#fff8ef' },
+    dark: { bg: '#2b211c', text: '#f4eee4', muted: '#bfae9f', accent: '#e07a5f', onAccent: '#2b211c' },
+  },
+  salvie: {
+    label: 'Salvie (verde, salvie, roșu-roșie)',
+    light: { bg: '#e4e8da', text: '#1f3a2e', muted: '#5b6e60', accent: '#e8512f', onAccent: '#ffffff' },
+    dark: { bg: '#1f3a2e', text: '#f2f0e6', muted: '#afc2b3', accent: '#ff6b4a', onAccent: '#1f3a2e' },
+  },
+  unt: {
+    label: 'Bleumarin & unt',
+    light: { bg: '#fbf3dc', text: '#16213e', muted: '#5a627a', accent: '#e2603a', onAccent: '#ffffff' },
+    dark: { bg: '#16213e', text: '#fbf3dc', muted: '#aeb6cc', accent: '#f6c453', onAccent: '#16213e' },
+  },
+} satisfies Record<string, { label: string; light: Tones; dark: Tones }>
+
+export type ColorScheme = keyof typeof COLOR_SCHEMES
+
 export interface StoryContent {
   style: StoryStyle
+  scheme: ColorScheme
+  // logo-ul „astur.” desenat direct pe canvas, în culorile schemei (în loc de imagine)
+  wordmark: boolean
   brandName: string
   place: string | null
   dateLabel: string // ex. „Luni, 13 octombrie”
@@ -29,12 +67,40 @@ const SAFE_BOTTOM = STORY_HEIGHT - 340
 const SERIF = 'Fraunces, Georgia, serif'
 const SANS = 'Inter, system-ui, sans-serif'
 
-// culorile Astur: negru, alb și roșul din logo
-const BRAND_RED = '#dc2000'
-const PALETTES = {
-  warm: { bg: '#121212', text: '#ffffff', muted: '#bdbdbd', accent: BRAND_RED, onAccent: '#ffffff' },
-  light: { bg: '#ffffff', text: '#141414', muted: '#5c5c5c', accent: BRAND_RED, onAccent: '#ffffff' },
-  photo: { bg: '#000000', text: '#ffffff', muted: '#e6e6e6', accent: BRAND_RED, onAccent: '#ffffff' },
+const rgba = (hex: string, alpha: number) => {
+  const n = parseInt(hex.slice(1), 16)
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`
+}
+
+// Logo-ul „astur.” (litere mici, punct colorat) + „GASTRO-BAR”, desenat ca text.
+// y = linia de bază a cuvântului; size = mărimea literelor „astur”.
+export function drawWordmark(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  align: 'center' | 'left',
+  ink: string,
+  dot: string,
+) {
+  ctx.font = `600 ${size}px ${SERIF}`
+  const word = ctx.measureText('astur').width
+  const dotR = size * 0.116
+  const total = word + size * 0.18 + dotR
+  const left = align === 'center' ? x - total / 2 : x
+  const prev = ctx.textAlign
+  ctx.textAlign = 'left'
+  ctx.fillStyle = ink
+  ctx.fillText('astur', left, y)
+  ctx.fillStyle = dot
+  ctx.beginPath()
+  ctx.arc(left + word + size * 0.18, y - size * 0.074, dotR, 0, Math.PI * 2)
+  ctx.fill()
+  const sub = size * 0.18
+  ctx.font = `600 ${sub}px ${SANS}`
+  ctx.fillStyle = ink
+  spaced(ctx, 'GASTRO-BAR', left + size * 0.03, y + size * 0.395, sub * 0.5, 'left')
+  ctx.textAlign = prev
 }
 
 export async function loadStoryFonts() {
@@ -90,7 +156,8 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
   canvas.width = STORY_WIDTH
   canvas.height = STORY_HEIGHT
   const ctx = canvas.getContext('2d')!
-  const p = PALETTES[c.style]
+  const scheme = COLOR_SCHEMES[c.scheme] ?? COLOR_SCHEMES.clasic
+  const p = c.style === 'light' ? scheme.light : scheme.dark
   const usePhoto = c.style === 'photo' && c.photo
   const align: 'center' | 'left' = usePhoto ? 'left' : 'center'
   const margin = 110
@@ -102,7 +169,7 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
   ctx.textBaseline = 'alphabetic'
 
   // fundal
-  ctx.fillStyle = p.bg
+  ctx.fillStyle = usePhoto ? '#000000' : p.bg
   ctx.fillRect(0, 0, STORY_WIDTH, STORY_HEIGHT)
   if (usePhoto) {
     drawCover(ctx, c.photo!)
@@ -118,12 +185,12 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
     ctx.fillStyle = top
     ctx.fillRect(0, 0, STORY_WIDTH, 420)
   } else {
-    // pe negru, un halou roșu discret; pe alb fundalul rămâne curat (logo-ul are fundal alb)
+    // pe fundal închis, un halou discret în culoarea de accent
     if (c.style === 'warm') {
       const glow = ctx.createRadialGradient(STORY_WIDTH / 2, STORY_HEIGHT * 0.42, 50, STORY_WIDTH / 2, STORY_HEIGHT * 0.42, 1100)
       // același ton la ambele capete (doar alfa diferit), altfel gradientul trece prin gri
-      glow.addColorStop(0, 'rgba(220,32,0,0.14)')
-      glow.addColorStop(1, 'rgba(220,32,0,0)')
+      glow.addColorStop(0, rgba(p.accent, 0.14))
+      glow.addColorStop(1, rgba(p.accent, 0))
       ctx.fillStyle = glow
       ctx.fillRect(0, 0, STORY_WIDTH, STORY_HEIGHT)
     }
@@ -276,7 +343,7 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
     return blocks
   }
 
-  const footerHeight = c.logo ? 240 : 190
+  const footerHeight = c.logo || c.wordmark ? 240 : 190
   const area = SAFE_BOTTOM - footerHeight - SAFE_TOP
   // meniu lung: micșorăm textul până încape deasupra semnăturii
   let blocks = build(baseK)
@@ -298,10 +365,12 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
   ctx.shadowBlur = 0
 
   // semnătura: logo sau numele brandului
-  const footerY = SAFE_BOTTOM - footerHeight + (c.logo ? 50 : 20)
+  const footerY = SAFE_BOTTOM - footerHeight + (c.logo || c.wordmark ? 50 : 20)
   const darkBg = c.style !== 'light'
   const logo = darkBg && c.logoDark ? c.logoDark : c.logo
-  if (logo) {
+  if (c.wordmark) {
+    drawWordmark(ctx, x, footerY + 110, 140, align, p.text, p.accent)
+  } else if (logo) {
     const maxW = 400
     const maxH = 160
     const s = Math.min(maxW / logo.naturalWidth, maxH / logo.naturalHeight)

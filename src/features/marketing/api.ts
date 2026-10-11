@@ -15,6 +15,7 @@ export interface Brand {
   event_info: string | null
   logo_url: string | null
   logo_dark_url: string | null
+  color_scheme: string
   address: string | null
   opening_hours: string | null
   website_url: string | null
@@ -25,7 +26,7 @@ export interface Brand {
   weekly_plan_enabled: boolean
 }
 
-export type BrandInput = Omit<Brand, 'id' | 'name' | 'logo_url' | 'logo_dark_url'>
+export type BrandInput = Omit<Brand, 'id' | 'name' | 'logo_url' | 'logo_dark_url' | 'color_scheme'>
 
 export interface MarketingItem {
   id: string
