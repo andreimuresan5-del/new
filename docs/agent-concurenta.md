@@ -1,6 +1,6 @@
 # Agent de monitorizare a concurenței
 
-Agent AI care scanează zilnic concurenții și zonele urmărite și raportează doar ce s-a
+Agent AI care scanează la fiecare 2 zile concurenții și zonele urmărite și raportează doar ce s-a
 schimbat: **meniuri și prețuri**, **recenzii/rating**, **promoții și social media**,
 **deschideri noi**. Rezultatele apar în aplicație la **Concurență** (doar owner).
 
@@ -8,7 +8,7 @@ schimbat: **meniuri și prețuri**, **recenzii/rating**, **promoții și social 
 
 ```
 pg_cron (la 15 min) ──► Edge Function `competitor-scan`
-                          │ alege ținta cea mai veche nescanată în ultimele 20h
+                          │ alege ținta cea mai veche nescanată în ultimele 44h
                           │ (un concurent sau o zonă urmărită)
                           ▼
                         Claude (web_search + web_fetch, pe serverele Anthropic)
@@ -22,9 +22,10 @@ pg_cron (la 15 min) ──► Edge Function `competitor-scan`
 ```
 
 - O scanare = o țintă, ca funcția să rămână sub limita de timp a Edge Functions.
-  La 15 minute → până la ~96 de ținte scanate pe zi.
+  Fiecare țintă e rescanată după 44h (≈ o dată la 2 zile; constanta
+  `RESCAN_AFTER_HOURS` din `index.ts`).
 - „Scanează acum” din UI pornește imediat scanarea unei ținte (cu JWT-ul owner-ului).
-- Model: `claude-opus-5-5`, effort `medium`, cu fallback automat pe server dacă un
+- Model: `claude-sonnet-5-5` (constanta `MODEL` din `agent.ts`), effort `medium`, cu fallback automat pe server dacă un
   răspuns e refuzat. Max 8 căutări + 8 pagini citite per scanare.
 
 ## Fișiere
@@ -48,7 +49,7 @@ pg_cron (la 15 min) ──► Edge Function `competitor-scan`
    Local (`supabase functions serve`): pune aceleași variabile în `supabase/functions/.env`
    (nu se commituie).
 3. Deploy: `npx supabase functions deploy competitor-scan`
-4. Programare zilnică: în SQL Editor, creează secretele din Vault descrise în capul
+4. Programare automată: în SQL Editor, creează secretele din Vault descrise în capul
    fișierului `supabase/cron/competitor_scan.sql`, apoi rulează fișierul.
    Intenționat nu e migrare — `db reset` local nu pornește apeluri plătite.
 5. În aplicație: **Concurență → Concurenți și zone** → adaugă concurenții (site, Google
@@ -57,12 +58,14 @@ pg_cron (la 15 min) ──► Edge Function `competitor-scan`
 
 ## De știut
 
-- **Cost**: fiecare scanare consumă tokeni (căutările web se taxează separat). Tokenii
+- **Cost**: estimat ~70–200 lei/lună pentru 5 concurenți + 1 zonă (Sonnet, la 2 zile).
+  Pune un plafon lunar de cheltuieli în contul Claude (Console → Limits).
+  Fiecare scanare consumă tokeni (căutările web se taxează separat). Tokenii
   per rulare sunt în `competitor_scan_runs`; verifică după primele zile.
 - **Limita de timp**: Edge Functions au limită de execuție (mai mică pe planul Free).
   Dacă vezi rulări rămase `running` sau erori de timeout, redu `max_uses` în `agent.ts`
   sau mută funcția pe un plan cu limită mai mare.
 - **Surse blocate**: unele platforme (ex. Glovo/Wolt) pot bloca citirea automată;
   agentul le trece în `unreachable_sources` și caută informația pe alte căi.
-- O scanare eșuată nu se reia până a doua zi (ținta e marcată la pornire, ca rulările
+- O scanare eșuată nu se reia până la runda următoare (~2 zile) (ținta e marcată la pornire, ca rulările
   paralele să nu o dubleze); eroarea apare în UI și în `competitor_scan_runs`.

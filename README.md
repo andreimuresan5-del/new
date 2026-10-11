@@ -24,7 +24,7 @@ După `supabase start`, rulează `npx supabase status` și verifică că `API UR
 
 ## Agent concurență
 
-Scanare zilnică automată a concurenței cu Claude (meniuri/prețuri, recenzii, promoții, deschideri noi). Setup și arhitectură: [`docs/agent-concurenta.md`](docs/agent-concurenta.md).
+Scanare automată (la 2 zile) a concurenței cu Claude (meniuri/prețuri, recenzii, promoții, deschideri noi). Setup și arhitectură: [`docs/agent-concurenta.md`](docs/agent-concurenta.md).
 
 ## Login
 

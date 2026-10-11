@@ -10,7 +10,7 @@
 --   select vault.create_secret('<anon key>', 'anon_key');
 --
 -- La fiecare 15 minute funcția scanează o singură țintă scadentă (nescanată în
--- ultimele 20h), deci ~96 de ținte/zi; când nu e nimic scadent, iese imediat.
+-- ultimele 44h, adică ~o dată la 2 zile); când nu e nimic scadent, iese imediat.
 
 create extension if not exists pg_cron;
 create extension if not exists pg_net;

@@ -71,7 +71,7 @@ export function CompetitorFeedPage() {
       {isLoading && <p className="mt-6 text-sm text-gray-500">Se încarcă...</p>}
       {!isLoading && visible.length === 0 && (
         <p className="mt-6 text-sm text-gray-500">
-          Nimic nou. Agentul scanează zilnic concurenții și zonele active.
+          Nimic nou. Agentul scanează la fiecare 2 zile concurenții și zonele active.
         </p>
       )}
 

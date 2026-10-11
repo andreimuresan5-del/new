@@ -150,7 +150,7 @@ export function CompetitorSettingsPage() {
       <Link to="/concurenta" className="text-sm text-gray-500 hover:text-gray-900">← Concurență</Link>
       <h1 className="mt-2 text-xl font-semibold text-gray-900">Concurenți și zone urmărite</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Agentul scanează automat fiecare țintă activă o dată pe zi. „Scanează acum” pornește o scanare imediată
+        Agentul scanează automat fiecare țintă activă o dată la 2 zile. „Scanează acum” pornește o scanare imediată
         (durează câteva minute).
       </p>
       {scanNow.error && <p className="mt-2 text-sm text-red-700">{(scanNow.error as Error).message}</p>}

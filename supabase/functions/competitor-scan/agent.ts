@@ -5,7 +5,7 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 
-const MODEL = 'claude-opus-5-5'
+const MODEL = 'claude-sonnet-5-5'
 const MAX_CONTINUATIONS = 6
 
 export const FINDING_CATEGORIES = [
@@ -201,7 +201,7 @@ function reportTool(kind: 'competitor' | 'area'): Anthropic.Tool {
   }
 }
 
-const SYSTEM_PROMPT = `Ești analistul de concurență al unei afaceri de food service din România (centru de producție + restaurante/locații de vânzare). Owner-ul vrea să afle zilnic ce se schimbă la concurență: meniuri și prețuri, recenzii, promoții și postări, deschideri noi.
+const SYSTEM_PROMPT = `Ești analistul de concurență al unei afaceri de food service din România (centru de producție + restaurante/locații de vânzare). Owner-ul vrea să afle regulat ce se schimbă la concurență: meniuri și prețuri, recenzii, promoții și postări, deschideri noi.
 
 Cum lucrezi:
 - Cercetează ținta cu web_search și web_fetch. Pornește de la linkurile primite; caută și pe platformele de livrare (Glovo, Wolt, Tazz, Bolt Food), Google Maps și social media dacă nu ai linkuri.

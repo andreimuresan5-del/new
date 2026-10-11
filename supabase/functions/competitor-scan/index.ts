@@ -4,7 +4,7 @@
 //   * pg_cron (supabase/cron/competitor_scan.sql), cu header-ul `x-cron-secret`:
 //     body `{}` → alege ținta activă cea mai veche nescanată în ultimele
 //     RESCAN_AFTER_HOURS și o scanează. Cron-ul rulează des, așa că toate țintele
-//     ajung scanate zilnic, una câte una (fără să depășim limita de timp a funcției).
+//     ajung scanate o dată la ~2 zile, una câte una (fără să depășim limita de timp a funcției).
 //   * UI-ul (owner logat), cu JWT-ul lui: body `{ competitor_id }` sau
 //     `{ watch_area_id }` → scanează ținta respectivă imediat („Scanează acum”).
 //
@@ -17,7 +17,9 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { runScan, type AreaTarget, type CompetitorTarget, type ScanContext } from './agent.ts'
 
-const RESCAN_AFTER_HOURS = 20
+// 44h, nu 48h: cron-ul rulează la 15 min, așa că o țintă scanată ieri la 10:00
+// ajunge scadentă poimâine dimineață, nu poimâine după-amiază
+const RESCAN_AFTER_HOURS = 44
 
 declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void }
 
