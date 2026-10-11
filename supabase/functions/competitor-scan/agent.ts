@@ -247,8 +247,8 @@ export async function runScan(client: Anthropic, ctx: ScanContext): Promise<Scan
     {
       type: 'web_search_20260209',
       name: 'web_search',
+      // fără user_location: API-ul nu acceptă codul de țară RO; orașul e oricum în prompt
       max_uses: 8,
-      user_location: { type: 'approximate', country: 'RO', timezone: 'Europe/Bucharest' },
     },
     { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 8 },
     reportTool(ctx.target.kind),
