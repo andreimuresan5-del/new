@@ -35,14 +35,15 @@ const BRAND_COLUMNS =
 
 const WEEKDAYS = ['duminică', 'luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă']
 
-async function isOwner(req: Request): Promise<boolean> {
+// owner sau rolul `marketing`
+async function canUseMarketing(req: Request): Promise<boolean> {
   const authHeader = req.headers.get('Authorization')
   if (!authHeader) return false
   const userClient = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
     global: { headers: { Authorization: authHeader } },
   })
   const { data, error } = await userClient.rpc('current_staff_role')
-  return !error && data === 'owner'
+  return !error && (data === 'owner' || data === 'marketing')
 }
 
 async function loadBrand(db: SupabaseClient, id: string): Promise<Brand & { id: string }> {
@@ -151,7 +152,7 @@ Deno.serve(async (req) => {
 
   const cronSecret = Deno.env.get('COMPETITOR_SCAN_CRON_SECRET')
   const fromCron = !!cronSecret && req.headers.get('x-cron-secret') === cronSecret
-  if (!fromCron && !(await isOwner(req))) return json({ error: 'unauthorized' }, 401)
+  if (!fromCron && !(await canUseMarketing(req))) return json({ error: 'unauthorized' }, 401)
 
   const body = (await req.json().catch(() => ({}))) as {
     task?: string

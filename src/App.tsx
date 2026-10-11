@@ -22,6 +22,7 @@ import { StockTransferPage } from './features/stock/StockTransferPage'
 function Home() {
   const { profile } = useAuth()
   if (profile?.role === 'owner') return <OwnerDashboardPage />
+  if (profile?.role === 'marketing') return <Navigate to="/marketing" replace />
   return <Navigate to="/production" replace />
 }
 
@@ -36,11 +37,14 @@ function App() {
 
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/recipes" element={<RecipesListPage />} />
-          <Route path="/recipes/:id" element={<RecipeDetailPage />} />
-          <Route path="/production" element={<ProductionLogListPage />} />
-          <Route path="/production/:id" element={<ProductionLogDetailPage />} />
-          <Route path="/stock" element={<StockLevelsPage />} />
+          {/* rolul `marketing` vede doar pagina Marketing */}
+          <Route element={<ProtectedRoute allowedRoles={['production_staff', 'kitchen_manager', 'owner']} />}>
+            <Route path="/recipes" element={<RecipesListPage />} />
+            <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+            <Route path="/production" element={<ProductionLogListPage />} />
+            <Route path="/production/:id" element={<ProductionLogDetailPage />} />
+            <Route path="/stock" element={<StockLevelsPage />} />
+          </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['kitchen_manager', 'owner']} />}>
             <Route path="/recipes/new" element={<RecipeFormPage />} />
@@ -48,8 +52,11 @@ function App() {
             <Route path="/stock/par-levels" element={<ParLevelsPage />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['owner']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['owner', 'marketing']} />}>
             <Route path="/marketing" element={<MarketingPage />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['owner']} />}>
             <Route path="/concurenta" element={<CompetitorFeedPage />} />
             <Route path="/concurenta/setari" element={<CompetitorSettingsPage />} />
           </Route>

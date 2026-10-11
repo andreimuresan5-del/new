@@ -15,10 +15,14 @@ export function Layout() {
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
           <nav className="flex gap-1">
             {profile?.role === 'owner' && <NavLink to="/" end className={linkClass}>Dashboard</NavLink>}
-            <NavLink to="/recipes" className={linkClass}>Rețete</NavLink>
-            <NavLink to="/production" className={linkClass}>Producție</NavLink>
-            <NavLink to="/stock" className={linkClass}>Stoc</NavLink>
-            {profile?.role === 'owner' && <NavLink to="/marketing" className={linkClass}>Marketing</NavLink>}
+            {profile?.role !== 'marketing' && (
+              <>
+                <NavLink to="/recipes" className={linkClass}>Rețete</NavLink>
+                <NavLink to="/production" className={linkClass}>Producție</NavLink>
+                <NavLink to="/stock" className={linkClass}>Stoc</NavLink>
+              </>
+            )}
+            {(profile?.role === 'owner' || profile?.role === 'marketing') && <NavLink to="/marketing" className={linkClass}>Marketing</NavLink>}
           </nav>
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-500">{profile?.name}</span>
