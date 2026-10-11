@@ -101,7 +101,8 @@ export function drawWordmark(
   const sub = size * 0.18
   ctx.font = `600 ${sub}px ${SANS}`
   ctx.fillStyle = ink
-  spaced(ctx, 'GASTRO BAR', left + size * 0.03, y + size * 0.395, sub * 0.5, 'left')
+  // centrat sub „astur.” (cuvânt + punct)
+  spaced(ctx, 'GASTRO BAR', left + total / 2, y + size * 0.395, sub * 0.5, 'center')
   ctx.textAlign = prev
 }
 
@@ -144,12 +145,22 @@ function spaced(ctx: CanvasRenderingContext2D, text: string, x: number, y: numbe
   ctx.textAlign = prev
 }
 
-function drawCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
-  const scale = Math.max(STORY_WIDTH / img.naturalWidth, STORY_HEIGHT / img.naturalHeight)
+// Umple dreptunghiul (0, 0, lățime, height) cu poza, decupată centrat.
+function drawCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement, height: number) {
+  const scale = Math.max(STORY_WIDTH / img.naturalWidth, height / img.naturalHeight)
   const w = img.naturalWidth * scale
   const h = img.naturalHeight * scale
-  ctx.drawImage(img, (STORY_WIDTH - w) / 2, (STORY_HEIGHT - h) / 2, w, h)
+  ctx.save()
+  ctx.beginPath()
+  ctx.rect(0, 0, STORY_WIDTH, height)
+  ctx.clip()
+  ctx.drawImage(img, (STORY_WIDTH - w) / 2, (height - h) / 2, w, h)
+  ctx.restore()
 }
+
+// Cu poză: poza ocupă partea de sus, meniul stă dedesubt pe culoare plină
+// (contrastul nu depinde de poză — important și pentru daltonism).
+const PHOTO_HEIGHT = 720
 
 interface Block {
   height: number
@@ -163,31 +174,32 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
   const scheme = COLOR_SCHEMES[c.scheme] ?? COLOR_SCHEMES.clasic
   const p = c.style === 'light' ? scheme.light : scheme.dark
   const usePhoto = c.style === 'photo' && c.photo
-  const align: 'center' | 'left' = usePhoto ? 'left' : 'center'
+  const align = 'center' as 'center' | 'left'
   const margin = 110
   const x = align === 'center' ? STORY_WIDTH / 2 : margin
   const maxWidth = STORY_WIDTH - margin * 2
-  // cu poză, textul e mai compact și stă jos, ca mâncarea să rămână vedeta
-  const baseK = usePhoto ? 0.78 : 1
+  // cu poză, textul e mai compact (are mai puțin loc sub poză)
+  const baseK = usePhoto ? 0.86 : 1
   ctx.textAlign = align
   ctx.textBaseline = 'alphabetic'
 
   // fundal
-  ctx.fillStyle = usePhoto ? '#000000' : p.bg
+  ctx.fillStyle = p.bg
   ctx.fillRect(0, 0, STORY_WIDTH, STORY_HEIGHT)
   if (usePhoto) {
-    drawCover(ctx, c.photo!)
-    const g = ctx.createLinearGradient(0, STORY_HEIGHT * 0.4, 0, STORY_HEIGHT)
-    g.addColorStop(0, 'rgba(0,0,0,0)')
-    g.addColorStop(0.3, 'rgba(0,0,0,0.68)')
-    g.addColorStop(1, 'rgba(0,0,0,0.9)')
-    ctx.fillStyle = g
-    ctx.fillRect(0, 0, STORY_WIDTH, STORY_HEIGHT)
-    const top = ctx.createLinearGradient(0, 0, 0, 420)
-    top.addColorStop(0, 'rgba(0,0,0,0.45)')
+    drawCover(ctx, c.photo!, PHOTO_HEIGHT)
+    // trecere lină din poză în culoarea plină de dedesubt
+    const fade = ctx.createLinearGradient(0, PHOTO_HEIGHT - 220, 0, PHOTO_HEIGHT)
+    fade.addColorStop(0, rgba(p.bg, 0))
+    fade.addColorStop(1, rgba(p.bg, 1))
+    ctx.fillStyle = fade
+    ctx.fillRect(0, PHOTO_HEIGHT - 220, STORY_WIDTH, 220)
+    // umbră discretă sus, sub avatarul și bara Instagram
+    const top = ctx.createLinearGradient(0, 0, 0, 260)
+    top.addColorStop(0, 'rgba(0,0,0,0.35)')
     top.addColorStop(1, 'rgba(0,0,0,0)')
     ctx.fillStyle = top
-    ctx.fillRect(0, 0, STORY_WIDTH, 420)
+    ctx.fillRect(0, 0, STORY_WIDTH, 260)
   } else {
     // pe fundal închis, un halou discret în culoarea de accent
     if (c.style === 'warm') {
@@ -211,28 +223,30 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
     const blocks: Block[] = []
     const gap = (h: number) => blocks.push({ height: px(h), draw: () => {} })
 
-    ctx.font = `700 34px ${SANS}`
+    const topLabel = usePhoto ? `MENIUL ZILEI · ${c.dateLabel.toUpperCase()}` : 'MENIUL ZILEI'
     blocks.push({
       height: 40,
       draw: (y) => {
-        ctx.font = `700 34px ${SANS}`
+        ctx.font = `700 ${usePhoto ? 30 : 34}px ${SANS}`
         ctx.fillStyle = p.accent
-        spaced(ctx, 'MENIUL ZILEI', x, y + 34, 10, align)
+        spaced(ctx, topLabel, x, y + 34, usePhoto ? 6 : 10, align)
       },
     })
-    gap(26)
-    ctx.font = `600 ${px(84)}px ${SERIF}`
-    const dateLines = wrap(ctx, c.dateLabel, maxWidth)
-    blocks.push({
-      height: dateLines.length * px(96),
-      draw: (y) => {
-        ctx.font = `600 ${px(84)}px ${SERIF}`
-        ctx.fillStyle = p.text
-        dateLines.forEach((l, i) => ctx.fillText(l, x, y + px(80) + i * px(96)))
-      },
-    })
+    if (!usePhoto) {
+      gap(26)
+      ctx.font = `600 ${px(84)}px ${SERIF}`
+      const dateLines = wrap(ctx, c.dateLabel, maxWidth)
+      blocks.push({
+        height: dateLines.length * px(96),
+        draw: (y) => {
+          ctx.font = `600 ${px(84)}px ${SERIF}`
+          ctx.fillStyle = p.text
+          dateLines.forEach((l, i) => ctx.fillText(l, x, y + px(80) + i * px(96)))
+        },
+      })
+    }
 
-    if (c.headline?.trim()) {
+    if (c.headline?.trim() && !usePhoto) {
       gap(34)
       ctx.font = `italic 400 ${px(56)}px ${SERIF}`
       const lines = wrap(ctx, c.headline.trim(), maxWidth)
@@ -246,16 +260,18 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
       })
     }
 
-    gap(60)
-    blocks.push({
-      height: 4,
-      draw: (y) => {
-        ctx.fillStyle = p.accent
-        const w = 120
-        ctx.fillRect(align === 'center' ? x - w / 2 : x, y, w, 4)
-      },
-    })
-    gap(56)
+    if (!usePhoto) {
+      gap(60)
+      blocks.push({
+        height: 4,
+        draw: (y) => {
+          ctx.fillStyle = p.accent
+          const w = 120
+          ctx.fillRect(align === 'center' ? x - w / 2 : x, y, w, 4)
+        },
+      })
+    }
+    gap(usePhoto ? 40 : 56)
 
     const count = c.sections.reduce((n, s) => n + s.items.length, 0)
     const itemFont = px(count > 4 ? 50 : 58)
@@ -348,7 +364,8 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
   }
 
   const footerHeight = c.logo || c.wordmark ? 240 : 190
-  const area = SAFE_BOTTOM - footerHeight - SAFE_TOP
+  const contentTop = usePhoto ? PHOTO_HEIGHT - 30 : SAFE_TOP
+  const area = SAFE_BOTTOM - footerHeight - contentTop
   // meniu lung: micșorăm textul până încape deasupra semnăturii
   let blocks = build(baseK)
   let total = blocks.reduce((h, b) => h + b.height, 0)
@@ -356,17 +373,12 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
     blocks = build(k)
     total = blocks.reduce((h, b) => h + b.height, 0)
   }
-  // pe poză textul stă jos, peste gradient; altfel centrat
-  let y = usePhoto ? Math.max(SAFE_TOP, SAFE_BOTTOM - footerHeight - total - 30) : SAFE_TOP + Math.max(0, (area - total) / 2)
-  if (usePhoto) {
-    ctx.shadowColor = 'rgba(0,0,0,0.7)'
-    ctx.shadowBlur = 24
-  }
+  // centrat vertical în spațiul liber (sub poză, în modul cu poză)
+  let y = contentTop + Math.max(0, (area - total) / 2)
   for (const b of blocks) {
     b.draw(y)
     y += b.height
   }
-  ctx.shadowBlur = 0
 
   // semnătura: logo sau numele brandului
   const footerY = SAFE_BOTTOM - footerHeight + (c.logo || c.wordmark ? 50 : 20)
