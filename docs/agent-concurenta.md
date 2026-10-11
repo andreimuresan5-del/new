@@ -1,8 +1,8 @@
-# Agent de monitorizare a concurenței
+# Iscoada — agentul de monitorizare a concurenței
 
 Agent AI care scanează la fiecare 2 zile concurenții și zonele urmărite și raportează doar ce s-a
 schimbat: **meniuri și prețuri**, **recenzii/rating**, **promoții și social media**,
-**deschideri noi**. Rezultatele apar în aplicație la **Concurență** (doar owner).
+**deschideri noi**. Rezultatele apar în aplicație la **Iscoada** (doar owner).
 
 ## Cum funcționează
 
@@ -52,7 +52,7 @@ pg_cron (la 15 min) ──► Edge Function `competitor-scan`
 4. Programare automată: în SQL Editor, creează secretele din Vault descrise în capul
    fișierului `supabase/cron/competitor_scan.sql`, apoi rulează fișierul.
    Intenționat nu e migrare — `db reset` local nu pornește apeluri plătite.
-5. În aplicație: **Concurență → Concurenți și zone** → adaugă concurenții (site, Google
+5. În aplicație: **Iscoada → Concurenți și zone** → adaugă concurenții (site, Google
    Maps, linkuri Glovo/Wolt/Tazz/Bolt, Facebook, Instagram, note) și zonele pentru
    deschideri noi. Apasă „Scanează acum” pe unul ca test.
 

@@ -32,13 +32,13 @@ export function CompetitorFeedPage() {
   return (
     <div className="mx-auto max-w-2xl p-4 pb-24">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900">Concurență</h1>
+        <h1 className="text-xl font-semibold text-gray-900">Iscoada</h1>
         <Link to="/concurenta/setari" className="text-sm font-medium text-gray-600 hover:text-gray-900">
           Concurenți și zone →
         </Link>
       </div>
       <p className="mt-1 text-sm text-gray-500">
-        Schimbări detectate de agent: prețuri, meniuri, recenzii, promoții, deschideri noi.
+        Ce s-a schimbat la concurență: prețuri, meniuri, recenzii, promoții, deschideri noi.
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -71,7 +71,7 @@ export function CompetitorFeedPage() {
       {isLoading && <p className="mt-6 text-sm text-gray-500">Se încarcă...</p>}
       {!isLoading && visible.length === 0 && (
         <p className="mt-6 text-sm text-gray-500">
-          Nimic nou. Agentul scanează la fiecare 2 zile concurenții și zonele active.
+          Nimic nou. Iscoada verifică la fiecare 2 zile concurenții și zonele active.
         </p>
       )}
 

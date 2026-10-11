@@ -23,7 +23,7 @@ export function OwnerDashboardPage() {
           <p className="text-2xl font-semibold text-gray-900">{logs?.length ?? '—'}</p>
         </Link>
         <Link to="/concurenta" className="rounded-lg border border-gray-200 bg-white p-4">
-          <p className="text-sm text-gray-500">Noutăți concurență (necitite)</p>
+          <p className="text-sm text-gray-500">Iscoada — noutăți necitite</p>
           <p className="text-2xl font-semibold text-gray-900">{unreadFindings ?? '—'}</p>
         </Link>
       </div>

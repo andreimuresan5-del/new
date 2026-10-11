@@ -22,7 +22,7 @@ După `supabase start`, rulează `npx supabase status` și verifică că `API UR
 - Supabase Studio (DB, tabele, auth users): http://127.0.0.1:54323
 - Emailuri de test (nefolosit în Faza 1, PIN-only): http://127.0.0.1:54324
 
-## Agent concurență
+## Iscoada (agent concurență)
 
 Scanare automată (la 2 zile) a concurenței cu Claude (meniuri/prețuri, recenzii, promoții, deschideri noi). Setup și arhitectură: [`docs/agent-concurenta.md`](docs/agent-concurenta.md).
 

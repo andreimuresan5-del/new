@@ -77,7 +77,7 @@ function CompetitorForm({ competitor, onDone }: { competitor?: Competitor; onDon
       <input placeholder="Facebook" value={form.facebook_url} onChange={set('facebook_url')} className={inputClass} />
       <input placeholder="Instagram" value={form.instagram_url} onChange={set('instagram_url')} className={inputClass} />
       <textarea
-        placeholder="Note pentru agent (ex. ce produse să compare cu ale noastre)"
+        placeholder="Note pentru Iscoada (ex. ce produse să compare cu ale noastre)"
         value={form.notes}
         onChange={set('notes')}
         rows={2}
@@ -113,7 +113,7 @@ function WatchAreaForm({ area, onDone }: { area?: WatchArea; onDone: () => void 
       <input required placeholder="Nume zonă * (ex. Cluj — Mărăști)" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
       <textarea
         required
-        placeholder="Ce să caute agentul * (ex. restaurante, fast-food și dark kitchen-uri noi în Cluj-Napoca, zona Mărăști)"
+        placeholder="Ce să caute Iscoada * (ex. restaurante, fast-food și dark kitchen-uri noi în Cluj-Napoca, zona Mărăști)"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         rows={2}
@@ -147,10 +147,10 @@ export function CompetitorSettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl p-4 pb-24">
-      <Link to="/concurenta" className="text-sm text-gray-500 hover:text-gray-900">← Concurență</Link>
+      <Link to="/concurenta" className="text-sm text-gray-500 hover:text-gray-900">← Iscoada</Link>
       <h1 className="mt-2 text-xl font-semibold text-gray-900">Concurenți și zone urmărite</h1>
       <p className="mt-1 text-sm text-gray-500">
-        Agentul scanează automat fiecare țintă activă o dată la 2 zile. „Scanează acum” pornește o scanare imediată
+        Iscoada verifică automat fiecare țintă activă o dată la 2 zile. „Scanează acum” pornește o scanare imediată
         (durează câteva minute).
       </p>
       {scanNow.error && <p className="mt-2 text-sm text-red-700">{(scanNow.error as Error).message}</p>}
