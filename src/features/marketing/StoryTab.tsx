@@ -5,8 +5,8 @@ import { loadStoryFonts, renderStory, type StoryStyle } from './storyRenderer'
 
 const HOURS = '12:00 – 16:00'
 const STYLES: { key: StoryStyle; label: string }[] = [
-  { key: 'warm', label: 'Cald (închis)' },
-  { key: 'light', label: 'Luminos' },
+  { key: 'warm', label: 'Negru' },
+  { key: 'light', label: 'Alb' },
   { key: 'photo', label: 'Cu poză' },
 ]
 
@@ -54,6 +54,7 @@ export function StoryTab({ brand }: { brand: Brand }) {
   const [headline, setHeadline] = useState('')
   const [style, setStyle] = useState<StoryStyle>('warm')
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null)
+  const [delivery, setDelivery] = useState(true)
   const [logo, setLogo] = useState<HTMLImageElement | null>(null)
   const [fontsReady, setFontsReady] = useState(false)
   const [caption, setCaption] = useState<string | null>(null)
@@ -93,6 +94,7 @@ export function StoryTab({ brand }: { brand: Brand }) {
       headline: headline || null,
       items: itemList.length ? itemList : ['Supa zilei', 'Felul principal', 'Desert'],
       price: price || null,
+      delivery: delivery ? 'Livrare prin Glovo · Wolt' : null,
       logo,
       photo,
     })
@@ -202,6 +204,10 @@ export function StoryTab({ brand }: { brand: Brand }) {
           <input type="file" accept="image/*" className="hidden" onChange={(e) => void pickPhoto(e.target.files?.[0])} />
         </label>
       </div>
+      <label className="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" checked={delivery} onChange={(e) => setDelivery(e.target.checked)} />
+        Arată „Livrare prin Glovo · Wolt”
+      </label>
       {style === 'photo' && !photo && <p className="text-sm text-gray-500">Adaugă o poză cu felul zilei — apare pe fundal.</p>}
 
       <canvas ref={canvas} className="mx-auto block w-full max-w-xs rounded-xl border border-gray-200 shadow-sm" />

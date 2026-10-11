@@ -13,6 +13,8 @@ export interface StoryContent {
   headline: string | null
   items: string[]
   price: string | null
+  // ex. „Livrare prin Glovo · Wolt” — null dacă nu se afișează
+  delivery: string | null
   logo: HTMLImageElement | null
   photo: HTMLImageElement | null
 }
@@ -24,10 +26,12 @@ const SAFE_BOTTOM = STORY_HEIGHT - 340
 const SERIF = 'Fraunces, Georgia, serif'
 const SANS = 'Inter, system-ui, sans-serif'
 
+// culorile Astur: negru, alb și roșul din logo
+const BRAND_RED = '#dc2000'
 const PALETTES = {
-  warm: { bg: '#1c1714', text: '#f4ead9', muted: '#bfae98', accent: '#d97845', onAccent: '#1c1714' },
-  light: { bg: '#f4ead9', text: '#1c1714', muted: '#6b5d50', accent: '#c4612f', onAccent: '#fff8ee' },
-  photo: { bg: '#000000', text: '#ffffff', muted: '#e9dfd2', accent: '#e08350', onAccent: '#1c1714' },
+  warm: { bg: '#121212', text: '#ffffff', muted: '#bdbdbd', accent: BRAND_RED, onAccent: '#ffffff' },
+  light: { bg: '#ffffff', text: '#141414', muted: '#5c5c5c', accent: BRAND_RED, onAccent: '#ffffff' },
+  photo: { bg: '#000000', text: '#ffffff', muted: '#e6e6e6', accent: BRAND_RED, onAccent: '#ffffff' },
 }
 
 export async function loadStoryFonts() {
@@ -90,8 +94,7 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
   const x = align === 'center' ? STORY_WIDTH / 2 : margin
   const maxWidth = STORY_WIDTH - margin * 2
   // cu poză, textul e mai compact și stă jos, ca mâncarea să rămână vedeta
-  const k = usePhoto ? 0.78 : 1
-  const px = (n: number) => Math.round(n * k)
+  const baseK = usePhoto ? 0.78 : 1
   ctx.textAlign = align
   ctx.textBaseline = 'alphabetic'
 
@@ -112,14 +115,15 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
     ctx.fillStyle = top
     ctx.fillRect(0, 0, STORY_WIDTH, 420)
   } else {
-    // ramă fină + halou cald, ca să nu fie un fundal plat
-    const glow = ctx.createRadialGradient(STORY_WIDTH / 2, STORY_HEIGHT * 0.42, 50, STORY_WIDTH / 2, STORY_HEIGHT * 0.42, 1100)
-    // același ton la ambele capete (doar alfa diferit), altfel gradientul trece prin gri
-    const [r, g2, b] = c.style === 'warm' ? [217, 120, 69] : [255, 255, 255]
-    glow.addColorStop(0, `rgba(${r},${g2},${b},${c.style === 'warm' ? 0.16 : 0.55})`)
-    glow.addColorStop(1, `rgba(${r},${g2},${b},0)`)
-    ctx.fillStyle = glow
-    ctx.fillRect(0, 0, STORY_WIDTH, STORY_HEIGHT)
+    // pe negru, un halou roșu discret; pe alb fundalul rămâne curat (logo-ul are fundal alb)
+    if (c.style === 'warm') {
+      const glow = ctx.createRadialGradient(STORY_WIDTH / 2, STORY_HEIGHT * 0.42, 50, STORY_WIDTH / 2, STORY_HEIGHT * 0.42, 1100)
+      // același ton la ambele capete (doar alfa diferit), altfel gradientul trece prin gri
+      glow.addColorStop(0, 'rgba(220,32,0,0.14)')
+      glow.addColorStop(1, 'rgba(220,32,0,0)')
+      ctx.fillStyle = glow
+      ctx.fillRect(0, 0, STORY_WIDTH, STORY_HEIGHT)
+    }
     ctx.strokeStyle = p.accent
     ctx.globalAlpha = 0.5
     ctx.lineWidth = 3
@@ -127,107 +131,142 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
     ctx.globalAlpha = 1
   }
 
-  // blocurile de conținut, măsurate întâi ca să le centrăm vertical
-  const blocks: Block[] = []
-  const gap = (h: number) => blocks.push({ height: px(h), draw: () => {} })
+  // blocurile de conținut, construite la o scară dată (k) ca să le putem micșora dacă nu încap
+  const build = (k: number) => {
+    const px = (n: number) => Math.round(n * k)
+    const blocks: Block[] = []
+    const gap = (h: number) => blocks.push({ height: px(h), draw: () => {} })
 
-  ctx.font = `700 34px ${SANS}`
-  blocks.push({
-    height: 40,
-    draw: (y) => {
-      ctx.font = `700 34px ${SANS}`
-      ctx.fillStyle = p.accent
-      spaced(ctx, 'MENIUL ZILEI', x, y + 34, 10, align)
-    },
-  })
-  gap(26)
-  ctx.font = `600 ${px(84)}px ${SERIF}`
-  const dateLines = wrap(ctx, c.dateLabel, maxWidth)
-  blocks.push({
-    height: dateLines.length * px(96),
-    draw: (y) => {
-      ctx.font = `600 ${px(84)}px ${SERIF}`
-      ctx.fillStyle = p.text
-      dateLines.forEach((l, i) => ctx.fillText(l, x, y + px(80) + i * px(96)))
-    },
-  })
-
-  if (c.headline?.trim()) {
-    gap(34)
-    ctx.font = `italic 400 ${px(56)}px ${SERIF}`
-    const lines = wrap(ctx, c.headline.trim(), maxWidth)
+    ctx.font = `700 34px ${SANS}`
     blocks.push({
-      height: lines.length * px(70),
+      height: 40,
       draw: (y) => {
-        ctx.font = `italic 400 ${px(56)}px ${SERIF}`
-        ctx.fillStyle = usePhoto ? p.text : p.muted
-        lines.forEach((l, i) => ctx.fillText(l, x, y + px(56) + i * px(70)))
-      },
-    })
-  }
-
-  gap(60)
-  blocks.push({
-    height: 4,
-    draw: (y) => {
-      ctx.fillStyle = p.accent
-      const w = 120
-      ctx.fillRect(align === 'center' ? x - w / 2 : x, y, w, 4)
-    },
-  })
-  gap(56)
-
-  const itemFont = px(c.items.length > 4 ? 50 : 58)
-  const itemLine = itemFont * 1.22
-  c.items.forEach((item, idx) => {
-    ctx.font = `500 ${itemFont}px ${SERIF}`
-    const lines = wrap(ctx, item, maxWidth)
-    blocks.push({
-      height: lines.length * itemLine,
-      draw: (y) => {
-        ctx.font = `500 ${itemFont}px ${SERIF}`
-        ctx.fillStyle = p.text
-        lines.forEach((l, i) => ctx.fillText(l, x, y + itemFont + i * itemLine))
-      },
-    })
-    if (idx < c.items.length - 1) gap(30)
-  })
-
-  if (c.price?.trim()) {
-    gap(64)
-    const label = c.price.trim()
-    ctx.font = `700 ${px(52)}px ${SANS}`
-    const w = ctx.measureText(label).width + px(90)
-    blocks.push({
-      height: px(100),
-      draw: (y) => {
-        const left = align === 'center' ? x - w / 2 : x
+        ctx.font = `700 34px ${SANS}`
         ctx.fillStyle = p.accent
-        ctx.beginPath()
-        ctx.roundRect(left, y, w, px(100), px(50))
-        ctx.fill()
-        ctx.font = `700 ${px(52)}px ${SANS}`
-        ctx.fillStyle = p.onAccent
-        ctx.textAlign = 'center'
-        ctx.fillText(label, left + w / 2, y + px(68))
-        ctx.textAlign = align
+        spaced(ctx, 'MENIUL ZILEI', x, y + 34, 10, align)
       },
     })
+    gap(26)
+    ctx.font = `600 ${px(84)}px ${SERIF}`
+    const dateLines = wrap(ctx, c.dateLabel, maxWidth)
+    blocks.push({
+      height: dateLines.length * px(96),
+      draw: (y) => {
+        ctx.font = `600 ${px(84)}px ${SERIF}`
+        ctx.fillStyle = p.text
+        dateLines.forEach((l, i) => ctx.fillText(l, x, y + px(80) + i * px(96)))
+      },
+    })
+
+    if (c.headline?.trim()) {
+      gap(34)
+      ctx.font = `italic 400 ${px(56)}px ${SERIF}`
+      const lines = wrap(ctx, c.headline.trim(), maxWidth)
+      blocks.push({
+        height: lines.length * px(70),
+        draw: (y) => {
+          ctx.font = `italic 400 ${px(56)}px ${SERIF}`
+          ctx.fillStyle = usePhoto ? p.text : p.muted
+          lines.forEach((l, i) => ctx.fillText(l, x, y + px(56) + i * px(70)))
+        },
+      })
+    }
+
+    gap(60)
+    blocks.push({
+      height: 4,
+      draw: (y) => {
+        ctx.fillStyle = p.accent
+        const w = 120
+        ctx.fillRect(align === 'center' ? x - w / 2 : x, y, w, 4)
+      },
+    })
+    gap(56)
+
+    const itemFont = px(c.items.length > 4 ? 50 : 58)
+    const itemLine = itemFont * 1.22
+    c.items.forEach((item, idx) => {
+      ctx.font = `500 ${itemFont}px ${SERIF}`
+      const lines = wrap(ctx, item, maxWidth)
+      blocks.push({
+        height: lines.length * itemLine,
+        draw: (y) => {
+          ctx.font = `500 ${itemFont}px ${SERIF}`
+          ctx.fillStyle = p.text
+          lines.forEach((l, i) => ctx.fillText(l, x, y + itemFont + i * itemLine))
+        },
+      })
+      if (idx < c.items.length - 1) gap(30)
+    })
+
+    if (c.price?.trim()) {
+      gap(64)
+      const label = c.price.trim()
+      ctx.font = `700 ${px(52)}px ${SANS}`
+      const w = ctx.measureText(label).width + px(90)
+      blocks.push({
+        height: px(100),
+        draw: (y) => {
+          const left = align === 'center' ? x - w / 2 : x
+          ctx.fillStyle = p.accent
+          ctx.beginPath()
+          ctx.roundRect(left, y, w, px(100), px(50))
+          ctx.fill()
+          ctx.font = `700 ${px(52)}px ${SANS}`
+          ctx.fillStyle = p.onAccent
+          ctx.textAlign = 'center'
+          ctx.fillText(label, left + w / 2, y + px(68))
+          ctx.textAlign = align
+        },
+      })
+    }
+
+    gap(54)
+    blocks.push({
+      height: px(50),
+      draw: (y) => {
+        ctx.font = `500 ${px(40)}px ${SANS}`
+        ctx.fillStyle = p.muted
+        ctx.fillText(`${c.hours} · luni–vineri`, x, y + px(40))
+      },
+    })
+
+    if (c.delivery) {
+      gap(30)
+      const label = c.delivery
+      ctx.font = `700 ${px(38)}px ${SANS}`
+      const w = ctx.measureText(label).width + px(70)
+      const h = px(78)
+      blocks.push({
+        height: h,
+        draw: (y) => {
+          const left = align === 'center' ? x - w / 2 : x
+          ctx.strokeStyle = p.accent
+          ctx.lineWidth = 4
+          ctx.beginPath()
+          ctx.roundRect(left, y, w, h, h / 2)
+          ctx.stroke()
+          ctx.font = `700 ${px(38)}px ${SANS}`
+          ctx.fillStyle = p.text
+          ctx.textAlign = 'center'
+          ctx.fillText(label, left + w / 2, y + h / 2 + px(13))
+          ctx.textAlign = align
+        },
+      })
+    }
+
+    return blocks
   }
 
-  gap(54)
-  blocks.push({
-    height: 50,
-    draw: (y) => {
-      ctx.font = `500 ${px(40)}px ${SANS}`
-      ctx.fillStyle = p.muted
-      ctx.fillText(`${c.hours} · luni–vineri`, x, y + px(40))
-    },
-  })
-
-  const total = blocks.reduce((h, b) => h + b.height, 0)
-  const footerHeight = 150
+  const footerHeight = c.logo ? 240 : 190
   const area = SAFE_BOTTOM - footerHeight - SAFE_TOP
+  // meniu lung: micșorăm textul până încape deasupra semnăturii
+  let blocks = build(baseK)
+  let total = blocks.reduce((h, b) => h + b.height, 0)
+  for (let k = baseK * 0.94; total > area && k > 0.5; k *= 0.94) {
+    blocks = build(k)
+    total = blocks.reduce((h, b) => h + b.height, 0)
+  }
   // pe poză textul stă jos, peste gradient; altfel centrat
   let y = usePhoto ? Math.max(SAFE_TOP, SAFE_BOTTOM - footerHeight - total - 30) : SAFE_TOP + Math.max(0, (area - total) / 2)
   if (usePhoto) {
@@ -241,14 +280,23 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
   ctx.shadowBlur = 0
 
   // semnătura: logo sau numele brandului
-  const footerY = SAFE_BOTTOM - footerHeight + 20
+  const footerY = SAFE_BOTTOM - footerHeight + (c.logo ? 50 : 20)
   if (c.logo) {
-    const maxW = 260
-    const maxH = 120
+    const maxW = 400
+    const maxH = 160
     const s = Math.min(maxW / c.logo.naturalWidth, maxH / c.logo.naturalHeight)
     const w = c.logo.naturalWidth * s
     const h = c.logo.naturalHeight * s
-    ctx.drawImage(c.logo, align === 'center' ? x - w / 2 : x, footerY, w, h)
+    const left = align === 'center' ? x - w / 2 : x
+    // logo-ul are fundal alb: pe fundal închis sau pe poză stă pe un card alb
+    if (c.style !== 'light') {
+      const pad = 26
+      ctx.fillStyle = '#ffffff'
+      ctx.beginPath()
+      ctx.roundRect(left - pad, footerY - pad, w + pad * 2, h + pad * 2, 28)
+      ctx.fill()
+    }
+    ctx.drawImage(c.logo, left, footerY, w, h)
   } else {
     ctx.font = `600 54px ${SERIF}`
     ctx.fillStyle = p.text
