@@ -354,6 +354,9 @@ export interface ChatMessage {
   id: string
   role: 'user' | 'assistant'
   content: string
+  image_path: string | null
+  // ce a creat agentul în aplicație la mesajul ăsta
+  actions: { tool: string; summary: string }[] | null
   created_at: string
 }
 
@@ -363,7 +366,7 @@ export function useChatMessages(brandId: string | undefined) {
     enabled: !!brandId,
     queryFn: async () => {
       // RLS: fiecare vede doar conversația proprie
-      const { data, error } = await supabase.from('marketing_chat_messages').select('id, role, content, created_at')
+      const { data, error } = await supabase.from('marketing_chat_messages').select('id, role, content, image_path, actions, created_at')
         .eq('brand_id', brandId!).order('created_at', { ascending: true }).limit(200)
       if (error) throw error
       return data as ChatMessage[]
@@ -371,12 +374,52 @@ export function useChatMessages(brandId: string | undefined) {
   })
 }
 
+// Poza se micșorează pe telefon înainte de încărcare (max 1600px, JPEG): mai rapid și mai ieftin.
+async function shrinkImage(file: File): Promise<Blob> {
+  const bitmap = await createImageBitmap(file)
+  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height))
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.round(bitmap.width * scale)
+  canvas.height = Math.round(bitmap.height * scale)
+  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+  return new Promise((resolve, reject) =>
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Nu am putut procesa poza'))), 'image/jpeg', 0.85),
+  )
+}
+
 export function useSendChat() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (input: { brandId: string; message: string }) =>
-      invokeAgent({ task: 'chat', brand_id: input.brandId, message: input.message }),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['marketing_chat'] }),
+    mutationFn: async (input: { brandId: string; message: string; image: File | null }) => {
+      let imagePath: string | null = null
+      if (input.image) {
+        imagePath = `${input.brandId}/chat/${crypto.randomUUID()}.jpg`
+        const { error } = await supabase.storage.from('marketing-uploads')
+          .upload(imagePath, await shrinkImage(input.image), { contentType: 'image/jpeg' })
+        if (error) throw error
+      }
+      return invokeAgent({ task: 'chat', brand_id: input.brandId, message: input.message, image_path: imagePath })
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketing_chat'] })
+      // agentul poate fi creat ciorne / cereri / meniul zilei
+      queryClient.invalidateQueries({ queryKey: ['marketing_items'] })
+      queryClient.invalidateQueries({ queryKey: ['event_leads'] })
+      queryClient.invalidateQueries({ queryKey: ['daily_menus'] })
+    },
+  })
+}
+
+export function useChatImageUrls(paths: string[]) {
+  return useQuery({
+    queryKey: ['chat_image_urls', paths],
+    enabled: paths.length > 0,
+    staleTime: 50 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage.from('marketing-uploads').createSignedUrls(paths, 3600)
+      if (error) throw error
+      return Object.fromEntries(data.map((d) => [d.path, d.signedUrl])) as Record<string, string>
+    },
   })
 }
 

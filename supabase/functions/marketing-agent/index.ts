@@ -24,7 +24,9 @@ import {
   reviewReply,
   storyHeadlines,
   weeklyPlan,
+  type ActionExecutor,
   type Brand,
+  type ChatTurn,
   type Learnings,
 } from './agent.ts'
 
@@ -195,6 +197,79 @@ async function eventOutcomes(db: SupabaseClient, brandId: string): Promise<strin
     `${l.event_packages ? `, pachet „${l.event_packages.name}”` : ''}${l.lost_reason ? ` — motiv: ${l.lost_reason}` : ''}`)
 }
 
+// Acțiunile pe care le poate face chat-ul. Totul intră ca ciornă / cerere nouă.
+function chatActions(db: SupabaseClient, brandId: string): ActionExecutor {
+  const latestBatch = async () => {
+    const { data } = await db.from('marketing_items').select('batch_id').eq('brand_id', brandId)
+      .not('batch_id', 'is', null).order('created_at', { ascending: false }).limit(1).maybeSingle()
+    // adăugăm la planul curent, ca materialul să apară în tabul Plan
+    return (data?.batch_id as string | undefined) ?? crypto.randomUUID()
+  }
+  return async (raw) => {
+    // fără `strict`, câmpurile opționale pot lipsi din input
+    const a = { ...raw, input: Object.fromEntries(Object.entries(raw.input).map(([k, v]) => [k, v ?? null])) } as typeof raw
+    switch (a.tool) {
+      case 'add_post': {
+        const i = a.input
+        const { error } = await db.from('marketing_items').insert({
+          brand_id: brandId, batch_id: await latestBatch(), kind: 'post', title: i.title, body: i.body,
+          channel: i.channel, suggested_date: i.date, suggested_time: i.time, image_idea: i.image_idea,
+        })
+        if (error) throw error
+        return `Postarea „${i.title}” e în tabul Plan, de aprobat.`
+      }
+      case 'add_promo': {
+        const i = a.input
+        const { error } = await db.from('marketing_items').insert({
+          brand_id: brandId, batch_id: await latestBatch(), kind: 'promo', title: i.title, body: i.details,
+          channel: i.channel, suggested_date: i.start_date,
+          rationale: `${i.rationale}${i.start_date ? ` (${i.start_date} → ${i.end_date ?? '?'})` : ''}`,
+        })
+        if (error) throw error
+        return `Oferta „${i.title}” e în tabul Plan, de aprobat.`
+      }
+      case 'add_event_lead': {
+        const i = a.input
+        const { error } = await db.from('event_leads').insert({
+          brand_id: brandId, name: i.name, contact_person: i.contact_person, phone: i.phone, email: i.email,
+          event_type: i.event_type, event_date: i.event_date, guests: i.guests, budget: i.budget, notes: i.notes,
+          source: 'chat', next_followup_date: new Date().toISOString().slice(0, 10),
+        })
+        if (error) throw error
+        return `Cererea „${i.name}” e în tabul Evenimente.`
+      }
+      case 'save_daily_menu': {
+        const i = a.input
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(i.menu_date)) throw new Error('Data trebuie să fie YYYY-MM-DD')
+        // același format ca în tabul Meniul zilei (StoryTab)
+        const items = [
+          i.ciorba && `Ciorbă: ${i.ciorba}`,
+          i.supa && `Supă cremă: ${i.supa}`,
+          ...(i.mains ?? []).slice(0, 3).map((m) => `Fel principal: ${m}`),
+        ].filter(Boolean).join('\n')
+        const { error } = await db.from('daily_menus').upsert(
+          { brand_id: brandId, menu_date: i.menu_date, items, price: i.price, updated_at: new Date().toISOString() },
+          { onConflict: 'brand_id,menu_date' },
+        )
+        if (error) throw error
+        return `Meniul zilei pentru ${i.menu_date} e în tabul Meniul zilei, gata de story.`
+      }
+      case 'add_review_reply': {
+        const i = a.input
+        const { error } = await db.from('marketing_items').insert({
+          brand_id: brandId, kind: 'review_reply', channel: i.platform,
+          title: `Recenzie${i.rating != null ? ` (${i.rating}★)` : ''}: ${i.review.slice(0, 60)}`,
+          body: i.reply, input: i.review,
+        })
+        if (error) throw error
+        return 'Răspunsul e în tabul Recenzii, de aprobat.'
+      }
+      default:
+        throw new Error('Acțiune necunoscută')
+    }
+  }
+}
+
 async function runMonthlyReport(db: SupabaseClient, anthropic: Anthropic, brandId: string, from: Date, to: Date, month: string) {
   const runId = await startRun(db, brandId, 'monthly_report')
   try {
@@ -309,6 +384,7 @@ Deno.serve(async (req) => {
     purpose?: 'offer' | 'followup' | 'prospecting'
     channel?: 'email' | 'whatsapp'
     message?: string
+    image_path?: string | null
     menu_date?: string
     items?: string
     price?: string | null
@@ -358,30 +434,49 @@ Deno.serve(async (req) => {
   const brandId = body.brand_id
 
   if (body.task === 'chat') {
-    const message = body.message?.trim()
+    const message = body.message?.trim() ?? ''
+    const imagePath = body.image_path ?? null
     if (!user) return json({ error: 'Chat-ul e doar pentru utilizatori logați' }, 400)
-    if (!message) return json({ error: 'Mesajul lipsește' }, 400)
+    if (!message && !imagePath) return json({ error: 'Mesajul lipsește' }, 400)
+    // poza trebuie să fie din folderul brandului, încărcată de echipă (vezi useSendChat)
+    if (imagePath && !imagePath.startsWith(`${brandId}/`)) return json({ error: 'Poză invalidă' }, 400)
     const runId = await startRun(db, brandId, 'chat')
     try {
       const { error: insertError } = await db.from('marketing_chat_messages')
-        .insert({ brand_id: brandId, user_id: user.id, role: 'user', content: message })
+        .insert({ brand_id: brandId, user_id: user.id, role: 'user', content: message, image_path: imagePath })
       if (insertError) throw insertError
       const [brand, context, history] = await Promise.all([
         loadBrand(db, brandId),
         chatContext(db, brandId),
         // ultimele 30 de mesaje, inclusiv cel de acum
-        db.from('marketing_chat_messages').select('role, content').eq('brand_id', brandId).eq('user_id', user.id)
+        db.from('marketing_chat_messages').select('role, content, image_path').eq('brand_id', brandId).eq('user_id', user.id)
           .order('created_at', { ascending: false }).limit(30),
       ])
       if (history.error) throw history.error
-      const turns = (history.data as { role: 'user' | 'assistant'; content: string }[]).reverse()
+      const rows = (history.data as { role: 'user' | 'assistant'; content: string; image_path: string | null }[]).reverse()
+      const turns: ChatTurn[] = rows.map((r) => ({ role: r.role, content: r.content, hadImage: !!r.image_path }))
+      // doar poza mesajului curent ajunge la model; pozele vechi rămân ca mențiune
+      if (imagePath) {
+        const { data: file, error } = await db.storage.from('marketing-uploads').download(imagePath)
+        if (error) throw error
+        const bytes = new Uint8Array(await file.arrayBuffer())
+        let bin = ''
+        for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+        const type = file.type === 'image/png' || file.type === 'image/webp' ? file.type : 'image/jpeg'
+        turns[turns.length - 1] = { role: 'user', content: message, image: { mediaType: type, data: btoa(bin) } }
+      }
       // conversația trebuie să înceapă cu un mesaj al utilizatorului
       while (turns.length && turns[0].role !== 'user') turns.shift()
-      const { output, inputTokens, outputTokens } = await chatReply(anthropic, brand, context, turns)
+
+      const execute = chatActions(db, brandId)
+      const { output, inputTokens, outputTokens } = await chatReply(anthropic, brand, context, turns, execute)
       const { data, error } = await db.from('marketing_chat_messages')
-        .insert({ brand_id: brandId, user_id: user.id, role: 'assistant', content: output }).select('*').single()
+        .insert({
+          brand_id: brandId, user_id: user.id, role: 'assistant', content: output.text,
+          actions: output.actions.length ? output.actions : null,
+        }).select('*').single()
       if (error) throw error
-      await finishRun(db, runId, { items: 1, inputTokens, outputTokens })
+      await finishRun(db, runId, { items: 1 + output.actions.length, inputTokens, outputTokens })
       return json({ message: data })
     } catch (err) {
       await finishRun(db, runId, { error: err })
