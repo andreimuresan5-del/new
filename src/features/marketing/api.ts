@@ -37,6 +37,9 @@ export interface MarketingItem {
   rationale: string | null
   input: string | null
   batch_id: string | null
+  // textul agentului înainte de prima editare a echipei (setat automat în DB)
+  original_body: string | null
+  rejection_reason: string | null
   created_at: string
 }
 
@@ -117,7 +120,7 @@ export function useLatestWeeklyRun(brandId: string | undefined) {
 export function useUpdateItem() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Pick<MarketingItem, 'status' | 'body' | 'title'>> }) => {
+    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Pick<MarketingItem, 'status' | 'body' | 'title' | 'rejection_reason'>> }) => {
       const { error } = await supabase
         .from('marketing_items')
         .update({ ...patch, updated_at: new Date().toISOString() })

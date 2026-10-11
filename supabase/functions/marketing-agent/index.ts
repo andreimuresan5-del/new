@@ -14,7 +14,7 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { menuTexts, reviewReply, weeklyPlan, type Brand } from './agent.ts'
+import { menuTexts, reviewReply, weeklyPlan, type Brand, type Learnings } from './agent.ts'
 
 declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void }
 
@@ -105,23 +105,42 @@ async function recentTitles(db: SupabaseClient, brandId: string, statuses: strin
   return data.map((r) => r.title as string)
 }
 
+// Ce a învățat agentul din folosire, pentru un tip de material:
+// editările echipei (original → final), respingerile cu motiv și exemple aprobate.
+async function loadLearnings(db: SupabaseClient, brandId: string, kinds: string[]): Promise<Learnings> {
+  const base = () => db.from('marketing_items').select('title, body, original_body, rejection_reason, input')
+    .eq('brand_id', brandId).in('kind', kinds).order('updated_at', { ascending: false })
+  const [edits, rejections, approved] = await Promise.all([
+    base().not('original_body', 'is', null).in('status', ['approved', 'published']).limit(5),
+    base().eq('status', 'rejected').limit(10),
+    base().is('original_body', null).in('status', ['approved', 'published']).limit(5),
+  ])
+  if (edits.error) throw edits.error
+  if (rejections.error) throw rejections.error
+  if (approved.error) throw approved.error
+  return {
+    edits: edits.data.map((r) => ({ original: r.original_body as string, final: r.body as string })),
+    rejections: rejections.data.map((r) => ({ title: r.title as string, reason: r.rejection_reason as string | null })),
+    approved: approved.data.map((r) => ({ input: r.input as string | null, text: r.body as string })),
+  }
+}
+
 async function runWeeklyPlan(db: SupabaseClient, anthropic: Anthropic, brandId: string) {
   const runId = await startRun(db, brandId, 'weekly_plan')
   try {
     const brand = await loadBrand(db, brandId)
     const now = new Date()
-    const [notes, approved, rejected] = await Promise.all([
+    const [notes, approved, learnings] = await Promise.all([
       competitorNotes(db),
       recentTitles(db, brandId, ['approved', 'published']),
-      recentTitles(db, brandId, ['rejected']),
+      loadLearnings(db, brandId, ['post', 'promo']),
     ])
     const { output, inputTokens, outputTokens } = await weeklyPlan(anthropic, brand, {
       startDate: now.toISOString().slice(0, 10),
       startWeekday: WEEKDAYS[now.getUTCDay()],
       competitorNotes: notes,
       approvedTitles: approved,
-      rejectedTitles: rejected,
-    })
+    }, learnings)
 
     const batchId = crypto.randomUUID()
     const rows = [
@@ -190,10 +209,13 @@ Deno.serve(async (req) => {
     if (!review) return json({ error: 'Textul recenziei lipsește' }, 400)
     const runId = await startRun(db, brandId, 'review_reply')
     try {
-      const brand = await loadBrand(db, brandId)
+      const [brand, learnings] = await Promise.all([
+        loadBrand(db, brandId),
+        loadLearnings(db, brandId, ['review_reply']),
+      ])
       const { output, inputTokens, outputTokens } = await reviewReply(anthropic, brand, {
         text: review, platform: body.platform ?? null, rating: body.rating ?? null, author: body.author ?? null,
-      })
+      }, learnings)
       const { data, error } = await db.from('marketing_items').insert({
         brand_id: brandId, kind: 'review_reply', channel: body.platform ?? null,
         title: `Recenzie${body.author ? ` ${body.author}` : ''}${body.rating != null ? ` (${body.rating}★)` : ''}: ${review.slice(0, 60)}`,
@@ -213,8 +235,11 @@ Deno.serve(async (req) => {
     if (!products) return json({ error: 'Lista de produse lipsește' }, 400)
     const runId = await startRun(db, brandId, 'menu_text')
     try {
-      const brand = await loadBrand(db, brandId)
-      const { output, inputTokens, outputTokens } = await menuTexts(anthropic, brand, products)
+      const [brand, learnings] = await Promise.all([
+        loadBrand(db, brandId),
+        loadLearnings(db, brandId, ['menu_text']),
+      ])
+      const { output, inputTokens, outputTokens } = await menuTexts(anthropic, brand, products, learnings)
       const { data, error } = await db.from('marketing_items').insert(
         output.items.map((m) => ({
           brand_id: brandId, kind: 'menu_text', title: m.title, body: m.description, input: m.product,

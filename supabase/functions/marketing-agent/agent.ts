@@ -22,12 +22,21 @@ export interface Brand {
   extra_notes: string | null
 }
 
+// Ce a învățat agentul din folosire (vezi index.ts → loadLearnings).
+export interface Learnings {
+  // textul agentului vs. ce a publicat echipa după editare
+  edits: { original: string; final: string }[]
+  // ce a respins echipa și de ce (motivul e opțional)
+  rejections: { title: string; reason: string | null }[]
+  // materiale aprobate, ca exemple de ton (la recenzii: recenzia + răspunsul)
+  approved: { input: string | null; text: string }[]
+}
+
 export interface WeeklyContext {
   startDate: string // YYYY-MM-DD, prima zi din plan
   startWeekday: string // ex. „luni”
   competitorNotes: string[] // rezumate din scanările de concurență
-  approvedTitles: string[] // ce a plăcut (aprobat/publicat) recent
-  rejectedTitles: string[] // ce a fost respins recent — de evitat
+  approvedTitles: string[] // ce a plăcut (aprobat/publicat) recent — fără repetiții
 }
 
 export interface PostDraft {
@@ -89,6 +98,29 @@ function describeBrand(b: Brand): string {
   ]
     .filter(Boolean)
     .join('\n')
+}
+
+function describeLearnings(l: Learnings): string {
+  const parts: string[] = []
+  if (l.edits.length > 0) {
+    parts.push(
+      'Cum a corectat echipa textele tale (adoptă stilul variantei finale: lungime, ton, expresii, ce a scos sau a adăugat):\n' +
+        l.edits.map((e, i) => `${i + 1}. Varianta ta:\n${e.original}\n   Varianta echipei:\n${e.final}`).join('\n\n'),
+    )
+  }
+  if (l.rejections.length > 0) {
+    parts.push(
+      'Ce a respins echipa (nu repeta direcția asta):\n' +
+        l.rejections.map((r) => `- ${r.title}${r.reason ? ` — motiv: ${r.reason}` : ''}`).join('\n'),
+    )
+  }
+  if (l.approved.length > 0) {
+    parts.push(
+      'Exemple aprobate de echipă (tonul de urmat, fără să le copiezi):\n' +
+        l.approved.map((a) => (a.input ? `- Pentru: ${a.input}\n  Aprobat: ${a.text}` : `- ${a.text}`)).join('\n'),
+    )
+  }
+  return parts.length > 0 ? `Ce ai învățat de la echipă până acum:\n\n${parts.join('\n\n')}` : ''
 }
 
 const BASE_SYSTEM = `Ești responsabilul de marketing al unui local din Timișoara (food service: restaurantul primește semipreparate de la propriul centru de producție). Scrii în română, natural, ca un om din echipă, nu ca o agenție. Folosești doar informații din profilul brandului și din meniu: nu inventa produse, prețuri, evenimente din local sau reduceri care nu sunt propuse explicit ca idee. Owner-ul citește și aprobă tot ce scrii înainte de publicare.`
@@ -199,7 +231,7 @@ const weeklyTool: Anthropic.Tool = {
   },
 }
 
-export function weeklyPlan(client: Anthropic, brand: Brand, ctx: WeeklyContext) {
+export function weeklyPlan(client: Anthropic, brand: Brand, ctx: WeeklyContext, learnings: Learnings) {
   const list = (items: string[]) => (items.length ? `- ${items.join('\n- ')}` : '(nimic)')
   const user = `${describeBrand(brand)}
 
@@ -208,11 +240,10 @@ Planul acoperă 7 zile începând cu ${ctx.startWeekday} ${ctx.startDate}.
 Ce știm despre concurența din Timișoara:
 ${list(ctx.competitorNotes)}
 
-Materiale aprobate recent (owner-ului i-au plăcut, păstrează direcția fără să le repeți):
+Materiale aprobate recent (păstrează direcția fără să le repeți):
 ${list(ctx.approvedTitles)}
 
-Materiale respinse recent (evită direcția asta):
-${list(ctx.rejectedTitles)}
+${describeLearnings(learnings)}
 
 Fă planul săptămânii:
 1. Caută pe web ce se întâmplă în Timișoara în zilele astea (meciuri, concerte, festivaluri, sărbători, zile speciale) și ce vreme se anunță — doar ce e relevant pentru un local.
@@ -255,8 +286,11 @@ export function reviewReply(
   client: Anthropic,
   brand: Brand,
   review: { text: string; platform: string | null; rating: number | null; author: string | null },
+  learnings: Learnings,
 ) {
   const user = `${describeBrand(brand)}
+
+${describeLearnings(learnings)}
 
 Recenzie${review.platform ? ` de pe ${review.platform}` : ''}${review.rating != null ? `, ${review.rating} stele` : ''}${review.author ? `, de la ${review.author}` : ''}:
 """
@@ -304,8 +338,10 @@ const menuTool: Anthropic.Tool = {
   },
 }
 
-export function menuTexts(client: Anthropic, brand: Brand, products: string) {
+export function menuTexts(client: Anthropic, brand: Brand, products: string, learnings: Learnings) {
   const user = `${describeBrand(brand)}
+
+${describeLearnings(learnings)}
 
 Scrie texte de meniu pentru produsele de mai jos (unul pe linie; pot avea ingrediente/gramaj/preț). Folosește doar ingredientele date sau cele evidente din numele produsului — nu inventa ingrediente sau alergeni.
 """

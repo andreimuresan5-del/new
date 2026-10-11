@@ -60,6 +60,8 @@ function ItemCard({ item }: { item: MarketingItem }) {
   const [editing, setEditing] = useState(false)
   const [body, setBody] = useState(item.body)
   const [copied, setCopied] = useState(false)
+  const [rejecting, setRejecting] = useState(false)
+  const [reason, setReason] = useState('')
 
   async function copy() {
     try {
@@ -127,36 +129,73 @@ function ItemCard({ item }: { item: MarketingItem }) {
         </p>
       )}
 
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium">
-        <button type="button" onClick={() => void copy()} className="text-gray-700 hover:text-gray-900">
-          {copied ? 'Copiat ✓' : 'Copiază'}
-        </button>
-        {!editing && (
-          <button type="button" onClick={() => setEditing(true)} className="text-gray-700 hover:text-gray-900">
-            Editează
+      {item.status === 'rejected' && item.rejection_reason && (
+        <p className="mt-2 text-sm text-gray-600">
+          <span className="font-medium">✗ Motiv: </span>
+          {item.rejection_reason}
+        </p>
+      )}
+
+      {rejecting ? (
+        <div className="mt-3 space-y-2">
+          <input
+            autoFocus
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="De ce? (opțional — agentul învață din asta)"
+            className={inputClass}
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className={primaryButton}
+              disabled={update.isPending}
+              onClick={() =>
+                update.mutate(
+                  { id: item.id, patch: { status: 'rejected', rejection_reason: reason.trim() || null } },
+                  { onSuccess: () => setRejecting(false) },
+                )
+              }
+            >
+              Respinge
+            </button>
+            <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => setRejecting(false)}>
+              Renunță
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium">
+          <button type="button" onClick={() => void copy()} className="text-gray-700 hover:text-gray-900">
+            {copied ? 'Copiat ✓' : 'Copiază'}
           </button>
-        )}
-        {item.status !== 'approved' && item.status !== 'published' && (
-          <button type="button" onClick={() => setStatus('approved')} className="text-green-700 hover:text-green-900">
-            Aprobă
-          </button>
-        )}
-        {item.status === 'approved' && (
-          <button type="button" onClick={() => setStatus('published')} className="text-blue-700 hover:text-blue-900">
-            Marchează publicat
-          </button>
-        )}
-        {item.status !== 'rejected' && item.status !== 'published' && (
-          <button type="button" onClick={() => setStatus('rejected')} className="text-gray-500 hover:text-gray-800">
-            Respinge
-          </button>
-        )}
-        {item.status === 'rejected' && (
-          <button type="button" onClick={() => remove.mutate(item.id)} className="text-red-600 hover:text-red-800">
-            Șterge
-          </button>
-        )}
-      </div>
+          {!editing && (
+            <button type="button" onClick={() => setEditing(true)} className="text-gray-700 hover:text-gray-900">
+              Editează
+            </button>
+          )}
+          {item.status !== 'approved' && item.status !== 'published' && (
+            <button type="button" onClick={() => setStatus('approved')} className="text-green-700 hover:text-green-900">
+              Aprobă
+            </button>
+          )}
+          {item.status === 'approved' && (
+            <button type="button" onClick={() => setStatus('published')} className="text-blue-700 hover:text-blue-900">
+              Marchează publicat
+            </button>
+          )}
+          {item.status !== 'rejected' && item.status !== 'published' && (
+            <button type="button" onClick={() => setRejecting(true)} className="text-gray-500 hover:text-gray-800">
+              Respinge
+            </button>
+          )}
+          {item.status === 'rejected' && (
+            <button type="button" onClick={() => remove.mutate(item.id)} className="text-red-600 hover:text-red-800">
+              Șterge
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
