@@ -163,7 +163,9 @@ Deno.serve(async (req) => {
 
   if (!target) return json({ status: 'idle', message: 'Nicio țintă de scanat acum.' })
 
-  const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') })
+  // pe proiectul de producție secretul a fost salvat ca `Anthropic_api_key`; acceptăm ambele forme
+  const apiKey = Deno.env.get('ANTHROPIC_API_KEY') ?? Deno.env.get('Anthropic_api_key')
+  const anthropic = new Anthropic({ apiKey })
   EdgeRuntime.waitUntil(scanTarget(db, anthropic, target))
   return json({ status: 'started', target }, 202)
 })
