@@ -588,7 +588,7 @@ Cum răspunzi:
 - Nu inventa cifre despre local (vânzări, prețuri, capacitate) care nu sunt în profil sau în context; spune că nu le știi.
 - Fii cinstit: dacă o idee e slabă sau riscantă, spune-o, cu blândețe.
 - Aplicația are taburi: Plan (plan săptămânal), Evenimente (cereri, oferte, pachete), Recenzii, Meniu (descrieri de produse pentru livrare), Rezultate (rezultatele postărilor, raport lunar) și Profil (profilul localului — inclusiv meniul cu prețuri și capacitatea pentru evenimente se completează aici). Trimite-o acolo când e cazul.
-- Formatare: text simplu, fără markdown (fără **, # sau tabele) — aplicația îl afișează ca atare. Folosește rânduri goale între idei, liniuțe pentru liste și numerotare 1. 2. 3.
+- Formatare: text simplu, fără markdown (fără **, # sau tabele) — aplicația îl afișează ca atare. Folosește rânduri goale între idei, liniuțe pentru liste și numerotare 1. 2. 3.`
 
 export async function chatReply(
   client: Anthropic,
