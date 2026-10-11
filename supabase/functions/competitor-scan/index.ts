@@ -114,7 +114,7 @@ async function scanTarget(db: SupabaseClient, anthropic: Anthropic, target: Targ
 
   try {
     const ctx = await loadContext(db, target)
-    const { report, inputTokens, outputTokens } = await runScan(anthropic, ctx)
+    const { report, inputTokens, outputTokens, toolErrors } = await runScan(anthropic, ctx)
 
     const { data: snapshot, error: snapError } = await db.from('competitor_snapshots')
       .insert({ ...ref, state: report.state, summary: report.summary })
@@ -131,6 +131,8 @@ async function scanTarget(db: SupabaseClient, anthropic: Anthropic, target: Targ
     await db.from('competitor_scan_runs').update({
       status: 'ok',
       finished_at: new Date().toISOString(),
+      // scanarea a reușit, dar notăm sursele care au dat eroare
+      error: toolErrors.length > 0 ? `Erori surse: ${toolErrors.join(', ')}` : null,
       findings_count: report.findings.length,
       input_tokens: inputTokens,
       output_tokens: outputTokens,
