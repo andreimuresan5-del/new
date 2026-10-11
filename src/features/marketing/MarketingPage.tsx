@@ -1,204 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   useBrands,
-  useDeleteItem,
   useGenerateMenuTexts,
   useGenerateReviewReply,
   useGenerateWeeklyPlan,
   useItems,
   useLatestWeeklyRun,
   useSaveBrand,
-  useUpdateItem,
   type Brand,
   type BrandInput,
-  type ItemStatus,
-  type MarketingItem,
 } from './api'
+import { EventsTab } from './EventsTab'
+import { ItemCard, inputClass, primaryButton } from './ItemCard'
+import { ResultsTab } from './ResultsTab'
 import { useQueryClient } from '@tanstack/react-query'
 
-type Tab = 'plan' | 'reviews' | 'menu' | 'profile'
+type Tab = 'plan' | 'events' | 'reviews' | 'menu' | 'results' | 'profile'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'plan', label: 'Plan' },
+  { key: 'events', label: 'Evenimente' },
   { key: 'reviews', label: 'Recenzii' },
   { key: 'menu', label: 'Meniu' },
+  { key: 'results', label: 'Rezultate' },
   { key: 'profile', label: 'Profil' },
 ]
-
-const inputClass = 'w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm'
-const primaryButton = 'rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50'
-
-const statusLabel: Record<ItemStatus, string> = {
-  draft: 'De revizuit',
-  approved: 'Aprobat',
-  rejected: 'Respins',
-  published: 'Publicat',
-}
-
-const statusClass: Record<ItemStatus, string> = {
-  draft: 'bg-amber-100 text-amber-800',
-  approved: 'bg-green-100 text-green-800',
-  rejected: 'bg-gray-100 text-gray-600',
-  published: 'bg-blue-100 text-blue-800',
-}
-
-const channelLabel: Record<string, string> = {
-  facebook: 'Facebook',
-  instagram: 'Instagram',
-  facebook_instagram: 'Facebook + Instagram',
-  in_local: 'În local',
-}
-
-function formatDate(date: string | null) {
-  if (!date) return null
-  return new Date(`${date}T12:00:00`).toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'short' })
-}
-
-function ItemCard({ item }: { item: MarketingItem }) {
-  const update = useUpdateItem()
-  const remove = useDeleteItem()
-  const [editing, setEditing] = useState(false)
-  const [body, setBody] = useState(item.body)
-  const [copied, setCopied] = useState(false)
-  const [rejecting, setRejecting] = useState(false)
-  const [reason, setReason] = useState('')
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(item.body)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      setEditing(true) // fără acces la clipboard: textul rămâne selectabil în editor
-    }
-  }
-
-  const setStatus = (status: ItemStatus) => update.mutate({ id: item.id, patch: { status } })
-
-  return (
-    <div className={`rounded-lg border bg-white p-4 ${item.status === 'rejected' ? 'border-gray-200 opacity-60' : 'border-gray-300'}`}>
-      <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className={`rounded px-1.5 py-0.5 font-medium ${statusClass[item.status]}`}>{statusLabel[item.status]}</span>
-        {item.channel && (
-          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-gray-700">{channelLabel[item.channel] ?? item.channel}</span>
-        )}
-        {item.suggested_date && (
-          <span className="text-gray-500">
-            {formatDate(item.suggested_date)}
-            {item.suggested_time && `, ${item.suggested_time}`}
-          </span>
-        )}
-      </div>
-      <p className="mt-2 font-medium text-gray-900">{item.title}</p>
-
-      {item.input && item.kind === 'review_reply' && (
-        <p className="mt-2 border-l-2 border-gray-200 pl-2 text-sm italic text-gray-500">{item.input}</p>
-      )}
-
-      {editing ? (
-        <div className="mt-2 space-y-2">
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={8} className={inputClass} />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className={primaryButton}
-              disabled={update.isPending}
-              onClick={() => update.mutate({ id: item.id, patch: { body } }, { onSuccess: () => setEditing(false) })}
-            >
-              Salvează
-            </button>
-            <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => { setBody(item.body); setEditing(false) }}>
-              Renunță
-            </button>
-          </div>
-        </div>
-      ) : (
-        <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800">{item.body}</p>
-      )}
-
-      {item.image_idea && (
-        <p className="mt-2 text-sm text-gray-600">
-          <span className="font-medium">📷 Poză: </span>
-          {item.image_idea}
-        </p>
-      )}
-      {item.rationale && item.kind !== 'post' && (
-        <p className="mt-2 text-sm text-gray-600">
-          <span className="font-medium">{item.kind === 'review_reply' ? '🔎 Pentru tine: ' : '💡 De ce: '}</span>
-          {item.rationale}
-        </p>
-      )}
-
-      {item.status === 'rejected' && item.rejection_reason && (
-        <p className="mt-2 text-sm text-gray-600">
-          <span className="font-medium">✗ Motiv: </span>
-          {item.rejection_reason}
-        </p>
-      )}
-
-      {rejecting ? (
-        <div className="mt-3 space-y-2">
-          <input
-            autoFocus
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="De ce? (opțional — agentul învață din asta)"
-            className={inputClass}
-          />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className={primaryButton}
-              disabled={update.isPending}
-              onClick={() =>
-                update.mutate(
-                  { id: item.id, patch: { status: 'rejected', rejection_reason: reason.trim() || null } },
-                  { onSuccess: () => setRejecting(false) },
-                )
-              }
-            >
-              Respinge
-            </button>
-            <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => setRejecting(false)}>
-              Renunță
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium">
-          <button type="button" onClick={() => void copy()} className="text-gray-700 hover:text-gray-900">
-            {copied ? 'Copiat ✓' : 'Copiază'}
-          </button>
-          {!editing && (
-            <button type="button" onClick={() => setEditing(true)} className="text-gray-700 hover:text-gray-900">
-              Editează
-            </button>
-          )}
-          {item.status !== 'approved' && item.status !== 'published' && (
-            <button type="button" onClick={() => setStatus('approved')} className="text-green-700 hover:text-green-900">
-              Aprobă
-            </button>
-          )}
-          {item.status === 'approved' && (
-            <button type="button" onClick={() => setStatus('published')} className="text-blue-700 hover:text-blue-900">
-              Marchează publicat
-            </button>
-          )}
-          {item.status !== 'rejected' && item.status !== 'published' && (
-            <button type="button" onClick={() => setRejecting(true)} className="text-gray-500 hover:text-gray-800">
-              Respinge
-            </button>
-          )}
-          {item.status === 'rejected' && (
-            <button type="button" onClick={() => remove.mutate(item.id)} className="text-red-600 hover:text-red-800">
-              Șterge
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
 
 function PlanTab({ brand }: { brand: Brand }) {
   const { data: items } = useItems(brand.id, ['post', 'promo'])
@@ -340,6 +166,7 @@ const PROFILE_FIELDS: { key: keyof BrandInput; label: string; placeholder: strin
   { key: 'tone', label: 'Cum vorbim', placeholder: 'Prietenos și relaxat, cu umor, fără să fim vulgari...', rows: 2 },
   { key: 'differentiators', label: 'Ce ne diferențiază', placeholder: 'Producție proprie sous vide, ingrediente..., evenimente...', rows: 2 },
   { key: 'competition', label: 'Cu cine concurăm', placeholder: 'Pe livrare: pizzerii, meniul zilei... În local: ...', rows: 2 },
+  { key: 'event_info', label: 'Evenimente', placeholder: 'Capacitate interior / terasă, ce oferiți (meniu fix, băuturi, DJ, decor), avans, program...', rows: 3 },
   { key: 'address', label: 'Adresă', placeholder: 'Str. ..., Timișoara', rows: 1 },
   { key: 'opening_hours', label: 'Program', placeholder: 'L-J 11-23, V-S 11-02, D 12-22', rows: 1 },
   { key: 'website_url', label: 'Site', placeholder: 'https://...', rows: 1 },
@@ -416,7 +243,7 @@ export function MarketingPage() {
         {brands?.length === 1 && <span className="text-sm font-medium text-gray-600">{brand?.name}</span>}
       </div>
 
-      <nav className="mt-4 flex gap-1 overflow-x-auto border-b border-gray-200">
+      <nav className="mt-4 flex flex-wrap gap-x-1 border-b border-gray-200">
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -433,7 +260,9 @@ export function MarketingPage() {
         {isLoading && <p className="text-sm text-gray-500">Se încarcă...</p>}
         {!isLoading && !brand && <p className="text-sm text-gray-500">Niciun brand configurat.</p>}
         {brand && tab === 'plan' && <PlanTab brand={brand} />}
+        {brand && tab === 'events' && <EventsTab brand={brand} />}
         {brand && tab === 'reviews' && <ReviewsTab brand={brand} />}
+        {brand && tab === 'results' && <ResultsTab brand={brand} />}
         {brand && tab === 'menu' && <MenuTab brand={brand} />}
         {brand && tab === 'profile' && <ProfileTab key={brand.id} brand={brand} />}
       </div>

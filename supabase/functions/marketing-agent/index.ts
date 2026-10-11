@@ -14,7 +14,17 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { menuTexts, reviewReply, weeklyPlan, type Brand, type Learnings } from './agent.ts'
+import {
+  eventMessage,
+  eventPackages,
+  formatReport,
+  menuTexts,
+  monthlyReport,
+  reviewReply,
+  weeklyPlan,
+  type Brand,
+  type Learnings,
+} from './agent.ts'
 
 declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void }
 
@@ -31,7 +41,7 @@ function json(body: unknown, status = 200) {
 }
 
 const BRAND_COLUMNS =
-  'id, name, description, audience, tone, differentiators, competition, address, opening_hours, website_url, facebook_url, instagram_url, menu_text, extra_notes'
+  'id, name, description, audience, tone, differentiators, competition, event_info, address, opening_hours, website_url, facebook_url, instagram_url, menu_text, extra_notes'
 
 const WEEKDAYS = ['duminică', 'luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă']
 
@@ -126,21 +136,102 @@ async function loadLearnings(db: SupabaseClient, brandId: string, kinds: string[
   }
 }
 
+const fmtResult = (r: { result_reach: number | null; result_engagement: number | null; result_orders: number | null; result_note: string | null }) =>
+  `${r.result_reach ?? '?'} vizualizări / ${r.result_engagement ?? '?'} interacțiuni / ${r.result_orders ?? '?'} comenzi-rezervări${r.result_note ? ` — ${r.result_note}` : ''}`
+
+// Postările publicate în ultimele 8 săptămâni, cu rezultatele trecute de echipă.
+async function performance(db: SupabaseClient, brandId: string): Promise<string[]> {
+  const since = new Date(Date.now() - 56 * 24 * 3600_000).toISOString()
+  const { data, error } = await db.from('marketing_items')
+    .select('title, kind, channel, suggested_date, result_reach, result_engagement, result_orders, result_note')
+    .eq('brand_id', brandId).eq('status', 'published').in('kind', ['post', 'promo'])
+    .gte('created_at', since).order('created_at', { ascending: false }).limit(30)
+  if (error) throw error
+  return data
+    .filter((r) => r.result_reach != null || r.result_engagement != null || r.result_orders != null || r.result_note)
+    .map((r) => `${r.kind === 'promo' ? 'Ofertă' : 'Postare'} „${r.title}” (${r.channel ?? '-'}, ${r.suggested_date ?? '-'}): ${fmtResult(r)}`)
+}
+
+// Ce s-a întâmplat cu cererile de eveniment: ce se confirmă și ce pierdem (și de ce).
+async function eventOutcomes(db: SupabaseClient, brandId: string): Promise<string[]> {
+  const { data, error } = await db.from('event_leads')
+    .select('name, event_type, guests, status, lost_reason, event_packages(name)')
+    .eq('brand_id', brandId).in('status', ['confirmed', 'lost'])
+    .order('updated_at', { ascending: false }).limit(20)
+  if (error) throw error
+  type Row = { name: string; event_type: string | null; guests: number | null; status: string; lost_reason: string | null; event_packages: { name: string } | null }
+  return (data as unknown as Row[]).map((l) =>
+    `${l.status === 'confirmed' ? 'CONFIRMAT' : 'PIERDUT'}: ${l.event_type ?? 'eveniment'}, ${l.guests ?? '?'} pers.` +
+    `${l.event_packages ? `, pachet „${l.event_packages.name}”` : ''}${l.lost_reason ? ` — motiv: ${l.lost_reason}` : ''}`)
+}
+
+async function runMonthlyReport(db: SupabaseClient, anthropic: Anthropic, brandId: string, from: Date, to: Date, month: string) {
+  const runId = await startRun(db, brandId, 'monthly_report')
+  try {
+    const brand = await loadBrand(db, brandId)
+    const range = <T extends { gte: (c: string, v: string) => T; lt: (c: string, v: string) => T }>(q: T, col: string) =>
+      q.gte(col, from.toISOString()).lt(col, to.toISOString())
+    const [items, leads] = await Promise.all([
+      range(db.from('marketing_items')
+        .select('kind, status, title, channel, suggested_date, result_reach, result_engagement, result_orders, result_note, rejection_reason, original_body')
+        .eq('brand_id', brandId), 'created_at'),
+      range(db.from('event_leads')
+        .select('name, event_type, guests, status, lost_reason, source, event_packages(name)')
+        .eq('brand_id', brandId), 'created_at'),
+    ])
+    if (items.error) throw items.error
+    if (leads.error) throw leads.error
+
+    type Item = { kind: string; status: string; title: string; channel: string | null; suggested_date: string | null; result_reach: number | null; result_engagement: number | null; result_orders: number | null; result_note: string | null; rejection_reason: string | null; original_body: string | null }
+    type Lead = { name: string; event_type: string | null; guests: number | null; status: string; lost_reason: string | null; source: string | null; event_packages: { name: string } | null }
+    const it = items.data as Item[]
+    const ld = leads.data as unknown as Lead[]
+    const count = (k: string, st?: string) => it.filter((i) => i.kind === k && (!st || i.status === st)).length
+    const published = it.filter((i) => i.status === 'published' && (i.kind === 'post' || i.kind === 'promo'))
+    const data = [
+      `Materiale generate: ${count('post')} postări, ${count('promo')} oferte, ${count('review_reply')} răspunsuri la recenzii, ${count('menu_text')} texte de meniu.`,
+      `Publicate: ${published.length}; aprobate nepublicate: ${it.filter((i) => i.status === 'approved').length}; respinse: ${it.filter((i) => i.status === 'rejected').length}; editate de echipă înainte de aprobare: ${it.filter((i) => i.original_body).length}.`,
+      published.length
+        ? `Rezultatele materialelor publicate:\n${published.map((p) => `- ${p.kind === 'promo' ? 'Ofertă' : 'Postare'} „${p.title}” (${p.channel ?? '-'}, ${p.suggested_date ?? '-'}): ${fmtResult(p)}`).join('\n')}`
+        : 'Niciun material marcat ca publicat.',
+      it.some((i) => i.rejection_reason)
+        ? `Motive de respingere:\n${it.filter((i) => i.rejection_reason).map((i) => `- „${i.title}”: ${i.rejection_reason}`).join('\n')}`
+        : '',
+      ld.length
+        ? `Cereri de eveniment noi: ${ld.length} (${['new', 'offer_sent', 'negotiating', 'confirmed', 'lost'].map((s) => `${s}: ${ld.filter((l) => l.status === s).length}`).join(', ')}).\n` +
+          ld.map((l) => `- ${l.event_type ?? 'eveniment'}, ${l.guests ?? '?'} pers., sursa ${l.source ?? '-'}, ${l.status}${l.event_packages ? `, pachet „${l.event_packages.name}”` : ''}${l.lost_reason ? ` — pierdut: ${l.lost_reason}` : ''}`).join('\n')
+        : 'Nicio cerere de eveniment înregistrată.',
+    ].filter(Boolean).join('\n\n')
+
+    const { output, inputTokens, outputTokens } = await monthlyReport(anthropic, brand, month, data)
+    const { error } = await db.from('marketing_items').insert({
+      brand_id: brandId, kind: 'report', title: output.title, body: formatReport(output),
+    })
+    if (error) throw error
+    await finishRun(db, runId, { items: 1, inputTokens, outputTokens })
+  } catch (err) {
+    console.error('monthly_report failed', brandId, err)
+    await finishRun(db, runId, { error: err })
+  }
+}
+
 async function runWeeklyPlan(db: SupabaseClient, anthropic: Anthropic, brandId: string) {
   const runId = await startRun(db, brandId, 'weekly_plan')
   try {
     const brand = await loadBrand(db, brandId)
     const now = new Date()
-    const [notes, approved, learnings] = await Promise.all([
+    const [notes, approved, learnings, perf] = await Promise.all([
       competitorNotes(db, brandId),
       recentTitles(db, brandId, ['approved', 'published']),
       loadLearnings(db, brandId, ['post', 'promo']),
+      performance(db, brandId),
     ])
     const { output, inputTokens, outputTokens } = await weeklyPlan(anthropic, brand, {
       startDate: now.toISOString().slice(0, 10),
       startWeekday: WEEKDAYS[now.getUTCDay()],
       competitorNotes: notes,
       approvedTitles: approved,
+      performance: perf,
     }, learnings)
 
     const batchId = crypto.randomUUID()
@@ -182,6 +273,10 @@ Deno.serve(async (req) => {
     rating?: number | null
     author?: string | null
     products?: string
+    request?: string
+    lead_id?: string
+    purpose?: 'offer' | 'followup' | 'prospecting'
+    channel?: 'email' | 'whatsapp'
   }
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY') ?? Deno.env.get('Anthropic_api_key')
@@ -202,8 +297,88 @@ Deno.serve(async (req) => {
     return json({ status: 'started', brands: brandIds.length }, 202)
   }
 
+  if (body.task === 'monthly_report') {
+    // din cron (ziua 1): luna trecută, pentru toate brandurile; din UI: luna curentă până azi
+    const now = new Date()
+    const thisMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
+    const [from, to] = fromCron && !body.brand_id
+      ? [new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)), thisMonth]
+      : [thisMonth, now]
+    const month = from.toLocaleDateString('ro-RO', { month: 'long', year: 'numeric', timeZone: 'UTC' }) +
+      (to === now ? ' (până azi)' : '')
+    let brandIds: string[]
+    if (body.brand_id) brandIds = [body.brand_id]
+    else if (fromCron) {
+      const { data, error } = await db.from('marketing_brands').select('id')
+      if (error) return json({ error: error.message }, 500)
+      brandIds = data.map((b) => b.id as string)
+    } else return json({ error: 'brand_id lipsă' }, 400)
+    EdgeRuntime.waitUntil((async () => {
+      for (const id of brandIds) await runMonthlyReport(db, anthropic, id, from, to, month)
+    })())
+    return json({ status: 'started' }, 202)
+  }
+
   if (!body.brand_id) return json({ error: 'brand_id lipsă' }, 400)
   const brandId = body.brand_id
+
+  if (body.task === 'event_packages') {
+    const runId = await startRun(db, brandId, 'event_packages')
+    try {
+      const [brand, existing, outcomes] = await Promise.all([
+        loadBrand(db, brandId),
+        db.from('event_packages').select('name, price_per_person, season').eq('brand_id', brandId).eq('active', true),
+        eventOutcomes(db, brandId),
+      ])
+      if (existing.error) throw existing.error
+      const { output, inputTokens, outputTokens } = await eventPackages(
+        anthropic, brand, body.request?.trim() ?? '',
+        existing.data.map((p) => `${p.name} (${p.price_per_person ?? '?'} lei/pers., ${p.season ?? '-'})`),
+        outcomes,
+      )
+      const { data, error } = await db.from('event_packages')
+        .insert(output.packages.map((p) => ({ ...p, brand_id: brandId }))).select('*')
+      if (error) throw error
+      await finishRun(db, runId, { items: data.length, inputTokens, outputTokens })
+      return json({ packages: data, note: output.note })
+    } catch (err) {
+      await finishRun(db, runId, { error: err })
+      return json({ error: err instanceof Error ? err.message : String(err) }, 500)
+    }
+  }
+
+  if (body.task === 'event_message') {
+    if (!body.lead_id) return json({ error: 'lead_id lipsă' }, 400)
+    const runId = await startRun(db, brandId, 'event_message')
+    try {
+      const [brand, lead, outcomes] = await Promise.all([
+        loadBrand(db, brandId),
+        db.from('event_leads')
+          .select('name, contact_person, event_type, event_date, guests, budget, status, notes, last_message, event_packages(name, description, price_per_person, min_guests, max_guests)')
+          .eq('id', body.lead_id).eq('brand_id', brandId).single(),
+        eventOutcomes(db, brandId),
+      ])
+      if (lead.error) throw lead.error
+      type Pkg = { name: string; description: string; price_per_person: number | null; min_guests: number | null; max_guests: number | null }
+      const pkg = (lead.data as unknown as { event_packages: Pkg | null }).event_packages
+      const noLearnings: Learnings = { edits: [], rejections: [], approved: [] }
+      const { output, inputTokens, outputTokens } = await eventMessage(
+        anthropic, brand, lead.data,
+        pkg ? `${pkg.name}: ${pkg.description} — ${pkg.price_per_person ?? '?'} lei/pers., ${pkg.min_guests ?? '?'}-${pkg.max_guests ?? '?'} pers.` : null,
+        body.purpose ?? 'offer', body.channel ?? 'email', outcomes, noLearnings,
+      )
+      const followup = new Date(Date.now() + output.followup_in_days * 24 * 3600_000).toISOString().slice(0, 10)
+      const { data, error } = await db.from('event_leads')
+        .update({ last_message: output.message, next_followup_date: followup, updated_at: new Date().toISOString() })
+        .eq('id', body.lead_id).select('*').single()
+      if (error) throw error
+      await finishRun(db, runId, { items: 1, inputTokens, outputTokens })
+      return json({ lead: data, internal_note: output.internal_note })
+    } catch (err) {
+      await finishRun(db, runId, { error: err })
+      return json({ error: err instanceof Error ? err.message : String(err) }, 500)
+    }
+  }
 
   if (body.task === 'review_reply') {
     const review = body.review?.trim()

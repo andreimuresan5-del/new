@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabaseClient'
 
-export type ItemKind = 'post' | 'promo' | 'review_reply' | 'menu_text'
+export type ItemKind = 'post' | 'promo' | 'review_reply' | 'menu_text' | 'report'
 export type ItemStatus = 'draft' | 'approved' | 'rejected' | 'published'
 
 export interface Brand {
@@ -12,6 +12,7 @@ export interface Brand {
   tone: string | null
   differentiators: string | null
   competition: string | null
+  event_info: string | null
   address: string | null
   opening_hours: string | null
   website_url: string | null
@@ -41,8 +42,15 @@ export interface MarketingItem {
   // textul agentului înainte de prima editare a echipei (setat automat în DB)
   original_body: string | null
   rejection_reason: string | null
+  published_at: string | null
+  result_reach: number | null
+  result_engagement: number | null
+  result_orders: number | null
+  result_note: string | null
   created_at: string
 }
+
+export type ResultFields = Pick<MarketingItem, 'result_reach' | 'result_engagement' | 'result_orders' | 'result_note'>
 
 export interface MarketingRun {
   id: string
@@ -98,22 +106,26 @@ export function useItems(brandId: string | undefined, kinds: ItemKind[]) {
 }
 
 export function useLatestWeeklyRun(brandId: string | undefined) {
+  return useLatestRun(brandId, 'weekly_plan')
+}
+
+export function useLatestRun(brandId: string | undefined, task: string) {
   return useQuery({
-    queryKey: ['marketing_runs', brandId, 'weekly_plan'],
+    queryKey: ['marketing_runs', brandId, task],
     enabled: !!brandId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('marketing_runs')
         .select('id, task, status, error, started_at')
         .eq('brand_id', brandId!)
-        .eq('task', 'weekly_plan')
+        .eq('task', task)
         .order('started_at', { ascending: false })
         .limit(1)
         .maybeSingle()
       if (error) throw error
       return data as MarketingRun | null
     },
-    // cât timp se generează planul, verificăm la 10s
+    // cât timp se generează, verificăm la 10s
     refetchInterval: (query) => (query.state.data?.status === 'running' ? 10_000 : false),
   })
 }
@@ -121,7 +133,7 @@ export function useLatestWeeklyRun(brandId: string | undefined) {
 export function useUpdateItem() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Pick<MarketingItem, 'status' | 'body' | 'title' | 'rejection_reason'>> }) => {
+    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Pick<MarketingItem, 'status' | 'body' | 'title' | 'rejection_reason' | 'published_at'> & ResultFields> }) => {
       const { error } = await supabase
         .from('marketing_items')
         .update({ ...patch, updated_at: new Date().toISOString() })
@@ -188,6 +200,145 @@ export function useGenerateMenuTexts() {
       invokeAgent({ task: 'menu_text', brand_id: input.brandId, products: input.products }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketing_items'] })
+    },
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Evenimente
+// ---------------------------------------------------------------------------
+
+export type LeadStatus = 'new' | 'offer_sent' | 'negotiating' | 'confirmed' | 'lost'
+
+export interface EventPackage {
+  id: string
+  brand_id: string
+  name: string
+  description: string
+  price_per_person: number | null
+  min_guests: number | null
+  max_guests: number | null
+  season: string | null
+  active: boolean
+}
+
+export type EventPackageInput = Omit<EventPackage, 'id' | 'brand_id'>
+
+export interface EventLead {
+  id: string
+  brand_id: string
+  name: string
+  contact_person: string | null
+  phone: string | null
+  email: string | null
+  source: string | null
+  event_type: string | null
+  event_date: string | null
+  guests: number | null
+  budget: string | null
+  package_id: string | null
+  status: LeadStatus
+  lost_reason: string | null
+  notes: string | null
+  next_followup_date: string | null
+  last_message: string | null
+  created_at: string
+}
+
+export type EventLeadInput = Omit<EventLead, 'id' | 'brand_id' | 'created_at' | 'last_message'>
+
+export function usePackages(brandId: string | undefined) {
+  return useQuery({
+    queryKey: ['event_packages', brandId],
+    enabled: !!brandId,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('event_packages').select('*')
+        .eq('brand_id', brandId!).order('active', { ascending: false }).order('created_at', { ascending: false })
+      if (error) throw error
+      return data as EventPackage[]
+    },
+  })
+}
+
+export function useSavePackage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, input }: { id: string; input: Partial<EventPackageInput> }) => {
+      const { error } = await supabase.from('event_packages')
+        .update({ ...input, updated_at: new Date().toISOString() }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['event_packages'] }),
+  })
+}
+
+export function useDeletePackage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('event_packages').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['event_packages'] }),
+  })
+}
+
+export function useGeneratePackages() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: { brandId: string; request: string }) =>
+      invokeAgent({ task: 'event_packages', brand_id: input.brandId, request: input.request }) as Promise<{ note: string }>,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['event_packages'] }),
+  })
+}
+
+export function useLeads(brandId: string | undefined) {
+  return useQuery({
+    queryKey: ['event_leads', brandId],
+    enabled: !!brandId,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('event_leads').select('*')
+        .eq('brand_id', brandId!).order('created_at', { ascending: false }).limit(200)
+      if (error) throw error
+      return data as EventLead[]
+    },
+  })
+}
+
+export function useSaveLead() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, brandId, input }: { id?: string; brandId: string; input: Partial<EventLeadInput> & { last_message?: string } }) => {
+      const { error } = id
+        ? await supabase.from('event_leads').update({ ...input, updated_at: new Date().toISOString() }).eq('id', id)
+        : await supabase.from('event_leads').insert({ ...input, brand_id: brandId })
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['event_leads'] }),
+  })
+}
+
+export function useGenerateLeadMessage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: { brandId: string; leadId: string; purpose: 'offer' | 'followup' | 'prospecting'; channel: 'email' | 'whatsapp' }) =>
+      invokeAgent({
+        task: 'event_message',
+        brand_id: input.brandId,
+        lead_id: input.leadId,
+        purpose: input.purpose,
+        channel: input.channel,
+      }) as Promise<{ internal_note: string }>,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['event_leads'] }),
+  })
+}
+
+export function useGenerateReport() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (brandId: string) => invokeAgent({ task: 'monthly_report', brand_id: brandId }),
+    onSuccess: () => {
+      setTimeout(() => queryClient.invalidateQueries({ queryKey: ['marketing_runs'] }), 1500)
     },
   })
 }
