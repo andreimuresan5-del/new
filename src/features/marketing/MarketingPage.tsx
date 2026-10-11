@@ -19,9 +19,9 @@ import { useQueryClient } from '@tanstack/react-query'
 type Tab = 'plan' | 'reviews' | 'menu' | 'profile'
 
 const TABS: { key: Tab; label: string }[] = [
-  { key: 'plan', label: 'Plan săptămânal' },
+  { key: 'plan', label: 'Plan' },
   { key: 'reviews', label: 'Recenzii' },
-  { key: 'menu', label: 'Texte meniu' },
+  { key: 'menu', label: 'Meniu' },
   { key: 'profile', label: 'Profil' },
 ]
 
