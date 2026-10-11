@@ -11,6 +11,7 @@ export interface Brand {
   audience: string | null
   tone: string | null
   differentiators: string | null
+  competition: string | null
   address: string | null
   opening_hours: string | null
   website_url: string | null

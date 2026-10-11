@@ -13,6 +13,7 @@ export interface Brand {
   audience: string | null
   tone: string | null
   differentiators: string | null
+  competition: string | null
   address: string | null
   opening_hours: string | null
   website_url: string | null
@@ -35,7 +36,7 @@ export interface Learnings {
 export interface WeeklyContext {
   startDate: string // YYYY-MM-DD, prima zi din plan
   startWeekday: string // ex. „luni”
-  competitorNotes: string[] // rezumate din scanările de concurență
+  competitorNotes: string[] // din scanările concurenților acestui brand (poate fi gol)
   approvedTitles: string[] // ce a plăcut (aprobat/publicat) recent — fără repetiții
 }
 
@@ -88,6 +89,7 @@ function describeBrand(b: Brand): string {
     field('Public', b.audience),
     field('Ton de comunicare', b.tone),
     field('Ce ne diferențiază', b.differentiators),
+    field('Cu cine concurăm', b.competition),
     field('Adresă', b.address),
     field('Program', b.opening_hours),
     field('Site', b.website_url),
@@ -123,7 +125,7 @@ function describeLearnings(l: Learnings): string {
   return parts.length > 0 ? `Ce ai învățat de la echipă până acum:\n\n${parts.join('\n\n')}` : ''
 }
 
-const BASE_SYSTEM = `Ești responsabilul de marketing al unui local din Timișoara (food service: restaurantul primește semipreparate de la propriul centru de producție). Scrii în română, natural, ca un om din echipă, nu ca o agenție. Folosești doar informații din profilul brandului și din meniu: nu inventa produse, prețuri, evenimente din local sau reduceri care nu sunt propuse explicit ca idee. Owner-ul citește și aprobă tot ce scrii înainte de publicare.`
+const BASE_SYSTEM = `Ești responsabilul de marketing al unui local din zona Timișoara — locația exactă e în profil (food service: restaurantul primește semipreparate de la propriul centru de producție). Scrii în română, natural, ca un om din echipă, nu ca o agenție. Folosești doar informații din profilul brandului și din meniu: nu inventa produse, prețuri, evenimente din local sau reduceri care nu sunt propuse explicit ca idee. Owner-ul citește și aprobă tot ce scrii înainte de publicare.`
 
 async function runWithTool<T>(
   client: Anthropic,
@@ -237,18 +239,17 @@ export function weeklyPlan(client: Anthropic, brand: Brand, ctx: WeeklyContext, 
 
 Planul acoperă 7 zile începând cu ${ctx.startWeekday} ${ctx.startDate}.
 
-Ce știm despre concurența din Timișoara:
-${list(ctx.competitorNotes)}
-
+${ctx.competitorNotes.length > 0 ? `Ce au aflat scanările despre concurenții noștri:\n${list(ctx.competitorNotes)}\n` : ''}
 Materiale aprobate recent (păstrează direcția fără să le repeți):
 ${list(ctx.approvedTitles)}
 
 ${describeLearnings(learnings)}
 
 Fă planul săptămânii:
-1. Caută pe web ce se întâmplă în Timișoara în zilele astea (meciuri, concerte, festivaluri, sărbători, zile speciale) și ce vreme se anunță — doar ce e relevant pentru un local.
-2. Propune 4-5 postări (Facebook/Instagram), răspândite pe zile și ore bune, legate de meniu și de ce se întâmplă în oraș.
-3. Propune 1-2 oferte concrete, realiste pentru marjă (folosește prețurile din meniu), cu motivul pentru care au sens acum.
+1. Caută pe web ce se întâmplă în zona localului (localitatea din profil și Timișoara) în zilele astea (meciuri, concerte, festivaluri, sărbători, zile speciale) și ce vreme se anunță — doar ce e relevant pentru un local.
+2. Ține cont de sezon și de ce spune profilul despre el: ce merge vara, ce merge iarna, unde e localul puternic și unde e slab. Strategia de marketing trebuie să se schimbe cu sezonul.
+3. Propune 4-5 postări (Facebook/Instagram), răspândite pe zile și ore bune, legate de meniu și de ce se întâmplă în zonă.
+4. Propune 1-2 oferte concrete, realiste pentru marjă (folosește prețurile din meniu), cu motivul pentru care au sens acum.
 Dacă meniul sau profilul sunt incomplete, lucrează cu ce ai și spune în summary ce ar trebui completat.`
 
   return runWithTool<WeeklyPlan>(client, {

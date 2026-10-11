@@ -339,6 +339,7 @@ const PROFILE_FIELDS: { key: keyof BrandInput; label: string; placeholder: strin
   { key: 'audience', label: 'Cine sunt clienții', placeholder: 'Corporatiști la prânz, grupuri de prieteni seara, turiști...', rows: 2 },
   { key: 'tone', label: 'Cum vorbim', placeholder: 'Prietenos și relaxat, cu umor, fără să fim vulgari...', rows: 2 },
   { key: 'differentiators', label: 'Ce ne diferențiază', placeholder: 'Producție proprie sous vide, ingrediente..., evenimente...', rows: 2 },
+  { key: 'competition', label: 'Cu cine concurăm', placeholder: 'Pe livrare: pizzerii, meniul zilei... În local: ...', rows: 2 },
   { key: 'address', label: 'Adresă', placeholder: 'Str. ..., Timișoara', rows: 1 },
   { key: 'opening_hours', label: 'Program', placeholder: 'L-J 11-23, V-S 11-02, D 12-22', rows: 1 },
   { key: 'website_url', label: 'Site', placeholder: 'https://...', rows: 1 },

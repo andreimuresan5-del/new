@@ -31,7 +31,7 @@ function json(body: unknown, status = 200) {
 }
 
 const BRAND_COLUMNS =
-  'id, name, description, audience, tone, differentiators, address, opening_hours, website_url, facebook_url, instagram_url, menu_text, extra_notes'
+  'id, name, description, audience, tone, differentiators, competition, address, opening_hours, website_url, facebook_url, instagram_url, menu_text, extra_notes'
 
 const WEEKDAYS = ['duminică', 'luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă']
 
@@ -73,13 +73,14 @@ async function finishRun(
   }).eq('id', runId)
 }
 
-async function competitorNotes(db: SupabaseClient): Promise<string[]> {
+// Doar concurenții scanați care țin de brandul ăsta (competitors.brand_id).
+async function competitorNotes(db: SupabaseClient, brandId: string): Promise<string[]> {
   const since = new Date(Date.now() - 30 * 24 * 3600_000).toISOString()
   const [snapshots, findings] = await Promise.all([
-    db.from('competitor_snapshots').select('summary, scanned_at, competitors(name)')
-      .not('competitor_id', 'is', null).order('scanned_at', { ascending: false }).limit(20),
-    db.from('competitor_findings').select('title, competitors(name)')
-      .not('competitor_id', 'is', null).gte('detected_at', since).order('detected_at', { ascending: false }).limit(30),
+    db.from('competitor_snapshots').select('summary, scanned_at, competitors!inner(name, brand_id)')
+      .eq('competitors.brand_id', brandId).order('scanned_at', { ascending: false }).limit(20),
+    db.from('competitor_findings').select('title, competitors!inner(name, brand_id)')
+      .eq('competitors.brand_id', brandId).gte('detected_at', since).order('detected_at', { ascending: false }).limit(30),
   ])
   if (snapshots.error) throw snapshots.error
   if (findings.error) throw findings.error
@@ -131,7 +132,7 @@ async function runWeeklyPlan(db: SupabaseClient, anthropic: Anthropic, brandId: 
     const brand = await loadBrand(db, brandId)
     const now = new Date()
     const [notes, approved, learnings] = await Promise.all([
-      competitorNotes(db),
+      competitorNotes(db, brandId),
       recentTitles(db, brandId, ['approved', 'published']),
       loadLearnings(db, brandId, ['post', 'promo']),
     ])
