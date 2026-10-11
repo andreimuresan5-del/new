@@ -74,7 +74,7 @@ const rgba = (hex: string, alpha: number) => {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`
 }
 
-// Logo-ul „astur.” (litere mici, punct colorat) + „GASTRO-BAR”, desenat ca text.
+// Logo-ul „astur.” (litere mici, punct colorat) + „GASTRO BAR”, desenat ca text.
 // y = linia de bază a cuvântului; size = mărimea literelor „astur”.
 export function drawWordmark(
   ctx: CanvasRenderingContext2D,
@@ -101,7 +101,7 @@ export function drawWordmark(
   const sub = size * 0.18
   ctx.font = `600 ${sub}px ${SANS}`
   ctx.fillStyle = ink
-  spaced(ctx, 'GASTRO-BAR', left + size * 0.03, y + size * 0.395, sub * 0.5, 'left')
+  spaced(ctx, 'GASTRO BAR', left + size * 0.03, y + size * 0.395, sub * 0.5, 'left')
   ctx.textAlign = prev
 }
 
