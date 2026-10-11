@@ -2,9 +2,11 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { useAuth } from './features/auth/AuthContext'
 import { PinLoginPage } from './features/auth/PinLoginPage'
+import { SetPasswordPage } from './features/auth/SetPasswordPage'
 import { ProtectedRoute } from './features/auth/ProtectedRoute'
 import { CompetitorFeedPage } from './features/competitors/CompetitorFeedPage'
 import { CompetitorSettingsPage } from './features/competitors/CompetitorSettingsPage'
+import { MarketingPage } from './features/marketing/MarketingPage'
 import { OwnerDashboardPage } from './features/dashboard/OwnerDashboardPage'
 import { ProductionLabelPage } from './features/production/ProductionLabelPage'
 import { ProductionLogDetailPage } from './features/production/ProductionLogDetailPage'
@@ -27,6 +29,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<PinLoginPage />} />
+      <Route path="/setare-parola" element={<SetPasswordPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/production/:id/etichete" element={<ProductionLabelPage />} />
@@ -46,6 +49,7 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['owner']} />}>
+            <Route path="/marketing" element={<MarketingPage />} />
             <Route path="/concurenta" element={<CompetitorFeedPage />} />
             <Route path="/concurenta/setari" element={<CompetitorSettingsPage />} />
           </Route>

@@ -4,13 +4,73 @@ import { useAuth } from './AuthContext'
 
 const PIN_LENGTH = 6
 
+function EmailLoginForm({ onBack }: { onBack?: () => void }) {
+  const { signInWithEmail } = useAuth()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true)
+    const { error } = await signInWithEmail(email, password)
+    setSubmitting(false)
+    setError(error)
+  }
+
+  return (
+    <form onSubmit={(e) => void submit(e)} className="w-full max-w-xs space-y-3">
+      <input
+        type="email"
+        required
+        autoComplete="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full rounded-md border border-gray-300 px-3 py-2"
+      />
+      <input
+        type="password"
+        required
+        autoComplete="current-password"
+        placeholder="Parolă"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full rounded-md border border-gray-300 px-3 py-2"
+      />
+      {error && <p className="text-sm font-medium text-red-600">{error}</p>}
+      <button type="submit" disabled={submitting} className="w-full rounded-md bg-gray-900 py-2 font-medium text-white disabled:opacity-50">
+        {submitting ? 'Se verifică...' : 'Intră'}
+      </button>
+      {onBack && (
+        <button type="button" onClick={onBack} className="w-full text-sm text-gray-500">
+          Intră cu PIN
+        </button>
+      )}
+    </form>
+  )
+}
+
 export function PinLoginPage() {
   const { session, signInWithPin } = useAuth()
+  // Online (VITE_LOGIN_MODE=email) logarea e doar cu email; local rămâne PIN-ul pentru bucătărie.
+  const emailOnly = import.meta.env.VITE_LOGIN_MODE === 'email'
+  const [useEmail, setUseEmail] = useState(emailOnly)
   const [pin, setPin] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   if (session) return <Navigate to="/" replace />
+
+  if (useEmail) {
+    return (
+      <div className="flex min-h-svh flex-col items-center justify-center gap-8 bg-gray-50 px-4">
+        <h1 className="text-2xl font-semibold text-gray-900">Control Producție</h1>
+        <EmailLoginForm onBack={emailOnly ? undefined : () => setUseEmail(false)} />
+      </div>
+    )
+  }
 
   async function submit(nextPin: string) {
     setSubmitting(true)
@@ -86,6 +146,10 @@ export function PinLoginPage() {
           0
         </button>
       </div>
+
+      <button type="button" onClick={() => setUseEmail(true)} className="text-sm text-gray-500">
+        Intră cu email și parolă
+      </button>
     </div>
   )
 }

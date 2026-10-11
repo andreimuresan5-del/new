@@ -21,6 +21,7 @@ interface AuthContextValue {
   profile: StaffProfile | null
   loading: boolean
   signInWithPin: (pin: string) => Promise<{ error: string | null }>
+  signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
 }
 
@@ -80,12 +81,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null }
   }
 
+  // Pentru varianta online (owner): PIN-ul de 6 cifre e prea ușor de ghicit pe internet.
+  async function signInWithEmail(email: string, password: string): Promise<{ error: string | null }> {
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+    return { error: error ? 'Email sau parolă greșite.' : null }
+  }
+
   async function signOut() {
     await supabase.auth.signOut()
   }
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, signInWithPin, signOut }}>
+    <AuthContext.Provider value={{ session, profile, loading, signInWithPin, signInWithEmail, signOut }}>
       {children}
     </AuthContext.Provider>
   )
