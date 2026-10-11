@@ -342,3 +342,50 @@ export function useGenerateReport() {
     },
   })
 }
+
+// ---------------------------------------------------------------------------
+// Chat „Întreabă marketerul”
+// ---------------------------------------------------------------------------
+
+export interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  created_at: string
+}
+
+export function useChatMessages(brandId: string | undefined) {
+  return useQuery({
+    queryKey: ['marketing_chat', brandId],
+    enabled: !!brandId,
+    queryFn: async () => {
+      // RLS: fiecare vede doar conversația proprie
+      const { data, error } = await supabase.from('marketing_chat_messages').select('id, role, content, created_at')
+        .eq('brand_id', brandId!).order('created_at', { ascending: true }).limit(200)
+      if (error) throw error
+      return data as ChatMessage[]
+    },
+  })
+}
+
+export function useSendChat() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: { brandId: string; message: string }) =>
+      invokeAgent({ task: 'chat', brand_id: input.brandId, message: input.message }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['marketing_chat'] }),
+  })
+}
+
+export function useClearChat() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (brandId: string) => {
+      const { data: userData } = await supabase.auth.getUser()
+      const { error } = await supabase.from('marketing_chat_messages').delete()
+        .eq('brand_id', brandId).eq('user_id', userData.user!.id)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketing_chat'] }),
+  })
+}

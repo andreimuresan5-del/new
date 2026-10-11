@@ -15,6 +15,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import {
+  chatReply,
   eventMessage,
   eventPackages,
   formatReport,
@@ -45,15 +46,39 @@ const BRAND_COLUMNS =
 
 const WEEKDAYS = ['duminică', 'luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă']
 
-// owner sau rolul `marketing`
-async function canUseMarketing(req: Request): Promise<boolean> {
+// Utilizatorul logat, dacă e owner sau are rolul `marketing`; altfel null.
+async function marketingUser(req: Request): Promise<{ id: string } | null> {
   const authHeader = req.headers.get('Authorization')
-  if (!authHeader) return false
+  if (!authHeader) return null
   const userClient = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
     global: { headers: { Authorization: authHeader } },
   })
-  const { data, error } = await userClient.rpc('current_staff_role')
-  return !error && (data === 'owner' || data === 'marketing')
+  const [{ data: role, error }, { data: auth }] = await Promise.all([
+    userClient.rpc('current_staff_role'),
+    userClient.auth.getUser(authHeader.replace(/^Bearer /, '')),
+  ])
+  if (error || !auth.user || (role !== 'owner' && role !== 'marketing')) return null
+  return { id: auth.user.id }
+}
+
+// Ce vede chat-ul despre starea aplicației: ultimul plan, evenimente, rezultate.
+async function chatContext(db: SupabaseClient, brandId: string): Promise<string> {
+  const [plan, leads, perf] = await Promise.all([
+    db.from('marketing_items').select('kind, status, title, suggested_date').eq('brand_id', brandId)
+      .in('kind', ['post', 'promo']).order('created_at', { ascending: false }).limit(8),
+    db.from('event_leads').select('name, event_type, event_date, guests, status, next_followup_date').eq('brand_id', brandId)
+      .in('status', ['new', 'offer_sent', 'negotiating']).order('next_followup_date', { ascending: true }).limit(10),
+    performance(db, brandId),
+  ])
+  if (plan.error) throw plan.error
+  if (leads.error) throw leads.error
+  const list = (items: string[]) => (items.length ? items.map((i) => `- ${i}`).join('\n') : '(nimic)')
+  return [
+    `Data de azi: ${new Date().toISOString().slice(0, 10)}`,
+    `Ultimele materiale din plan:\n${list(plan.data.map((i) => `${i.kind === 'promo' ? 'Ofertă' : 'Postare'} „${i.title}” (${i.suggested_date ?? '-'}, ${i.status})`))}`,
+    `Cereri de eveniment în lucru:\n${list(leads.data.map((l) => `${l.name}: ${l.event_type ?? 'eveniment'}, ${l.event_date ?? 'dată nestabilită'}, ${l.guests ?? '?'} pers., ${l.status}, recontactare ${l.next_followup_date ?? '-'}`))}`,
+    `Rezultatele postărilor publicate:\n${list(perf)}`,
+  ].join('\n\n')
 }
 
 async function loadBrand(db: SupabaseClient, id: string): Promise<Brand & { id: string }> {
@@ -263,7 +288,8 @@ Deno.serve(async (req) => {
 
   const cronSecret = Deno.env.get('COMPETITOR_SCAN_CRON_SECRET')
   const fromCron = !!cronSecret && req.headers.get('x-cron-secret') === cronSecret
-  if (!fromCron && !(await canUseMarketing(req))) return json({ error: 'unauthorized' }, 401)
+  const user = fromCron ? null : await marketingUser(req)
+  if (!fromCron && !user) return json({ error: 'unauthorized' }, 401)
 
   const body = (await req.json().catch(() => ({}))) as {
     task?: string
@@ -277,6 +303,7 @@ Deno.serve(async (req) => {
     lead_id?: string
     purpose?: 'offer' | 'followup' | 'prospecting'
     channel?: 'email' | 'whatsapp'
+    message?: string
   }
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY') ?? Deno.env.get('Anthropic_api_key')
@@ -321,6 +348,38 @@ Deno.serve(async (req) => {
 
   if (!body.brand_id) return json({ error: 'brand_id lipsă' }, 400)
   const brandId = body.brand_id
+
+  if (body.task === 'chat') {
+    const message = body.message?.trim()
+    if (!user) return json({ error: 'Chat-ul e doar pentru utilizatori logați' }, 400)
+    if (!message) return json({ error: 'Mesajul lipsește' }, 400)
+    const runId = await startRun(db, brandId, 'chat')
+    try {
+      const { error: insertError } = await db.from('marketing_chat_messages')
+        .insert({ brand_id: brandId, user_id: user.id, role: 'user', content: message })
+      if (insertError) throw insertError
+      const [brand, context, history] = await Promise.all([
+        loadBrand(db, brandId),
+        chatContext(db, brandId),
+        // ultimele 30 de mesaje, inclusiv cel de acum
+        db.from('marketing_chat_messages').select('role, content').eq('brand_id', brandId).eq('user_id', user.id)
+          .order('created_at', { ascending: false }).limit(30),
+      ])
+      if (history.error) throw history.error
+      const turns = (history.data as { role: 'user' | 'assistant'; content: string }[]).reverse()
+      // conversația trebuie să înceapă cu un mesaj al utilizatorului
+      while (turns.length && turns[0].role !== 'user') turns.shift()
+      const { output, inputTokens, outputTokens } = await chatReply(anthropic, brand, context, turns)
+      const { data, error } = await db.from('marketing_chat_messages')
+        .insert({ brand_id: brandId, user_id: user.id, role: 'assistant', content: output }).select('*').single()
+      if (error) throw error
+      await finishRun(db, runId, { items: 1, inputTokens, outputTokens })
+      return json({ message: data })
+    } catch (err) {
+      await finishRun(db, runId, { error: err })
+      return json({ error: err instanceof Error ? err.message : String(err) }, 500)
+    }
+  }
 
   if (body.task === 'event_packages') {
     const runId = await startRun(db, brandId, 'event_packages')

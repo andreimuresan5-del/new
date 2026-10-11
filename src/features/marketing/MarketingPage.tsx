@@ -10,16 +10,18 @@ import {
   type Brand,
   type BrandInput,
 } from './api'
+import { ChatTab } from './ChatTab'
 import { EventsTab } from './EventsTab'
 import { ItemCard, inputClass, primaryButton } from './ItemCard'
 import { ResultsTab } from './ResultsTab'
 import { useQueryClient } from '@tanstack/react-query'
 
-type Tab = 'plan' | 'events' | 'reviews' | 'menu' | 'results' | 'profile'
+type Tab = 'plan' | 'events' | 'chat' | 'reviews' | 'menu' | 'results' | 'profile'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'plan', label: 'Plan' },
   { key: 'events', label: 'Evenimente' },
+  { key: 'chat', label: 'Chat' },
   { key: 'reviews', label: 'Recenzii' },
   { key: 'menu', label: 'Meniu' },
   { key: 'results', label: 'Rezultate' },
@@ -261,6 +263,7 @@ export function MarketingPage() {
         {!isLoading && !brand && <p className="text-sm text-gray-500">Niciun brand configurat.</p>}
         {brand && tab === 'plan' && <PlanTab brand={brand} />}
         {brand && tab === 'events' && <EventsTab brand={brand} />}
+        {brand && tab === 'chat' && <ChatTab brand={brand} />}
         {brand && tab === 'reviews' && <ReviewsTab brand={brand} />}
         {brand && tab === 'results' && <ResultsTab brand={brand} />}
         {brand && tab === 'menu' && <MenuTab brand={brand} />}
