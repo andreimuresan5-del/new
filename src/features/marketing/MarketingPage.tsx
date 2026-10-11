@@ -14,11 +14,13 @@ import { ChatTab } from './ChatTab'
 import { EventsTab } from './EventsTab'
 import { ItemCard, inputClass, primaryButton } from './ItemCard'
 import { ResultsTab } from './ResultsTab'
+import { StoryTab } from './StoryTab'
 import { useQueryClient } from '@tanstack/react-query'
 
-type Tab = 'plan' | 'events' | 'chat' | 'reviews' | 'menu' | 'results' | 'profile'
+type Tab = 'story' | 'plan' | 'events' | 'chat' | 'reviews' | 'menu' | 'results' | 'profile'
 
 const TABS: { key: Tab; label: string }[] = [
+  { key: 'story', label: 'Meniul zilei' },
   { key: 'plan', label: 'Plan' },
   { key: 'events', label: 'Evenimente' },
   { key: 'chat', label: 'Chat' },
@@ -181,7 +183,7 @@ const PROFILE_FIELDS: { key: keyof BrandInput; label: string; placeholder: strin
 function ProfileTab({ brand }: { brand: Brand }) {
   const save = useSaveBrand()
   const [form, setForm] = useState<BrandInput>(() => {
-    const { id: _id, name: _name, ...rest } = brand
+    const { id: _id, name: _name, logo_url: _logo, ...rest } = brand
     return rest
   })
   const [saved, setSaved] = useState(false)
@@ -230,7 +232,7 @@ function ProfileTab({ brand }: { brand: Brand }) {
 export function MarketingPage() {
   const { data: brands, isLoading } = useBrands()
   const [brandId, setBrandId] = useState<string | null>(null)
-  const [tab, setTab] = useState<Tab>('plan')
+  const [tab, setTab] = useState<Tab>('story')
   const brand = brands?.find((b) => b.id === brandId) ?? brands?.[0]
 
   return (
@@ -261,6 +263,7 @@ export function MarketingPage() {
       <div className="mt-4">
         {isLoading && <p className="text-sm text-gray-500">Se încarcă...</p>}
         {!isLoading && !brand && <p className="text-sm text-gray-500">Niciun brand configurat.</p>}
+        {brand && tab === 'story' && <StoryTab brand={brand} />}
         {brand && tab === 'plan' && <PlanTab brand={brand} />}
         {brand && tab === 'events' && <EventsTab brand={brand} />}
         {brand && tab === 'chat' && <ChatTab brand={brand} />}

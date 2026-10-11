@@ -13,6 +13,7 @@ export interface Brand {
   differentiators: string | null
   competition: string | null
   event_info: string | null
+  logo_url: string | null
   address: string | null
   opening_hours: string | null
   website_url: string | null
@@ -23,7 +24,7 @@ export interface Brand {
   weekly_plan_enabled: boolean
 }
 
-export type BrandInput = Omit<Brand, 'id' | 'name'>
+export type BrandInput = Omit<Brand, 'id' | 'name' | 'logo_url'>
 
 export interface MarketingItem {
   id: string
@@ -387,5 +388,77 @@ export function useClearChat() {
       if (error) throw error
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketing_chat'] }),
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Meniul zilei → story
+// ---------------------------------------------------------------------------
+
+export interface DailyMenu {
+  id: string
+  menu_date: string
+  items: string
+  price: string | null
+  headline: string | null
+}
+
+export function useDailyMenus(brandId: string | undefined, from: string, to: string) {
+  return useQuery({
+    queryKey: ['daily_menus', brandId, from, to],
+    enabled: !!brandId,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('daily_menus').select('id, menu_date, items, price, headline')
+        .eq('brand_id', brandId!).gte('menu_date', from).lte('menu_date', to).order('menu_date')
+      if (error) throw error
+      return data as DailyMenu[]
+    },
+  })
+}
+
+export function useSaveDailyMenu() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: { brandId: string; menu_date: string; items: string; price: string | null; headline: string | null }) => {
+      const { error } = await supabase.from('daily_menus').upsert(
+        {
+          brand_id: input.brandId,
+          menu_date: input.menu_date,
+          items: input.items,
+          price: input.price,
+          headline: input.headline,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'brand_id,menu_date' },
+      )
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['daily_menus'] }),
+  })
+}
+
+export function useStoryHeadlines() {
+  return useMutation({
+    mutationFn: (input: { brandId: string; menu_date: string; items: string; price: string | null }) =>
+      invokeAgent({ task: 'story_headline', brand_id: input.brandId, menu_date: input.menu_date, items: input.items, price: input.price }) as Promise<{
+        headlines: string[]
+        caption: string
+      }>,
+  })
+}
+
+export function useUploadLogo() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ brandId, file }: { brandId: string; file: File }) => {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'png'
+      const path = `${brandId}/logo-${Date.now()}.${ext}`
+      const { error } = await supabase.storage.from('brand-assets').upload(path, file, { contentType: file.type, upsert: true })
+      if (error) throw error
+      const { data } = supabase.storage.from('brand-assets').getPublicUrl(path)
+      const { error: updateError } = await supabase.from('marketing_brands').update({ logo_url: data.publicUrl }).eq('id', brandId)
+      if (updateError) throw updateError
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketing_brands'] }),
   })
 }

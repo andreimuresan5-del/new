@@ -22,6 +22,7 @@ import {
   menuTexts,
   monthlyReport,
   reviewReply,
+  storyHeadlines,
   weeklyPlan,
   type Brand,
   type Learnings,
@@ -63,14 +64,17 @@ async function marketingUser(req: Request): Promise<{ id: string } | null> {
 
 // Ce vede chat-ul despre starea aplicației: ultimul plan, evenimente, rezultate.
 async function chatContext(db: SupabaseClient, brandId: string): Promise<string> {
-  const [plan, leads, perf] = await Promise.all([
+  const [plan, leads, perf, menus] = await Promise.all([
     db.from('marketing_items').select('kind, status, title, suggested_date').eq('brand_id', brandId)
       .in('kind', ['post', 'promo']).order('created_at', { ascending: false }).limit(8),
     db.from('event_leads').select('name, event_type, event_date, guests, status, next_followup_date').eq('brand_id', brandId)
       .in('status', ['new', 'offer_sent', 'negotiating']).order('next_followup_date', { ascending: true }).limit(10),
     performance(db, brandId),
+    db.from('daily_menus').select('menu_date, items, price').eq('brand_id', brandId)
+      .order('menu_date', { ascending: false }).limit(5),
   ])
   if (plan.error) throw plan.error
+  if (menus.error) throw menus.error
   if (leads.error) throw leads.error
   const list = (items: string[]) => (items.length ? items.map((i) => `- ${i}`).join('\n') : '(nimic)')
   return [
@@ -78,6 +82,7 @@ async function chatContext(db: SupabaseClient, brandId: string): Promise<string>
     `Ultimele materiale din plan:\n${list(plan.data.map((i) => `${i.kind === 'promo' ? 'Ofertă' : 'Postare'} „${i.title}” (${i.suggested_date ?? '-'}, ${i.status})`))}`,
     `Cereri de eveniment în lucru:\n${list(leads.data.map((l) => `${l.name}: ${l.event_type ?? 'eveniment'}, ${l.event_date ?? 'dată nestabilită'}, ${l.guests ?? '?'} pers., ${l.status}, recontactare ${l.next_followup_date ?? '-'}`))}`,
     `Rezultatele postărilor publicate:\n${list(perf)}`,
+    `Meniul zilei (luni-vineri, 12-16), ultimele zile:\n${list(menus.data.map((m) => `${m.menu_date}: ${(m.items as string).split('\n').join(', ')}${m.price ? ` — ${m.price}` : ''}`))}`,
   ].join('\n\n')
 }
 
@@ -304,6 +309,9 @@ Deno.serve(async (req) => {
     purpose?: 'offer' | 'followup' | 'prospecting'
     channel?: 'email' | 'whatsapp'
     message?: string
+    menu_date?: string
+    items?: string
+    price?: string | null
   }
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY') ?? Deno.env.get('Anthropic_api_key')
@@ -375,6 +383,30 @@ Deno.serve(async (req) => {
       if (error) throw error
       await finishRun(db, runId, { items: 1, inputTokens, outputTokens })
       return json({ message: data })
+    } catch (err) {
+      await finishRun(db, runId, { error: err })
+      return json({ error: err instanceof Error ? err.message : String(err) }, 500)
+    }
+  }
+
+  if (body.task === 'story_headline') {
+    const items = body.items?.trim()
+    if (!items || !body.menu_date) return json({ error: 'Meniul zilei lipsește' }, 400)
+    const runId = await startRun(db, brandId, 'story_headline')
+    try {
+      const [brand, recent] = await Promise.all([
+        loadBrand(db, brandId),
+        db.from('daily_menus').select('headline').eq('brand_id', brandId).not('headline', 'is', null)
+          .order('menu_date', { ascending: false }).limit(10),
+      ])
+      if (recent.error) throw recent.error
+      const weekday = WEEKDAYS[new Date(`${body.menu_date}T12:00:00Z`).getUTCDay()]
+      const { output, inputTokens, outputTokens } = await storyHeadlines(
+        anthropic, brand, { date: body.menu_date, weekday, items, price: body.price ?? null },
+        recent.data.map((r) => r.headline as string),
+      )
+      await finishRun(db, runId, { items: output.headlines.length, inputTokens, outputTokens })
+      return json(output)
     } catch (err) {
       await finishRun(db, runId, { error: err })
       return json({ error: err instanceof Error ? err.message : String(err) }, 500)

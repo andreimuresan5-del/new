@@ -637,3 +637,46 @@ export async function chatReply(
   }
   throw new Error('Agentul nu a terminat răspunsul')
 }
+
+// ---------------------------------------------------------------------------
+// Story meniul zilei: titlu scurt + text pentru postare
+// ---------------------------------------------------------------------------
+
+const headlineTool: Anthropic.Tool = {
+  name: 'submit_story_headlines',
+  description: 'Trimite propunerile de titlu pentru story-ul cu meniul zilei.',
+  strict: true,
+  input_schema: {
+    type: 'object',
+    properties: {
+      headlines: {
+        type: 'array',
+        description: '3 variante diferite ca stil (apetisant, cu umor, legat de zi/vreme). Max 45 de caractere fiecare, fără hashtag-uri.',
+        items: { type: 'string' },
+      },
+      caption: { type: 'string', description: 'Text scurt pentru postare/descriere, dacă vor să-l publice și ca postare (1-2 rânduri + 2-3 hashtag-uri locale).' },
+    },
+    required: ['headlines', 'caption'],
+    additionalProperties: false,
+  },
+}
+
+export function storyHeadlines(client: Anthropic, brand: Brand, menu: { date: string; weekday: string; items: string; price: string | null }, recent: string[]) {
+  const user = `${describeBrand(brand)}
+
+Meniul zilei pentru ${menu.weekday} ${menu.date} (servit 12:00-16:00, luni-vineri):
+${menu.items}${menu.price ? `\nPreț: ${menu.price}` : ''}
+
+Titluri folosite recent (nu le repeta):
+${recent.length ? recent.map((r) => `- ${r}`).join('\n') : '(niciunul)'}
+
+Propune 3 titluri scurte pentru story-ul de azi: să facă poftă și să se citească dintr-o privire pe telefon. Pot face referire la un fel anume, la zi sau la sezon. Nu repeta lista de feluri (e deja pe story). Nu promite livrare, rezervări sau alte servicii pentru meniul zilei decât dacă profilul spune explicit că există.`
+
+  return runWithTool<{ headlines: string[]; caption: string }>(client, {
+    system: BASE_SYSTEM,
+    user,
+    tool: headlineTool,
+    webSearch: false,
+    effort: 'low',
+  })
+}
