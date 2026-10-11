@@ -25,10 +25,12 @@ export const COLOR_SCHEMES = {
     light: { bg: '#f4eee4', text: '#2b211c', muted: '#7a6a5e', accent: '#c8553d', onAccent: '#fff8ef' },
     dark: { bg: '#2b211c', text: '#f4eee4', muted: '#bfae9f', accent: '#e07a5f', onAccent: '#2b211c' },
   },
+  // contrastul vine din luminozitate, nu din nuanță (lizibil și pentru daltonism roșu-verde):
+  // toate textele au contrast ≥ 5,5:1 față de fundal, majoritatea ≥ 9:1
   salvie: {
-    label: 'Salvie (verde, salvie, roșu-roșie)',
-    light: { bg: '#e4e8da', text: '#1f3a2e', muted: '#5b6e60', accent: '#e8512f', onAccent: '#ffffff' },
-    dark: { bg: '#1f3a2e', text: '#f2f0e6', muted: '#afc2b3', accent: '#ff6b4a', onAccent: '#1f3a2e' },
+    label: 'Salvie (verde, salvie, cărămiziu)',
+    light: { bg: '#e6eadc', text: '#14291f', muted: '#3e5146', accent: '#a8321a', onAccent: '#ffffff' },
+    dark: { bg: '#173226', text: '#f6f3e8', muted: '#cfdccf', accent: '#ffc4a8', onAccent: '#173226' },
   },
   unt: {
     label: 'Bleumarin & unt',
@@ -106,6 +108,8 @@ export function drawWordmark(
 export async function loadStoryFonts() {
   await Promise.all([
     document.fonts.load(`600 80px ${SERIF}`),
+    document.fonts.load(`500 60px ${SERIF}`),
+    document.fonts.load(`600 40px ${SANS}`),
     document.fonts.load(`italic 400 60px ${SERIF}`),
     document.fonts.load(`500 40px ${SANS}`),
     document.fonts.load(`700 40px ${SANS}`),
@@ -256,7 +260,7 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
     const count = c.sections.reduce((n, s) => n + s.items.length, 0)
     const itemFont = px(count > 4 ? 50 : 58)
     const itemLine = itemFont * 1.22
-    const labelFont = px(28)
+    const labelFont = px(32)
     c.sections.forEach((section, si) => {
       if (section.label) {
         blocks.push({
