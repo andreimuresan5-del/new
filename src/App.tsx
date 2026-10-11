@@ -3,6 +3,8 @@ import { Layout } from './components/Layout'
 import { useAuth } from './features/auth/AuthContext'
 import { PinLoginPage } from './features/auth/PinLoginPage'
 import { ProtectedRoute } from './features/auth/ProtectedRoute'
+import { CompetitorFeedPage } from './features/competitors/CompetitorFeedPage'
+import { CompetitorSettingsPage } from './features/competitors/CompetitorSettingsPage'
 import { OwnerDashboardPage } from './features/dashboard/OwnerDashboardPage'
 import { ProductionLabelPage } from './features/production/ProductionLabelPage'
 import { ProductionLogDetailPage } from './features/production/ProductionLogDetailPage'
@@ -41,6 +43,11 @@ function App() {
             <Route path="/recipes/new" element={<RecipeFormPage />} />
             <Route path="/recipes/:id/edit" element={<RecipeFormPage />} />
             <Route path="/stock/par-levels" element={<ParLevelsPage />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['owner']} />}>
+            <Route path="/concurenta" element={<CompetitorFeedPage />} />
+            <Route path="/concurenta/setari" element={<CompetitorSettingsPage />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['production_staff', 'kitchen_manager']} />}>

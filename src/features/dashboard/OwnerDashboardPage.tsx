@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useRecipes } from '../recipes/api'
 import { useProductionLogs } from '../production/api'
+import { useUnreadFindingsCount } from '../competitors/api'
 
 export function OwnerDashboardPage() {
   const { data: recipes } = useRecipes()
   const { data: logs } = useProductionLogs()
+  const { data: unreadFindings } = useUnreadFindingsCount()
 
   return (
     <div className="mx-auto max-w-2xl p-4">
@@ -19,6 +21,10 @@ export function OwnerDashboardPage() {
         <Link to="/production" className="rounded-lg border border-gray-200 bg-white p-4">
           <p className="text-sm text-gray-500">Loguri producție (recente)</p>
           <p className="text-2xl font-semibold text-gray-900">{logs?.length ?? '—'}</p>
+        </Link>
+        <Link to="/concurenta" className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="text-sm text-gray-500">Noutăți concurență (necitite)</p>
+          <p className="text-2xl font-semibold text-gray-900">{unreadFindings ?? '—'}</p>
         </Link>
       </div>
     </div>

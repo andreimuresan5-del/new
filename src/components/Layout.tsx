@@ -18,6 +18,7 @@ export function Layout() {
             <NavLink to="/recipes" className={linkClass}>Rețete</NavLink>
             <NavLink to="/production" className={linkClass}>Producție</NavLink>
             <NavLink to="/stock" className={linkClass}>Stoc</NavLink>
+            {profile?.role === 'owner' && <NavLink to="/concurenta" className={linkClass}>Concurență</NavLink>}
           </nav>
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-500">{profile?.name}</span>

@@ -28,3 +28,6 @@ dist-ssr
 supabase/.branches
 supabase/.temp
 
+
+# Secrete Edge Functions (local)
+supabase/functions/.env
