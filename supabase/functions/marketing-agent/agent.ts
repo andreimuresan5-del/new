@@ -142,7 +142,7 @@ async function runWithTool<T>(
   },
 ): Promise<AgentResult<T>> {
   const tools: Anthropic.Beta.BetaToolUnion[] = [opts.tool]
-  if (opts.webSearch) tools.unshift({ type: 'web_search_20260209', name: 'web_search', max_uses: 5 })
+  if (opts.webSearch) tools.unshift({ type: 'web_search_20260209', name: 'web_search', max_uses: 10 })
 
   const messages: Anthropic.Beta.BetaMessageParam[] = [{ role: 'user', content: opts.user }]
   let inputTokens = 0
