@@ -41,6 +41,8 @@ export interface WeeklyContext {
   approvedTitles: string[] // ce a plăcut (aprobat/publicat) recent — fără repetiții
   // postări publicate cu rezultatele trecute de echipă: ce aduce efectiv clienți
   performance: string[]
+  dailyMenus: string[] // meniul zilei salvat pentru zilele din plan
+  eventPackages: string[] // pachetele de eveniment active
 }
 
 export interface PostDraft {
@@ -248,6 +250,8 @@ Materiale aprobate recent (păstrează direcția fără să le repeți):
 ${list(ctx.approvedTitles)}
 
 ${ctx.performance.length > 0 ? `Rezultatele postărilor publicate (vizualizări / interacțiuni / comenzi-rezervări) — fă mai mult din ce a adus clienți, mai puțin din ce n-a mers:\n${list(ctx.performance)}\n` : ''}
+${ctx.dailyMenus.length > 0 ? `Meniul zilei deja stabilit pentru zilele din plan (folosește preparatele reale în postări, nu paranteze de completat):\n${list(ctx.dailyMenus)}\n` : ''}
+${ctx.eventPackages.length > 0 ? `Pachetele de eveniment active (promovează-le cu numele și prețurile de aici):\n${list(ctx.eventPackages)}\n` : ''}
 ${describeLearnings(learnings)}
 
 Fă planul săptămânii:
