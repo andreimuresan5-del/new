@@ -2,7 +2,10 @@
 
 Context pentru orice sesiune nouă de lucru pe acest proiect (CP). Decizii luate cu Andrei pe 24.10.2026.
 
-Citește și `docs/agent-concurenta.md` (agentul Iscoada) înainte de a atinge modulul de concurență, și secțiunea „Ce e construit și ce trebuie deployat” de mai jos înainte de orice deploy.
+Citește și:
+- `CLAUDE.md` din rădăcina proiectului — contextul complet: cifrele și analizele din spatele planului (vânzări, contabilitate, marfă, partea casei, reforma salarială, întrebările deschise). Fișierul ăsta spune *ce* construim; acela spune *de ce* și cu ce numere. **Nu e în repository, intenționat** — conține salarii și alte cifre sensibile, și e ținut în afara GitHub prin `.gitignore`. Dacă lipsește din folderul tău, cere-l lui Andrei.
+- `docs/agent-concurenta.md` — agentul Iscoada, înainte de a atinge modulul de concurență.
+- Secțiunea „Ce e construit și ce trebuie deployat” de mai jos, înainte de orice deploy.
 
 ## De ce
 
