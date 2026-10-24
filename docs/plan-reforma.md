@@ -41,7 +41,7 @@ Regula de locație e în baza de date (RLS), nu doar în ecrane. Rolurile de loc
 4. **Mitică în cereri** — asistentul care azi citește formularele de seară și facturile în grupul „Symbai Operațional” răspunde în cardul cererii și cere confirmarea doar celui care a trimis-o. Depinde de accesul la Symbai din server (de lămurit: cheie API Symbai).
 5. **Ziua mea + notificări + follow-up** — rutine zilnice pe rol (manager, șef bucătărie, șef tură), ghid pas cu pas pentru închidere/recepție/inventar, reamintire cu 30 min înainte, la termen, apoi manager (+30 min), apoi administratori (+1 h, doar sarcini critice). Notificări web push (PWA), cu WhatsApp privat ca rezervă.
 6. **Operațional** — recepție din poză, transfer între locații, pontaj, închiderea zilei.
-7. **Reforma, Decizii, Scorecarduri** — mutate din prototipul de pe claude.ai; KPI-uri și bonusuri calculate automat (disciplina = sarcini făcute la timp).
+7. **Reforma, Decizii, Scorecarduri** — lista de probleme și deciziile sunt **făcute** (`src/features/reform/`, migrarea `20261024000003_reforma`), mutate din Panoul de pe claude.ai și vizibile numai pentru `owner`. Datele reale intră din `supabase/import/reforma.sql`, ținut în afara repository-ului. Rămân scorecardurile: KPI-uri și bonusuri calculate automat (disciplina = sarcini făcute la timp) — au nevoie de lipsa la inventar din Symbai, costul cu personalul și vânzările, care încă nu intră în aplicație.
 8. **Banii** — POS vs bancă zilnic, profit pe livrări (Glovo/Wolt, comisioanele nu sunt încă completate în Symbai).
 
 ## Ce e construit și ce trebuie deployat
@@ -55,10 +55,22 @@ Starea la 24.10.2026. Pe ramura `claude/roluri-locatii` e scris și funcțional 
 | **Iscoada** — monitorizare concurență: meniuri, prețuri, recenzii, promoții, deschideri noi; scanare la ~2 zile; feed doar pentru owner | `src/features/competitors/`, `supabase/functions/competitor-scan/` | `docs/agent-concurenta.md` |
 | **Agent marketing** — plan săptămânal și lunar, story „Meniul zilei”, chat cu poze și acțiuni, evenimente, rezultate | `src/features/marketing/`, `supabase/functions/marketing-agent/` | — |
 | **Roluri pe locație** (pasul 1) — pagina Echipa, pagina „Locația mea” | `src/features/team/`, `src/features/locationHome/`, `src/lib/roles.ts` | — |
+| **Reforma** (pasul 7, prima parte) — lista de probleme și deciziile, mutate din Panoul de pe claude.ai; doar `owner` | `src/features/reform/` | — |
 
-### 1. Migrări neaplicate (18)
+### 1. Migrări neaplicate (19)
 
-De la `20261011000000_competitor_intel.sql` până la `20261024000004_ascunde_pin_code.sql`, în ordinea din numele fișierelor. Se testează întâi local (`supabase start` + `supabase db reset`), apoi `npx supabase db push` — conform regulii din „Reguli de lucru”.
+De la `20261011000000_competitor_intel.sql` până la `20261024000005_restrange_marketing.sql`, în ordinea din numele fișierelor. Se testează întâi local (`supabase start` + `supabase db reset`), apoi `npx supabase db push` — conform regulii din „Reguli de lucru”.
+
+Patru dintre ele schimbă drepturi, nu doar adaugă — de aceea proba locală nu e opțională:
+
+| Migrare | Ce schimbă |
+|---|---|
+| `20261024000002_productie_pe_locatie` | producția se loghează la locația unde s-a produs; centrul de producție devine opțional; transferul primește locația sursă |
+| `20261024000003_reforma` | tabelele listei Reforma, vizibile numai pentru `owner` |
+| `20261024000004_ascunde_pin_code` | retrage dreptul de citire pe `staff_profiles` și îl redă pe coloane, fără `pin_code` — PIN-ul e și parola contului |
+| `20261024000005_restrange_marketing` | scoate rolul `marketing` din producție, HACCP, stocuri și praguri |
+
+**Starea probei locale la 24.10.2026, seara:** toate cele 28 de migrări aplicate pe o bază locală proaspătă, importul listei Reforma intrat complet (19 probleme, 6 decizii, 2 administratori), logarea cu PIN funcțională, iar `supabase/tests/vizibilitate_roluri.sql` trecut pe toate cele 10 conturi de probă. Rămâne de făcut pe live: copie de siguranță, `db push`, importul, publicarea.
 
 ### 2. Secrete pentru Edge Functions
 
