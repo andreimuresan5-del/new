@@ -2,6 +2,8 @@
 
 Context pentru orice sesiune nouă de lucru pe acest proiect (CP). Decizii luate cu Andrei pe 24.10.2026.
 
+Citește și `docs/agent-concurenta.md` (agentul Iscoada) înainte de a atinge modulul de concurență, și secțiunea „Ce e construit și ce trebuie deployat” de mai jos înainte de orice deploy.
+
 ## De ce
 
 Grupul (Drunken Rat, Timișoara + Astur, Dumbrăvița, o singură firmă) vinde ~1,5 mil. € pe an fără TVA, dar profitul ajunge greu la administratori: costul real cu personalul ~31% (parte plătită cash), lipsuri la inventar concentrate în bucătăria Astur, produse din partea casei ~13% din vânzări la Astur, bani ieșiți fără documente, credite. Aplicația trebuie să dea control pe locații fără ca administratorii să fie fizic acolo.
@@ -38,6 +40,68 @@ Regula de locație e în baza de date (RLS), nu doar în ecrane. Rolurile de loc
 6. **Operațional** — recepție din poză, transfer între locații, pontaj, închiderea zilei.
 7. **Reforma, Decizii, Scorecarduri** — mutate din prototipul de pe claude.ai; KPI-uri și bonusuri calculate automat (disciplina = sarcini făcute la timp).
 8. **Banii** — POS vs bancă zilnic, profit pe livrări (Glovo/Wolt, comisioanele nu sunt încă completate în Symbai).
+
+## Ce e construit și ce trebuie deployat
+
+Starea la 24.10.2026. Pe ramura `claude/roluri-locatii` e scris și funcțional local mai mult decât pasul 1 din plan — **nimic din lista de mai jos nu e aplicat pe proiectul live**. Fără pașii 2–4 de aici, migrările se aplică dar agenții rămân morți, fără niciun semnal.
+
+### Module care nu apar în cei 8 pași
+
+| Modul | Unde | Documentație |
+|---|---|---|
+| **Iscoada** — monitorizare concurență: meniuri, prețuri, recenzii, promoții, deschideri noi; scanare la ~2 zile; feed doar pentru owner | `src/features/competitors/`, `supabase/functions/competitor-scan/` | `docs/agent-concurenta.md` |
+| **Agent marketing** — plan săptămânal și lunar, story „Meniul zilei”, chat cu poze și acțiuni, evenimente, rezultate | `src/features/marketing/`, `supabase/functions/marketing-agent/` | — |
+| **Roluri pe locație** (pasul 1) — pagina Echipa, pagina „Locația mea” | `src/features/team/`, `src/features/locationHome/`, `src/lib/roles.ts` | — |
+
+### 1. Migrări neaplicate (15)
+
+De la `20261011000000_competitor_intel.sql` până la `20261024000001_location_roles_policies.sql`, în ordinea din numele fișierelor. Se testează întâi local (`supabase start` + `supabase db reset`), apoi `npx supabase db push` — conform regulii din „Reguli de lucru”.
+
+### 2. Secrete pentru Edge Functions
+
+```bash
+npx supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+npx supabase secrets set COMPETITOR_SCAN_CRON_SECRET=$(openssl rand -hex 32)
+```
+
+`SUPABASE_URL`, `SUPABASE_ANON_KEY` și `SUPABASE_SERVICE_ROLE_KEY` sunt injectate automat de Supabase. Pentru rulare locală, aceleași variabile în `supabase/functions/.env` (nu se commituie).
+
+### 3. Deploy funcții
+
+```bash
+npx supabase functions deploy competitor-scan
+npx supabase functions deploy marketing-agent
+```
+
+### 4. Vault + cron — de rulat MANUAL în SQL Editor
+
+Intenționat nu sunt migrări, ca `db reset` local să nu pornească apeluri plătite către API-ul Claude.
+
+Întâi secretele din Vault, o dată per proiect:
+
+```sql
+select vault.create_secret('https://<project-ref>.supabase.co', 'project_url');
+select vault.create_secret('<același secret ca COMPETITOR_SCAN_CRON_SECRET>', 'competitor_scan_cron_secret');
+select vault.create_secret('<anon key>', 'anon_key');
+```
+
+Apoi fișierele:
+
+| Fișier | Ce programează |
+|---|---|
+| `supabase/cron/competitor_scan.sql` | la 15 min; scanează o singură țintă scadentă (~o dată la 2 zile per concurent) |
+| `supabase/cron/marketing_weekly.sql` | luni, 05:00 UTC — plan săptămânal |
+| `supabase/cron/marketing_monthly.sql` | ziua 1 a lunii, 06:00 UTC — raport lunar |
+
+### 5. Înainte de publicarea online — obligatoriu
+
+`supabase/cron/online_hardening.sql` **nu e opțional**: revocă `execute` pe `get_login_email_by_pin(text)` pentru `anon` și `authenticated`. Online, PIN-ul de 6 cifre se poate ghici prin încercări repetate, iar funcția îl verifică fără autentificare. Se rulează manual pe proiectul live, iar în Vercel se pune `VITE_LOGIN_MODE=email` — owner-ul intră cu email + parolă; local rămâne logarea cu PIN pentru bucătărie.
+
+### 6. După deploy, de verificat
+
+- **Iscoada → Concurenți și zone**: adaugă concurenții (site, Google Maps, linkuri Glovo/Wolt/Tazz/Bolt, Facebook, Instagram) și zonele pentru deschideri noi; apasă „Scanează acum” pe unul, ca test.
+- Tokenii consumați și erorile per rulare sunt în `competitor_scan_runs` — verifică după primele zile.
+- Cost estimat Iscoada: ~70–200 lei/lună pentru 5 concurenți + 1 zonă. Pune un plafon lunar de cheltuieli în contul Claude (Console → Limits).
 
 ## KPI-uri hotărâte (propuse, de confirmat pe act adițional)
 
