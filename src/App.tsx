@@ -18,11 +18,15 @@ import { RecipesListPage } from './features/recipes/RecipesListPage'
 import { ParLevelsPage } from './features/stock/ParLevelsPage'
 import { StockLevelsPage } from './features/stock/StockLevelsPage'
 import { StockTransferPage } from './features/stock/StockTransferPage'
+import { LocationHomePage } from './features/locationHome/LocationHomePage'
+import { TeamPage } from './features/team/TeamPage'
+import { isLocationRole } from './lib/roles'
 
 function Home() {
   const { profile } = useAuth()
   if (profile?.role === 'owner') return <OwnerDashboardPage />
   if (profile?.role === 'marketing') return <Navigate to="/marketing" replace />
+  if (isLocationRole(profile?.role)) return <LocationHomePage />
   return <Navigate to="/production" replace />
 }
 
@@ -38,12 +42,26 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           {/* rolul `marketing` vede doar pagina Marketing */}
-          <Route element={<ProtectedRoute allowedRoles={['production_staff', 'kitchen_manager', 'owner']} />}>
+          {/* rețetele (read-only) și stocul locației sunt vizibile și rolurilor de locație */}
+          <Route
+            element={
+              <ProtectedRoute
+                allowedRoles={['production_staff', 'kitchen_manager', 'owner', 'location_manager', 'head_chef', 'shift_lead']}
+              />
+            }
+          >
             <Route path="/recipes" element={<RecipesListPage />} />
             <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+            <Route path="/stock" element={<StockLevelsPage />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['owner', 'location_manager']} />}>
+            <Route path="/echipa" element={<TeamPage />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['production_staff', 'kitchen_manager', 'owner']} />}>
             <Route path="/production" element={<ProductionLogListPage />} />
             <Route path="/production/:id" element={<ProductionLogDetailPage />} />
-            <Route path="/stock" element={<StockLevelsPage />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['kitchen_manager', 'owner']} />}>

@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../features/auth/AuthContext'
+import { isLocationRole } from '../lib/roles'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `px-3 py-2 text-sm font-medium rounded-md ${
@@ -8,19 +9,24 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function Layout() {
   const { profile, signOut } = useAuth()
+  const locationRole = isLocationRole(profile?.role)
 
   return (
     <div className="min-h-svh bg-gray-50">
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
-          <nav className="flex gap-1">
+          <nav className="flex flex-wrap gap-1">
             {profile?.role === 'owner' && <NavLink to="/" end className={linkClass}>Dashboard</NavLink>}
+            {locationRole && <NavLink to="/" end className={linkClass}>Locația mea</NavLink>}
             {profile?.role !== 'marketing' && (
               <>
                 <NavLink to="/recipes" className={linkClass}>Rețete</NavLink>
-                <NavLink to="/production" className={linkClass}>Producție</NavLink>
+                {!locationRole && <NavLink to="/production" className={linkClass}>Producție</NavLink>}
                 <NavLink to="/stock" className={linkClass}>Stoc</NavLink>
               </>
+            )}
+            {(profile?.role === 'owner' || profile?.role === 'location_manager') && (
+              <NavLink to="/echipa" className={linkClass}>Echipa</NavLink>
             )}
             {(profile?.role === 'owner' || profile?.role === 'marketing') && <NavLink to="/marketing" className={linkClass}>Marketing</NavLink>}
           </nav>

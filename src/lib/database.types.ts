@@ -3,4 +3,11 @@
 // Până atunci, clientul rămâne netipizat generic — fiecare feature/api.ts declară
 // propriile interfețe pentru shape-ul rândurilor pe care le folosește.
 
-export type StaffRole = 'production_staff' | 'kitchen_manager' | 'owner' | 'marketing'
+export type StaffRole =
+  | 'production_staff'
+  | 'kitchen_manager'
+  | 'owner'
+  | 'marketing'
+  | 'location_manager'
+  | 'head_chef'
+  | 'shift_lead'
