@@ -45,6 +45,26 @@ Capcană de reținut: cu RLS, un `update` sau `delete` pe rânduri invizibile **
 eroare** — atinge zero rânduri. Un test care așteaptă o excepție raportează greșit
 o gaură inexistentă. De aceea testul numără rândurile afectate.
 
+## Conturi de probă și vizibilitatea pe roluri
+
+Doar pe Supabase local, după `db reset` (folosesc locațiile și owner-ul din `seed.sql`):
+
+```bash
+psql "<DB_URL local>" -f supabase/tests/conturi_proba_roluri.sql   # 9 conturi + date de probă
+psql "<DB_URL local>" -f supabase/tests/vizibilitate_roluri.sql    # ce vede / ce scrie fiecare
+```
+
+`conturi_proba_roluri.sql` creează câte un cont pe fiecare rol (manager, șef de bucătărie
+și șef de tură la Drunken Rat și la Astur, plus kitchen manager, producție, marketing) —
+PIN-urile sunt în antetul fișierului — și câte o producție, HACCP, stoc și stoc țintă pe
+fiecare locație. `vizibilitate_roluri.sql` simulează fiecare cont prin RLS și afișează
+două tabele: ce locații vede în fiecare zonă și ce scrieri îi trec. Nu modifică datele.
+
+Rulat pe Supabase local la 24.10.2026: rolurile de locație văd doar locația lor, Reforma
+doar owner-ul. Problemă găsită și reparată: `pin_code` (care e și parola) era citibil
+de owner, kitchen manager și managerul de locație pentru echipa lui. După
+`20261024000004_ascunde_pin_code.sql` coloana e respinsă la toate rolurile.
+
 ## Ce acoperă `productie_pe_locatie.sql`
 
 Scenariul „fiecare locație cu marfa ei", fără niciun centru de producție marcat:

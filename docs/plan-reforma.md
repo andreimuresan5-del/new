@@ -56,9 +56,9 @@ Starea la 24.10.2026. Pe ramura `claude/roluri-locatii` e scris și funcțional 
 | **Agent marketing** — plan săptămânal și lunar, story „Meniul zilei”, chat cu poze și acțiuni, evenimente, rezultate | `src/features/marketing/`, `supabase/functions/marketing-agent/` | — |
 | **Roluri pe locație** (pasul 1) — pagina Echipa, pagina „Locația mea” | `src/features/team/`, `src/features/locationHome/`, `src/lib/roles.ts` | — |
 
-### 1. Migrări neaplicate (15)
+### 1. Migrări neaplicate (18)
 
-De la `20261011000000_competitor_intel.sql` până la `20261024000001_location_roles_policies.sql`, în ordinea din numele fișierelor. Se testează întâi local (`supabase start` + `supabase db reset`), apoi `npx supabase db push` — conform regulii din „Reguli de lucru”.
+De la `20261011000000_competitor_intel.sql` până la `20261024000004_ascunde_pin_code.sql`, în ordinea din numele fișierelor. Se testează întâi local (`supabase start` + `supabase db reset`), apoi `npx supabase db push` — conform regulii din „Reguli de lucru”.
 
 ### 2. Secrete pentru Edge Functions
 
