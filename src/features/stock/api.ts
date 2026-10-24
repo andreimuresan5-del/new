@@ -73,12 +73,14 @@ export function useTransferSemipreparat() {
   return useMutation({
     mutationFn: async (input: {
       recipeId: string
+      sourceLocationId: string
       destinationLocationId: string
       portions: number
       notes: string | null
     }) => {
       const { error } = await supabase.rpc('transfer_semipreparat', {
         p_recipe_id: input.recipeId,
+        p_source_location_id: input.sourceLocationId,
         p_destination_location_id: input.destinationLocationId,
         p_portions: input.portions,
         p_notes: input.notes,

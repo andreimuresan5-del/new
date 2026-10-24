@@ -12,8 +12,11 @@ export function useLocations() {
   })
 }
 
-// Producția (sous vide) se loghează mereu la centrul de producție — Drunken Rat/Astur
-// sunt puncte de vânzare care primesc doar semipreparat, nu materie primă.
+// Centrul de producție e OPȚIONAL. Din octombrie 2026 nu e activ: fiecare locație
+// își cumpără marfa și produce la ea în bucătărie. Codul nu trebuie să depindă de
+// existența lui — de aceea `maybeSingle()` (întoarce null când nu e marcat niciunul)
+// în loc de `single()`, care arunca eroare și lăsa formularele fără locație.
+// Rămâne folosit doar ca valoare implicită, niciodată ca sursă obligatorie.
 export function useProductionCenter() {
   return useQuery({
     queryKey: ['locations', 'production_center'],
@@ -22,7 +25,7 @@ export function useProductionCenter() {
         .from('locations')
         .select('id, name')
         .eq('is_production_center', true)
-        .single()
+        .maybeSingle()
       if (error) throw error
       return data
     },

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useProductionCenter } from '../locations/api'
+import { useAuth } from '../auth/AuthContext'
+import { useLocations, useProductionCenter } from '../locations/api'
 import { useRecipeIngredients, useRecipeVersion } from '../recipes/api'
 import { useActiveRecipes, useCreateProductionLog } from './api'
 
@@ -41,9 +42,19 @@ function roundQty(n: number) {
 
 export function ProductionLogFormPage() {
   const navigate = useNavigate()
+  const { profile } = useAuth()
   const { data: recipes } = useActiveRecipes()
+  const { data: locations } = useLocations()
   const { data: productionCenter } = useProductionCenter()
   const createLog = useCreateProductionLog()
+
+  // Un cont legat de o locație poate loga producție numai acolo (politica de
+  // inserare din baza de date o impune oricum) — îi arătăm doar locația lui, ca
+  // să nu aleagă una care i-ar fi respinsă la salvare. Conturile fără locație
+  // (centru, sau cineva care acoperă ambele) pot alege liber.
+  const selectableLocations = profile?.location_id
+    ? (locations ?? []).filter((l) => l.id === profile.location_id)
+    : (locations ?? [])
 
   const {
     register,
@@ -64,9 +75,17 @@ export function ProductionLogFormPage() {
 
   const { fields, append, remove } = useFieldArray({ control, name: 'checkpoints' })
 
+  // Precompletăm locația o singură dată: locația contului, altfel centrul, dacă
+  // e marcat vreunul. Ref-ul împiedică un răspuns întârziat de la server să
+  // suprascrie locația pe care a ales-o deja omul.
+  const locationPreselected = useRef(false)
   useEffect(() => {
-    if (productionCenter) setValue('locationId', productionCenter.id)
-  }, [productionCenter, setValue])
+    if (locationPreselected.current) return
+    const preselect = profile?.location_id ?? productionCenter?.id
+    if (!preselect) return
+    locationPreselected.current = true
+    setValue('locationId', preselect)
+  }, [profile?.location_id, productionCenter, setValue])
 
   const selectedRecipeId = useWatch({ control, name: 'recipeId' })
   const batchSize = useWatch({ control, name: 'batchSize' })
@@ -142,10 +161,18 @@ export function ProductionLogFormPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Locație</label>
-            <p className="mt-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-700">
-              {productionCenter?.name ?? 'Centru de producție'}
-            </p>
-            <input type="hidden" {...register('locationId')} />
+            <select
+              {...register('locationId')}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2"
+            >
+              <option value="">alege</option>
+              {selectableLocations.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-gray-500">Bucătăria în care s-a produs efectiv.</p>
             {errors.locationId && (
               <p className="mt-1 text-sm text-red-600">{errors.locationId.message}</p>
             )}
