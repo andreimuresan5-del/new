@@ -1,14 +1,14 @@
 -- Seed date pentru dev local. Rulează automat la `supabase db reset`.
 
--- Drunken Rat/Astur sunt puncte de vânzare (primesc doar semipreparat, fără
--- materie primă proprie) — producția (sous vide) se loghează mereu la
--- centrul de producție.
+-- Fiecare locație își cumpără marfa și produce la ea în bucătărie. Centrul de
+-- producție există ca spațiu, dar nu e activ (octombrie 2026), deci nu e marcat
+-- `is_production_center` — locul producției se alege în formular.
 insert into locations (id, name, address) values
   ('11111111-1111-1111-1111-111111111111', 'Drunken Rat', null),
   ('22222222-2222-2222-2222-222222222222', 'Astur', null);
 
 insert into locations (id, name, address, is_production_center) values
-  ('44444444-1111-4444-1111-444444444444', 'Centru de producție', null, true);
+  ('44444444-1111-4444-1111-444444444444', 'Centru de producție', null, false);
 
 -- Cont inițial owner (Andrei). PIN: 482913 — de schimbat după primul login
 -- (vezi README pentru cum se actualizează PIN-ul unui cont din Studio).

@@ -30,6 +30,21 @@ psql -d cp -f supabase/tests/productie_pe_locatie.sql
 
 Stub-urile sunt doar pentru test. Nu sunt migrări și nu ajung niciodată pe baza reală.
 
+## Ce acoperă `reforma_acces.sql`
+
+Cine vede lista Reforma. Se rulează **după** importul datelor
+(`supabase/import/reforma.sql`, fișier ținut în afara repository-ului):
+
+- administratorul (`owner`) vede toate problemele și deciziile, și poate scrie
+- managerul de locație vede **zero** probleme, zero decizii, zero administratori —
+  nici pentru locația lui
+- managerul nu poate adăuga, iar `update` și `delete` **fără filtru** ating zero rânduri
+- lista rămâne intactă după toate încercările
+
+Capcană de reținut: cu RLS, un `update` sau `delete` pe rânduri invizibile **nu dă
+eroare** — atinge zero rânduri. Un test care așteaptă o excepție raportează greșit
+o gaură inexistentă. De aceea testul numără rândurile afectate.
+
 ## Ce acoperă `productie_pe_locatie.sql`
 
 Scenariul „fiecare locație cu marfa ei", fără niciun centru de producție marcat:
@@ -42,4 +57,4 @@ Scenariul „fiecare locație cu marfa ei", fără niciun centru de producție m
   destinația, mai multe porții decât există, și transferul sau finalizarea făcute de
   un șef de tură
 
-Rulat pe Postgres 16 la 24.10.2026: toate au trecut.
+Rulate pe Postgres 16 la 24.10.2026, cu toate migrările aplicate în ordine: toate au trecut.

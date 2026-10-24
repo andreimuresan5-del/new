@@ -37,3 +37,7 @@ supabase/functions/.env
 CLAUDE.md
 CLAUDE.local.md
 CLAUDE-context-*.md
+
+# Import de date reale în baza de date — salarii, bani fără documente, cash.
+# Structura tabelelor se versionează; conținutul, nu.
+supabase/import/

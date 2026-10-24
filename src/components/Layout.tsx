@@ -21,7 +21,10 @@ export function Layout() {
             {profile?.role !== 'marketing' && (
               <>
                 <NavLink to="/recipes" className={linkClass}>Rețete</NavLink>
-                {!locationRole && <NavLink to="/production" className={linkClass}>Producție</NavLink>}
+                {/* Șeful de bucătărie produce la locația lui; managerul și șeful de tură nu. */}
+                {(!locationRole || profile?.role === 'head_chef') && (
+                  <NavLink to="/production" className={linkClass}>Producție</NavLink>
+                )}
                 <NavLink to="/stock" className={linkClass}>Stoc</NavLink>
               </>
             )}
@@ -29,6 +32,8 @@ export function Layout() {
               <NavLink to="/echipa" className={linkClass}>Echipa</NavLink>
             )}
             {(profile?.role === 'owner' || profile?.role === 'marketing') && <NavLink to="/marketing" className={linkClass}>Marketing</NavLink>}
+            {/* Reforma: doar administratorii. Conține salarii și bani fără documente. */}
+            {profile?.role === 'owner' && <NavLink to="/reforma" className={linkClass}>Reforma</NavLink>}
           </nav>
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-500">{profile?.name}</span>

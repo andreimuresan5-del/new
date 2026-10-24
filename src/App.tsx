@@ -15,6 +15,9 @@ import { ProductionLogListPage } from './features/production/ProductionLogListPa
 import { RecipeDetailPage } from './features/recipes/RecipeDetailPage'
 import { RecipeFormPage } from './features/recipes/RecipeFormPage'
 import { RecipesListPage } from './features/recipes/RecipesListPage'
+import { ReformDecisionsPage } from './features/reform/ReformDecisionsPage'
+import { ReformIssuePage } from './features/reform/ReformIssuePage'
+import { ReformPage } from './features/reform/ReformPage'
 import { ParLevelsPage } from './features/stock/ParLevelsPage'
 import { StockLevelsPage } from './features/stock/StockLevelsPage'
 import { StockTransferPage } from './features/stock/StockTransferPage'
@@ -59,7 +62,12 @@ function App() {
             <Route path="/echipa" element={<TeamPage />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['production_staff', 'kitchen_manager', 'owner']} />}>
+          {/* șeful de bucătărie produce la locația lui — fiecare locație are marfa ei */}
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['production_staff', 'kitchen_manager', 'head_chef', 'owner']} />
+            }
+          >
             <Route path="/production" element={<ProductionLogListPage />} />
             <Route path="/production/:id" element={<ProductionLogDetailPage />} />
           </Route>
@@ -75,12 +83,30 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['owner']} />}>
+            <Route path="/reforma" element={<ReformPage />} />
+            <Route path="/reforma/nou" element={<ReformIssuePage />} />
+            <Route path="/reforma/decizii" element={<ReformDecisionsPage />} />
+            <Route path="/reforma/:id" element={<ReformIssuePage />} />
             <Route path="/concurenta" element={<CompetitorFeedPage />} />
             <Route path="/concurenta/setari" element={<CompetitorSettingsPage />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['production_staff', 'kitchen_manager']} />}>
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['production_staff', 'kitchen_manager', 'head_chef']} />
+            }
+          >
             <Route path="/production/new" element={<ProductionLogFormPage />} />
+          </Route>
+
+          {/* transferul mută stoc între locații: și managerul locației poate */}
+          <Route
+            element={
+              <ProtectedRoute
+                allowedRoles={['production_staff', 'kitchen_manager', 'head_chef', 'location_manager']}
+              />
+            }
+          >
             <Route path="/stock/transfer" element={<StockTransferPage />} />
           </Route>
         </Route>
