@@ -45,7 +45,7 @@ Lipsa la inventar față de rețete: **bucătărie +4,7%**, **bar +2,6%**. Mult 
 |---|---|---|
 | [Manager de locație](posturi/manager-locatie.md) | `location_manager` | **scris** |
 | [Șef de bucătărie](posturi/sef-bucatarie.md) | `head_chef` | **scris** |
-| Șef de tură | `shift_lead` | de scris |
+| [Șef de tură](posturi/sef-tura.md) | `shift_lead` | **scris** |
 | Bucătar | — | de scris |
 | Ospătar | — | de scris |
 | Barman | — | de scris |
