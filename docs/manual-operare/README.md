@@ -18,7 +18,8 @@ unde dotarea diferă, procedura diferă. Câteva exemple:
 | Echipamentul care dictează procedurile | Plancha/grill, 2 friteuze, cuptor **doar** pentru producție | **Josper** pe cărbune (4.900–5.800 lei/lună de cărbune), cuptor de pizza |
 | Bucătăria | 3 stații, 4 oameni până la 15:00, 3 după | 10 oameni |
 | Bar | 2 barmani, bar propriu, se vând și țigări | Bar aproape fără pierderi, fără post de barman dedicat |
-| Posturi care există doar aici | Ambalare pentru livrare | Pizzaiolo, meniul zilei ca sistem, pachete de evenimente |
+| Meniul zilei | **există** — aceleași feluri de ~2 ani, de refăcut | există, ~20% din vânzările de luni–vineri |
+| Posturi care există doar aici | Ambalare pentru livrare | Pizzaiolo, pachete de evenimente, brunch |
 | Închiderea | După 02:00 — banca e închisă | Se închide mai devreme |
 
 De aceea **nu există o pagină „șef de bucătărie" comună.** Șeful de bucătărie de la Drunken Rat

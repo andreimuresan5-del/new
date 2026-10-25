@@ -109,5 +109,12 @@ risipă, ori luni în care nu s-a scris.
 - **Ora mesei** și cine gătește — propun un bucătar desemnat, nu „cine are timp".
 - **Un buget sau o normă pe om**, după ce se știe cifra. Înainte de a avea cifra, orice normă e
   inventată.
-- **Dacă se face o listă de preparate permise** pentru masa echipei, din mise en place. La Astur
-  propunerea e „din meniul zilei"; la Drunken Rat nu există meniu al zilei, deci trebuie altceva.
+- **Dacă masa echipei se face din meniul zilei.** Drunken Rat **are** meniu al zilei, deci
+  propunerea de la Astur se aplică și aici: echipa mănâncă din el, se bonează pe ingrediente, și nu
+  se mai gătește separat. Avantajul nu e doar costul — e că mise en place-ul există oricum, deci se
+  scrie mai ușor.
+  - *De decis:* din meniul zilei, dintr-o listă scurtă proprie, sau amândouă (meniul zilei pentru
+    tura de prânz, listă scurtă pentru cea de noapte, care se închide la 02:00 când meniul zilei
+    s-a terminat de mult).
+  - *De reținut:* meniul zilei de la DR are aceleași feluri de vreo doi ani și urmează să fie
+    refăcut. Dacă masa echipei se leagă de el, cele două decizii se iau împreună, nu separat.

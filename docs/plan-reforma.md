@@ -150,10 +150,26 @@ Hotărât pe 25.10.2026, după analiza pe locații din Symbai (august–septembr
 | Exclus | Motiv |
 |---|---|
 | Plante și amenajări | Decizie de administrator, nu consum de bucătărie. În septembrie, 6.830 lei la Astur într-o singură lună; în august, zero. |
-| Obiecte de inventar | Pahare, farfurii, cuțite, tocătoare, veioze. Țin ani, nu se consumă. |
+| Obiecte de inventar | Pahare, farfurii, cuțite, tocătoare, veioze. Țin ani, nu se consumă. **Scos din procent ≠ neurmărit** — vezi mai jos. |
 | Cărbune și lemn de grătar | Astur are grătar pe jar, Drunken Rat nu cumpără deloc. E diferență de bucătărie, nu de disciplină, și face locațiile incomparabile. Se urmărește separat, legat de volumul de grătar. |
 
 Același tipar ca „fără țigări în calcul" la șefii de bucătărie: din KPI iese ce omul nu controlează.
+
+**Vesela: scoasă din procent, dar urmărită.** Hotărât pe 25.10.2026, la cererea lui Andrei. Pahare,
+farfurii, tacâmuri și ustensile ies din procentul de consumabile — sunt obiecte de inventar și
+amestecate cu ambalajul fac două costuri diferite să arate ca unul. Dar azi stau la `Consumabile`
+(~3.000 lei pe lună pe firmă, încadrați greșit) și **nimeni nu se uită la ele**, deci intră în
+urmărirea lunară a managerului, pe linia lor:
+
+- **câte bucăți s-au spart**, pe fel, din numărătoarea scrisă la zona de spălare;
+- **cât s-a cumpărat**, în lei, din facturile lunii;
+- **diferența** dintre cele două — dacă se cumpără mult mai mult decât se sparge scris, lipsește
+  evidența, nu vesela.
+
+**Fără prag și fără bonus legat de ea.** O seară plină sparge mai mult decât una goală; un prag pe
+veselă, fără raportare la numărul de bonuri, l-ar penaliza pe manager exact în lunile bune — aceeași
+greșeală ca pragul pus pe cumpărare. Se măsoară și se arată. Cifra nu există încă: primele două luni
+o dau.
 
 **Pragurile — NU se trec încă în actul adițional.** Pe cifra brută, Astur pare la 5,53% și Drunken Rat la 4,02% (septembrie); după curățare, Astur e la 2,79% și Drunken Rat la 3,78% — clasamentul se inversează. În august, curățate, erau aproape egale: 3,10% și 2,94%.
 

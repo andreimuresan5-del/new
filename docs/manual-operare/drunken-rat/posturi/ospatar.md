@@ -5,8 +5,10 @@
 [șeful de tură](sef-tura.md), peste el [managerul](manager-locatie.md)
 **Câți:** **4** în structura de iarnă · **Programul locației:** 11:00–02:00
 
-> La **Astur** postul se numește la fel, dar se vinde altfel: prânzul face ~60% din încasări, există
-> meniul zilei, pachete de evenimente și platouri. Nu se citește pagina asta pentru Astur.
+> La **Astur** postul se numește la fel, dar se vinde altfel: prânzul face ~60% din încasări, iar
+> meniul zilei face ~20% din vânzările de luni–vineri; există pachete de evenimente și platouri.
+> Meniul zilei există și la Drunken Rat — doar greutatea lui diferă. Nu se citește pagina asta
+> pentru Astur.
 
 ---
 

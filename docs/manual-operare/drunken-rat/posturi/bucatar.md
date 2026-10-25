@@ -6,8 +6,8 @@
 **Câți:** **4** în structura de iarnă, pe rotație **3 zile lucrate / 1 liberă** — mereu 3 la lucru.
 4 oameni în bucătărie până la 15:00, 3 după.
 
-> La **Astur** postul se numește la fel, dar bucătăria are 10 oameni, Josper pe cărbune, cuptor de
-> pizza și meniul zilei. Nu se citește pagina asta pentru Astur.
+> La **Astur** postul se numește la fel, dar bucătăria are 10 oameni, Josper pe cărbune și cuptor de
+> pizza. (Meniul zilei se gătește la amândouă.) Nu se citește pagina asta pentru Astur.
 
 ---
 

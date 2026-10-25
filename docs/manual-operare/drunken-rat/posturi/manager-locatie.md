@@ -7,7 +7,8 @@
 de livrare
 
 > Postul de la **Astur** se numește la fel, dar e alt post: prânzul face ~60% din încasări, există
-> meniul zilei ca sistem, pizza, evenimente și Josperul. Nu se citește pagina asta pentru Astur.
+> pizza, evenimentele și Josperul. (Meniul zilei există la amândouă.) Nu se citește pagina asta
+> pentru Astur.
 
 ---
 
@@ -135,6 +136,31 @@ Se măsoară tot ce iese din gestiunea `Consumabile`, ca procent din vânzările
 - plantele și amenajările;
 - obiectele de inventar (peste un an de viață sau peste 500 lei bucata);
 - cărbunele și lemnul de grătar — la DR oricum zero, dar definiția e comună.
+
+> **Scos din procent nu înseamnă neurmărit.** Hotărât pe 25.10.2026: vesela intră în urmărirea
+> managerului, separat. Vezi mai jos.
+
+### Vesela: urmărită pe linia ei, nu în procent
+
+Pahare, farfurii, tacâmuri, ustensile. **Nu intră în procentul de consumabile** — sunt obiecte de
+inventar, țin ani, și amestecate cu ambalajul și detergentul fac două costuri diferite să arate ca
+unul. Dar nici nu rămân nevăzute: azi stau în gestiunea `Consumabile` (circa **3.000 lei pe lună**
+pe firmă, încadrați greșit) și **nimeni nu se uită la ele**.
+
+Ce urmărește managerul, lunar:
+
+| Ce | De unde | De ce |
+|---|---|---|
+| **Câte bucăți s-au spart**, pe fel (pahare de bere, de cocktail, farfurii, tacâmuri) | numărătoarea scrisă la zona de spălare — vezi [vase și curățenie](vase-curatenie.md) | Un tipar se vede în bucăți, nu în lei: dacă se sparg mereu paharele de cocktail, problema e la bar sau la coș, nu „la oameni" |
+| **Cât s-a cumpărat**, în lei | facturile de veselă din luna respectivă | Cumpărarea vine în salturi; fără bucăți lângă ea nu se poate citi |
+| **Diferența între ce s-a spart și ce s-a cumpărat** | cele două de mai sus | Dacă se cumpără mult mai mult decât se sparge scris, lipsește evidența, nu vesela |
+
+**Nu are prag și nu dă bonus.** Se măsoară și se arată, ca indicator de urmărit — ca atâtea altele
+acum, cifra nu există încă. Primele două luni dau baza; abia după aia se poate discuta o țintă.
+
+> **De ce nu intră în bonus de la început:** o seară plină sparge mai mult decât o seară goală. Un
+> prag pe veselă, fără raportare la numărul de bonuri sau de acoperiri, l-ar penaliza pe manager
+> exact în lunile bune. Aceeași greșeală ca pragul pus pe cumpărare la consumabile.
 
 **Pragurile (sub 3% întreg, 3–3,5% jumătate, peste 3,5% zero) nu intră în actul adițional până în
 ianuarie 2027**, după două luni de date curate. Motivul e simplu: la 3,78% managerul ar fi azi pe

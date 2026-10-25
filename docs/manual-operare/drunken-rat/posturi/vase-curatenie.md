@@ -51,6 +51,11 @@ veselă, tacâmuri, ustensile — stau în gestiunea `Consumabile`, aproximativ 
 Consecința: vesela spartă se amestecă în cifra de consumabile, care e și indicatorul
 [managerului](manager-locatie.md). Două costuri complet diferite, într-un singur procent.
 
+**Hotărât pe 25.10.2026:** vesela **iese** din procentul de consumabile, dar **intră** în urmărirea
+lunară a managerului, pe bucăți și pe fel. Fără prag și fără bonus legat de ea — o seară plină sparge
+mai mult decât una goală. Scopul e să se vadă tiparul: dacă se sparg mereu aceleași pahare, problema
+e la coș, la raft sau la felul în care se cară, nu „la oameni".
+
 > *De reparat în Symbai:* tip de produs separat pentru obiectele de inventar, și mutarea
 > durabilelor acolo. E una din reparațiile managerului, nu ale lui.
 
@@ -120,9 +125,11 @@ Ce se măsoară oricum:
 - **Zonele și frecvențele**, scrise concret: ce se face pe tură, ce zilnic, ce săptămânal, ce lunar.
   Fără ele, „curățenie" nu se poate nici cere, nici verifica. *Punctul cel mai important al postului.*
 - **Cum se numără vesela spartă** — un carnet la zona de spălare, sau direct în Symbai la pierderi. De
-  ales una, nu amândouă.
+  ales una, nu amândouă. **Numărătoarea are de acum un destinatar:** vesela intră în urmărirea lunară
+  a [managerului](manager-locatie.md), pe bucăți și pe fel (hotărât 25.10.2026). Fără numărătoare,
+  linia lui rămâne goală.
 - **Un inventar de veselă**, măcar la început și la sfârșit de lună. Fără el nu se știe câte pahare au
-  dispărut, ci doar câte s-au cumpărat.
+  dispărut, ci doar câte s-au cumpărat — exact problema de la consumabile, în mic.
 - **Dozajele**, scrise pe perete lângă mașină, pentru fiecare produs. Dozajul ținut minte e dozajul
   dublu.
 - **Cele două ture față de program.** 11:00–02:00 cu doi oameni: de stabilit orele, ca să nu rămână
