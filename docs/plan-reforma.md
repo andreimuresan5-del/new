@@ -2,6 +2,8 @@
 
 Context pentru orice sesiune nouă de lucru pe acest proiect (CP). Decizii luate cu Andrei pe 24.10.2026.
 
+Citește și `docs/proceduri-bucatarie.md` — procedurile zilnice de bucătărie, care devin sarcini în aplicație la pasul 5.
+
 Citește și:
 - `CLAUDE.md` din rădăcina proiectului — contextul complet: cifrele și analizele din spatele planului (vânzări, contabilitate, marfă, partea casei, reforma salarială, întrebările deschise). Fișierul ăsta spune *ce* construim; acela spune *de ce* și cu ce numere. **Nu e în repository, intenționat** — conține salarii și alte cifre sensibile, și e ținut în afara GitHub prin `.gitignore`. Dacă lipsește din folderul tău, cere-l lui Andrei.
 - `docs/agent-concurenta.md` — agentul Iscoada, înainte de a atinge modulul de concurență.
@@ -120,9 +122,39 @@ Apoi fișierele:
 
 ## KPI-uri hotărâte (propuse, de confirmat pe act adițional)
 
-- **Manager DR:** 4.000 lei net fix + până la 3.000 bonus. Condiție de bază: disciplina banilor. KPI: lipsa la inventar față de rețete, cost personal %, vânzări față de anul trecut, calitate.
-- **Manager Astur:** aceeași arhitectură; ponderi: cost personal 40%, lipsă marfă 30%, vânzări extrasezon 20%, calitate 10%.
-- **Șefi de bucătărie:** 4.500 fix + până la 2.500. Lipsa la inventar față de rețete (DR ≤5% întreg, 5–8% jumătate; Astur nov–dec ≤10%/≤15%, apoi ca DR), rețete și înregistrări complete, calitate și porționare, HACCP. Fără țigări în calcul.
+- **Manager DR:** 4.000 lei net fix + până la 3.000 bonus. Condiție de bază: disciplina banilor. KPI: lipsa la inventar față de rețete, cost personal %, **consumabile**, vânzări față de anul trecut, calitate.
+- **Manager Astur:** aceeași arhitectură; ponderi: cost personal 35%, lipsă marfă 25%, **consumabile 10%**, vânzări extrasezon 20%, calitate 10%.
+- **Șefi de bucătărie:** 4.500 fix + până la 2.500. Lipsa la inventar față de rețete (DR ≤5% întreg, 5–8% jumătate; Astur nov–dec ≤10%/≤15%, apoi ca DR), rețete și înregistrări complete, calitate și porționare, HACCP. Fără țigări în calcul. **Consumabilele nu intră la șefii de bucătărie** — managerul comandă și recepționează.
+
+### Consumabile: definiția indicatorului
+
+Hotărât pe 25.10.2026, după analiza pe locații din Symbai (august–septembrie 2026).
+
+**Se măsoară** „consumabile operaționale" ca procent din vânzările fără bacșiș ale locației:
+
+> tot ce iese din gestiunea `Consumabile` a locației, **minus** plantele și amenajările, **minus** obiectele de inventar (ce ține mai mult de un an sau costă peste 500 lei bucata), **minus** cărbunele și lemnul de grătar.
+
+**De ce aceste excluderi**, și nu cifra brută:
+
+| Exclus | Motiv |
+|---|---|
+| Plante și amenajări | Decizie de administrator, nu consum de bucătărie. În septembrie, 6.830 lei la Astur într-o singură lună; în august, zero. |
+| Obiecte de inventar | Pahare, farfurii, cuțite, tocătoare, veioze. Țin ani, nu se consumă. |
+| Cărbune și lemn de grătar | Astur are grătar pe jar, Drunken Rat nu cumpără deloc. E diferență de bucătărie, nu de disciplină, și face locațiile incomparabile. Se urmărește separat, legat de volumul de grătar. |
+
+Același tipar ca „fără țigări în calcul" la șefii de bucătărie: din KPI iese ce omul nu controlează.
+
+**Pragurile — NU se trec încă în actul adițional.** Pe cifra brută, Astur pare la 5,53% și Drunken Rat la 4,02% (septembrie); după curățare, Astur e la 2,79% și Drunken Rat la 3,78% — clasamentul se inversează. În august, curățate, erau aproape egale: 3,10% și 2,94%.
+
+Pragurile propuse, de fixat **din ianuarie 2027**, după două luni de date curate: sub 3,0% bonus întreg, 3,0–3,5% jumătate, peste 3,5% zero. Până atunci indicatorul se măsoară și se arată, fără bani legați de el.
+
+**Trei lucruri de reparat înainte de a lega bani de prag:**
+
+1. **Tipurile de produs în Symbai.** Un singur produs din tot sistemul e marcat „obiect de inventar" (o veioză); restul lucrurilor durabile stau la „Consumabile" — circa 3.000 lei pe lună pe ambele locații. Fără separare, pragul are o marjă de eroare de aproape un punct, adică ~4.400 lei pe lună.
+2. **Marcarea ridicării personale la bonare.** Câmpul `order_type` există, dar în septembrie există o singură comandă marcată ca ridicare (Astur, 119 lei) și niciuna la Drunken Rat — restul se bonează ca „în sală", deși Drunken Rat a consumat 5.073 lei de ambalaje, inclusiv pahare „Take Away". Fără bifă, ambalajul nu se poate împărți pe canale.
+3. **Cărbunele și lemnul pe linia lor.** La Astur, 4.900–5.800 lei pe lună, peste 1% din vânzări.
+
+Pentru referință: livrarea prin platforme e 22,6% din vânzări la Drunken Rat și 8,2% la Astur (septembrie); ambalaje per comandă livrată, 4,20 lei la DR și 5,93 la Astur — maxime, pentru că ambalajul acoperă și ridicarea personală nebonată.
 
 ## Prototipuri
 
