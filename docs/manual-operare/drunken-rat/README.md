@@ -49,9 +49,9 @@ Lipsa la inventar față de rețete: **bucătărie +4,7%**, **bar +2,6%**. Mult 
 | [Bucătar](posturi/bucatar.md) | — | **scris** |
 | [Ospătar](posturi/ospatar.md) | — | **scris** |
 | [Barman](posturi/barman.md) | — | **scris** |
-| Vase și curățenie | — | de scris |
+| [Vase și curățenie](posturi/vase-curatenie.md) | — | **scris** |
 | [Ambalare (livrare)](posturi/ambalare.md) | — | **scris** — post care la Astur nu există separat |
-| Administrator | `owner` | de scris la final |
+| [Administrator](posturi/administrator.md) | `owner` | **scris** — ce rămâne la voi, plus **lista deciziilor care blochează manualul** |
 
 ### Structura de iarnă, decisă anterior — 15 oameni, **plus managerul**
 
