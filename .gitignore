@@ -32,9 +32,9 @@ supabase/.temp
 # Secrete Edge Functions (local)
 supabase/functions/.env
 
-# Context personal pentru Claude — conține cifre sensibile (salarii, bani fără
-# documente, protocol). Se ține local, NU ajunge pe GitHub.
-CLAUDE.md
+# Partea sensibilă a contextului — bani și salarii. Se ține local, NU ajunge pe
+# GitHub. Perechea ei, CLAUDE.md, e versionată: conține doar cum lucrăm,
+# locațiile, aplicația și procedurile, fără nicio sumă.
 CLAUDE.local.md
 CLAUDE-context-*.md
 
