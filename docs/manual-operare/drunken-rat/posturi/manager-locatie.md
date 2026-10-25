@@ -85,8 +85,11 @@ luni dimineață nu se mai poate tăia luni seara.
 
 - [Închiderea zilei](../proceduri/inchiderea-zilei.md) — o execută șeful de tură, o **verifică** el și
   duce plicul la bancă
-- Recepția cântărită (consumabile, bar, țigări) — *de scris*
-- Deschiderea turei și casa de deschidere — *de scris*
+- [Recepția cântărită](../proceduri/receptia-cantarita.md) — consumabile, bar, țigări; și **înregistrarea în aceeași zi**, care e reparația 0
+- [Deschiderea turei](../proceduri/deschiderea-turei.md) — o verifică, nu o execută
+- [Inventarul critic zilnic](../proceduri/inventarul-critic.md) — îl primește până la 12:00
+- [Masa personalului](../proceduri/masa-personalului.md) — o verifică
+- [Predarea turei](../proceduri/predarea-turei.md) — citește ce a rămas nerezolvat
 - Comanda de consumabile — *de scris, după ce se lămurește creșterea din septembrie*
 
 ## Ce i se măsoară

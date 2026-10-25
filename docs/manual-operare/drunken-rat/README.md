@@ -46,7 +46,7 @@ Lipsa la inventar față de rețete: **bucătărie +4,7%**, **bar +2,6%**. Mult 
 | [Manager de locație](posturi/manager-locatie.md) | `location_manager` | **scris** |
 | [Șef de bucătărie](posturi/sef-bucatarie.md) | `head_chef` | **scris** |
 | [Șef de tură](posturi/sef-tura.md) | `shift_lead` | **scris** |
-| Bucătar | — | de scris |
+| [Bucătar](posturi/bucatar.md) | — | **scris** |
 | Ospătar | — | de scris |
 | [Barman](posturi/barman.md) | — | **scris** |
 | Vase și curățenie | — | de scris |
@@ -67,23 +67,58 @@ s-a numărat când s-a făcut structura.
 
 | Procedură | Cine o execută | Ce apără |
 |---|---|---|
+| [Recepția cântărită](proceduri/receptia-cantarita.md) | Șef de bucătărie · manager pentru bar, țigări, consumabile | Cantitatea plătită, și **stocul negativ**: 45,7% din liniile de bucătărie, 31,8% din cele de bar |
+| [Inventarul critic zilnic](proceduri/inventarul-critic.md) | Șef de bucătărie · barman | Timpul până afli de o lipsă: a doua zi, nu peste o lună |
+| [Deschiderea turei](proceduri/deschiderea-turei.md) | Șef de tură | Casa de deschidere, marfa stricată peste noapte, HACCP |
 | [Închiderea zilei](proceduri/inchiderea-zilei.md) | Șef de tură, verificată de manager | Cash peste plafon, încasările de card care nu ajung în cont |
 | [Formularul de seară al bucătăriei](proceduri/formular-seara-bucatarie.md) | Șef de bucătărie | Consumul neînregistrat — ~45% din lipsuri |
+| [Masa personalului](proceduri/masa-personalului.md) | Șef de bucătărie | Marfa echipei, trecută pe ingrediente și nu ca „din partea casei" |
+| [Predarea turei](proceduri/predarea-turei.md) | Toți | Ce rămâne nerezolvat între ture |
 | [Energie în intervalul mort](proceduri/energie-interval-mort.md) | Șef de tură bucătărie | GPL-ul, curentul, durata de viață a uleiului |
 
-**De scris**, în ordinea banilor pe care îi apără:
+**De scris:**
 
-1. **Recepția cântărită** — la DR lipsurile sunt mici, dar recepția cântărită e condiție de bază
-   pentru bonusul șefului de bucătărie, deci procedura trebuie să existe.
-2. **Inventarul critic zilnic** — lista pentru DR nu e încă stabilită. *Vezi „de calibrat".*
-3. **Masa personalului** — bonată pe ingrediente, nu „din partea casei".
-4. **Deschiderea turei** — checklist, temperaturi, casa de deschidere.
-5. **Ambalarea pentru livrare** — postul există doar aici.
+1. **Ambalarea pentru livrare** — postul există doar aici; livrarea prin platforme e 22,6% din
+   vânzările DR.
+2. **Comanda de consumabile** — după ce se lămurește creșterea din septembrie. *Vezi „de calibrat".*
+3. **Transferul între locații** — după ce modulul intră pe live.
+
+## Evidența nu e curată — de citit înainte de a cere socoteală cuiva
+
+Verificat în Symbai pe 25.10.2026, perioada 25.09–24.10. Afectează **orice** procent de lipsă din
+manual:
+
+| Gestiune | Linii deschise la inventar | Numărate | Din numărate, pe **stoc negativ** |
+|---|---|---|---|
+| Bucătărie Drunken Rat | 8.950 | **623 — 7%** | **285 — 45,7%** |
+| Bar Drunken Rat | 7.367 | **402 — 5%** | **128 — 31,8%** |
+| `Tigari Drunken` (11 produse) | — | **0 sesiuni, vreodată** | — |
+| `Consumabile Drunken` (74 produse) | — | **0 sesiuni, vreodată** | — |
+
+Trei consecințe:
+
+1. **Lipsa de +4,7% la bucătărie și +2,6% la bar nu e credibilă** până la un inventar complet pe stoc
+   pozitiv. Stocul negativ înseamnă marfă vândută înainte de a fi înregistrată la recepție — vine
+   inventarul, găsește marfa, iese plus. De aceea liniile ies aproape jumătate plus, jumătate minus.
+2. **Inventarul se deschide și se abandonează**, la amândouă gestiunile. 25 de sesiuni cu 7% din
+   linii numărate e mai rău decât un singur inventar făcut complet.
+3. **Consumabilele nu se inventariază niciodată**, deci cifra lunară nu e consum — e **cumpărare**.
+   Creșterea de la 2,94% (august) la 3,78% (septembrie) poate fi doar o lună în care s-a cumpărat mai
+   mult. Detaliile și ce înseamnă pentru KPI: [inventarul critic](proceduri/inventarul-critic.md).
+
+Se repară cu [recepția la timp](proceduri/receptia-cantarita.md) și cu
+[inventarul dus până la capăt](proceduri/inventarul-critic.md).
 
 ## De calibrat la Drunken Rat
 
 - **Lista de inventar critic.** La Astur e deja definită (pui, ceafă, obrăjori, burrata, mozzarella),
   pentru că acolo s-au văzut lipsurile. La DR trebuie aleasă altfel: din produsele cu cea mai mare
-  valoare pe kilogram și cel mai mare consum — coaste, carne de burger, rață.
+  valoare pe kilogram și cel mai mare consum — propunerea e coaste, carne de burger, rață.
+- **Tara și densitatea sticlelor, în Symbai.** Barul se cântărește deja, dar conversia se face pe
+  lângă sistem. **Decizie de Andrei** — Symbai nu se modifică fără acordul lui.
+- **Inventar lunar pe `Consumabile Drunken`**, fără care KPI-ul de consumabile măsoară cumpărarea.
+- **Un bucătar desemnat pe tura de seară** — procedura de energie de la 15:00 n-are proprietar după
+  plecarea șefului de bucătărie.
 - **Ora la care managerul duce plicul la bancă** dimineața, din cauza programului până la 02:00.
 - **Fondul de rest** al casei.
+- **Limitele de temperatură** pe fiecare echipament, scrise pe fișa HACCP.

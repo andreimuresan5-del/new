@@ -155,8 +155,8 @@ separat în structura de iarnă — atunci execută [închiderea zilei](../proce
 
 Dacă nu, barul se închide cu:
 
-1. **Cântărirea** produselor din lista de inventar zilnic (*listă de stabilit — vezi mai jos*),
-   sticla deschisă la cântar, tara scăzută;
+1. **Cântărirea** produselor din lista de [inventar critic](../proceduri/inventarul-critic.md)
+   (*listă de stabilit — vezi mai jos*), sticla deschisă la cântar, tara scăzută;
 2. **pierderile trecute**, cu motiv;
 3. **țigările predate**, numărate;
 4. frigiderele închise, scurgerile curățate;
@@ -165,8 +165,10 @@ Dacă nu, barul se închide cu:
 ## Procedurile lui
 
 - [Închiderea zilei](../proceduri/inchiderea-zilei.md) — doar dacă e șef de tură pe seara aceea
-- Inventarul zilnic de bar — *de scris, după ce se stabilește lista*
-- Recepția de bar și de țigări — *de scris; o face managerul, barmanul verifică la preluare*
+- [Inventarul critic zilnic](../proceduri/inventarul-critic.md) — partea de bar, cântărită; lista scurtă încă de stabilit
+- [Recepția cântărită](../proceduri/receptia-cantarita.md) — bar și țigări; o face managerul, barmanul verifică la preluare
+- [Deschiderea turei](../proceduri/deschiderea-turei.md) — partea de bar
+- [Predarea turei](../proceduri/predarea-turei.md)
 
 ## Ce i se măsoară
 

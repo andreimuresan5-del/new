@@ -39,7 +39,7 @@ seara e tot ce are locația.
 
 | Ce | Detaliu |
 |---|---|
-| **Checklist de deschidere** | *procedură de scris* |
+| **Checklist de deschidere** | Vezi [deschiderea turei](../proceduri/deschiderea-turei.md) |
 | **Temperaturile** | Frigidere și vitrine de bar, trecute în fișa HACCP. Nu „din ochi" — cu termometrul |
 | **Casa de deschidere** | Se numără fondul de rest și se confirmă că e suma stabilită. Dacă nu e, se anunță managerul **înainte** de primul bon, nu la închidere |
 | **Barul** | Stocul de lucru: ce lipsește se cere acum, nu la 20:00 când se termină |
@@ -96,8 +96,8 @@ rezervare promisă verbal, o lipsă de la bar, o diferență de casă.
 - [Închiderea zilei](../proceduri/inchiderea-zilei.md) — **procedura lui principală**
 - [Energie în intervalul mort](../proceduri/energie-interval-mort.md) — dacă el e cel care conduce
   bucătăria la ora aceea; vezi nota de mai sus
-- Deschiderea turei și casa de deschidere — *de scris*
-- Predarea turei — *de scris*
+- [Deschiderea turei](../proceduri/deschiderea-turei.md) — checklist, temperaturi, casa de deschidere
+- [Predarea turei](../proceduri/predarea-turei.md)
 
 ## Ce i se măsoară
 

@@ -49,7 +49,7 @@ aici e GPL-ul îmbuteliat (788 lei în septembrie) și curentul.
 | La început de tură | Temperaturile frigiderelor și congelatoarelor, trecute în fișa HACCP |
 | Dimineața | Planul de producție pe ziua curentă — ce se pregătește și în ce cantități |
 | **Până la 12:00** | **Inventarul critic**, numărat și trimis managerului |
-| La fiecare recepție | Marfa se **cântărește** înainte de semnătură (procedură de scris) |
+| La fiecare recepție | Marfa se **cântărește** înainte de semnătură, și se **înregistrează în aceeași zi** — vezi [recepția cântărită](../proceduri/receptia-cantarita.md) |
 | **15:00 și 17:45** | [Energie în intervalul mort](../proceduri/energie-interval-mort.md) — friteuzele și un arzător de la plită; direct, sau prin șeful de tură din bucătărie |
 | Înainte de plecare | [Formularul de seară](../proceduri/formular-seara-bucatarie.md), toate patru rubricile |
 
@@ -71,8 +71,11 @@ Scopul nu e să numeri tot. E ca, atunci când lipsește ceva, să afli **a doua
 - [Formularul de seară al bucătăriei](../proceduri/formular-seara-bucatarie.md) — producție, pierderi
   cu motiv, masa personalului, uleiul
 - [Energie în intervalul mort](../proceduri/energie-interval-mort.md) — friteuzele și plita
-- Recepția cântărită — *de scris*
-- Inventarul critic zilnic — *de scris, după ce se stabilește lista*
+- [Recepția cântărită](../proceduri/receptia-cantarita.md) — cântărire, refuz la neconformitate, înregistrare în aceeași zi
+- [Inventarul critic zilnic](../proceduri/inventarul-critic.md) — lista scurtă pentru DR încă de stabilit
+- [Masa personalului](../proceduri/masa-personalului.md) — pe ingrediente
+- [Deschiderea turei](../proceduri/deschiderea-turei.md) — partea de bucătărie
+- [Predarea turei](../proceduri/predarea-turei.md)
 
 ## Ce i se măsoară
 
