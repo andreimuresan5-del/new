@@ -84,8 +84,9 @@ fotografiat e dovada; depunerea fizică se face dimineața, de cine s-a stabilit
 Dacă depunerea din bancă nu e egală cu suma de pe poza plicului, diferența se urmărește în aceeași zi,
 nu la sfârșit de lună. După o săptămână nu-și mai amintește nimeni.
 
-> Dacă rolul de manager **nu rămâne** în structura de iarnă de la Drunken Rat, verificările din tabel
-> trec la administratori. Se decide odată cu rolul — vezi [README-ul locației](../README.md).
+Verificările din tabel sunt condiția de bază din bonusul [managerului de
+locație](../posturi/manager-locatie.md). Nu „ar fi bine să le facă" — fără ele, bonusul lui e zero
+indiferent de vânzări.
 
 ---
 
@@ -93,8 +94,8 @@ nu la sfârșit de lună. După o săptămână nu-și mai amintește nimeni.
 
 - **Fondul de rest:** cât rămâne în casă peste noapte la Drunken Rat. De stabilit o sumă fixă și de
   scris aici, ca „restul se depune" să însemne ceva precis.
-- **Cine duce plicul la bancă dimineața** și la ce oră, din moment ce la 02:00 banca e închisă.
-  Variante: managerul la deschidere, sau bancomat de depuneri. De scris aici varianta aleasă — e cel
-  mai important punct deschis al procedurii.
+- **Ora la care managerul duce plicul la bancă.** Plicul se face la închidere, după 02:00, dar
+  depunerea fizică o face managerul dimineața, la 9:30, odată cu verificarea formularului. De stabilit
+  ora și de scris aici. Alternativa, dacă 9:30 e prea târziu: bancomat de depuneri.
 - **Dacă bacșișul de card poate fi plătit altfel decât din casă** (pe salariu, lunar). Ar scoate
   complet pasul 4 și gaura de ~4.800 lei pe lună. Decizie de administratori, cu contabilul.

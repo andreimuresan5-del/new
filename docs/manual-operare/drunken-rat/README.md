@@ -43,8 +43,8 @@ Lipsa la inventar față de rețete: **bucătărie +4,7%**, **bar +2,6%**. Mult 
 
 | Post | Rol în aplicație | Stare |
 |---|---|---|
+| [Manager de locație](posturi/manager-locatie.md) | `location_manager` | **scris** |
 | [Șef de bucătărie](posturi/sef-bucatarie.md) | `head_chef` | **scris** |
-| Manager de locație | `location_manager` | de scris — vezi nota de mai jos |
 | Șef de tură | `shift_lead` | de scris |
 | Bucătar | — | de scris |
 | Ospătar | — | de scris |
@@ -53,22 +53,21 @@ Lipsa la inventar față de rețete: **bucătărie +4,7%**, **bar +2,6%**. Mult 
 | Ambalare (livrare) | — | de scris — post care la Astur nu există separat |
 | Administrator | `owner` | de scris la final |
 
-> **Managerul de locație la Drunken Rat: de confirmat dacă rolul rămâne.** În structura de iarnă
-> decisă anterior pentru DR (15 oameni) **nu există post de manager**. Dacă rolul rămâne, pagina se
-> scrie; dacă nu, atribuțiile lui se împart între șeful de tură și administratori, și atunci se scrie
-> altceva. Decizia e a administratorilor și blochează pagina.
-
-### Structura de iarnă, decisă anterior — 15 oameni
+### Structura de iarnă, decisă anterior — 15 oameni, **plus managerul**
 
 4 ospătari · 2 barmani · 4 bucătari pe rotație 3 zile lucrate / 1 liberă (mereu 3 la lucru) ·
 1 șef de bucătărie · 2 oameni pentru vase și curățenie · 1 la ambalare · 1 pe proiectul de brand nou
 de livrare.
 
+**Managerul de locație nu era în lista aia de 15** — există, confirmat pe 25.10.2026, deci echipa de
+iarnă e de **16 oameni**. Contează la calculul costului de personal pe zi: cu un om mai mult decât
+s-a numărat când s-a făcut structura.
+
 ## Procedurile de la Drunken Rat
 
 | Procedură | Cine o execută | Ce apără |
 |---|---|---|
-| [Închiderea zilei](proceduri/inchiderea-zilei.md) | Șef de tură | Cash peste plafon, încasările de card care nu ajung în cont |
+| [Închiderea zilei](proceduri/inchiderea-zilei.md) | Șef de tură, verificată de manager | Cash peste plafon, încasările de card care nu ajung în cont |
 | [Formularul de seară al bucătăriei](proceduri/formular-seara-bucatarie.md) | Șef de bucătărie | Consumul neînregistrat — ~45% din lipsuri |
 | [Energie în intervalul mort](proceduri/energie-interval-mort.md) | Șef de tură bucătărie | GPL-ul, curentul, durata de viață a uleiului |
 
@@ -86,6 +85,5 @@ de livrare.
 - **Lista de inventar critic.** La Astur e deja definită (pui, ceafă, obrăjori, burrata, mozzarella),
   pentru că acolo s-au văzut lipsurile. La DR trebuie aleasă altfel: din produsele cu cea mai mare
   valoare pe kilogram și cel mai mare consum — coaste, carne de burger, rață.
-- **Rolul de manager** — vezi nota de mai sus.
-- **Ora depunerii**, din cauza programului până la 02:00.
+- **Ora la care managerul duce plicul la bancă** dimineața, din cauza programului până la 02:00.
 - **Fondul de rest** al casei.

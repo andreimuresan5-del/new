@@ -1,7 +1,7 @@
 # Șef de bucătărie — Drunken Rat
 
 **Rol în aplicație:** `head_chef` · **Locația:** Drunken Rat (Symbai: „Unirii", id 2)
-**Depinde de:** managerul locației (*rol de confirmat — vezi [README-ul locației](../README.md)*)
+**Depinde de:** [managerul locației](manager-locatie.md)
 **Coordonează:** bucătarii de la Drunken Rat — **4 până la 15:00, 3 după**; iarna, 4 bucătari pe
 rotație 3 zile lucrate / 1 liberă, mereu 3 la lucru
 
