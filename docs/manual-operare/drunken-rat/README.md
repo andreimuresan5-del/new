@@ -47,10 +47,10 @@ Lipsa la inventar față de rețete: **bucătărie +4,7%**, **bar +2,6%**. Mult 
 | [Șef de bucătărie](posturi/sef-bucatarie.md) | `head_chef` | **scris** |
 | [Șef de tură](posturi/sef-tura.md) | `shift_lead` | **scris** |
 | [Bucătar](posturi/bucatar.md) | — | **scris** |
-| Ospătar | — | de scris |
+| [Ospătar](posturi/ospatar.md) | — | **scris** |
 | [Barman](posturi/barman.md) | — | **scris** |
 | Vase și curățenie | — | de scris |
-| Ambalare (livrare) | — | de scris — post care la Astur nu există separat |
+| [Ambalare (livrare)](posturi/ambalare.md) | — | **scris** — post care la Astur nu există separat |
 | Administrator | `owner` | de scris la final |
 
 ### Structura de iarnă, decisă anterior — 15 oameni, **plus managerul**
@@ -78,8 +78,8 @@ s-a numărat când s-a făcut structura.
 
 **De scris:**
 
-1. **Ambalarea pentru livrare** — postul există doar aici; livrarea prin platforme e 22,6% din
-   vânzările DR.
+1. **Ambalarea pentru livrare, pas cu pas** — după ce se stabilește lista de ambalaje folosite
+   efectiv. Postul [ambalare](posturi/ambalare.md) e scris; procedura detaliată, nu.
 2. **Comanda de consumabile** — după ce se lămurește creșterea din septembrie. *Vezi „de calibrat".*
 3. **Transferul între locații** — după ce modulul intră pe live.
 
