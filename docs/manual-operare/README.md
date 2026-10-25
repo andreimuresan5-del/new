@@ -3,21 +3,39 @@
 Cum se lucrează, pe fiecare post. Scopul: **orice om nou să poată prelua un post citind o singură
 pagină**, iar administratorii să nu mai fie singurii care știu cum merg lucrurile.
 
-Manualul nu e terminat și nu trebuie să fie. Se scrie pe măsură ce se iau deciziile, se corectează
-când realitatea îl contrazice, și se adaugă la el oricând.
-
 ---
 
-## Cum e organizat
+## Un manual pe locație, nu unul comun
 
-**[Posturi](posturi/)** — o pagină pentru fiecare post. Ce răspunde omul, programul zilei cu ore,
+> **[Manualul Drunken Rat](drunken-rat/)** · **[Manualul Astur](astur/)**
+
+Cele două locații au posturi asemănătoare pe nume, dar **diferă prin posturi și prin dotări**, iar
+unde dotarea diferă, procedura diferă. Câteva exemple:
+
+| | Drunken Rat | Astur |
+|---|---|---|
+| Ce e | Pub / gastro bar, 11:00–02:00 | Restaurant de cartier, prânzul face ~60% |
+| Echipamentul care dictează procedurile | Plancha/grill, 2 friteuze, cuptor **doar** pentru producție | **Josper** pe cărbune (4.900–5.800 lei/lună de cărbune), cuptor de pizza |
+| Bucătăria | 3 stații, 4 oameni până la 15:00, 3 după | 10 oameni |
+| Bar | 2 barmani, bar propriu, se vând și țigări | Bar aproape fără pierderi, fără post de barman dedicat |
+| Posturi care există doar aici | Ambalare pentru livrare | Pizzaiolo, meniul zilei ca sistem, pachete de evenimente |
+| Închiderea | După 02:00 — banca e închisă | Se închide mai devreme |
+
+De aceea **nu există o pagină „șef de bucătărie" comună.** Șeful de bucătărie de la Drunken Rat
+coordonează 3–4 oameni pe 3 stații și nu are cărbune în gestiune; cel de la Astur coordonează 10
+oameni și răspunde de Josper. Aceeași denumire, două posturi diferite.
+
+Ce e **chiar** identic — regulile de mai jos — se scrie aici, o singură dată.
+
+## Cum e organizat fiecare manual
+
+**`posturi/`** — o pagină pentru fiecare post al locației. Ce răspunde omul, programul zilei cu ore,
 ce proceduri execută, ce i se măsoară, ce **nu** intră în sarcina lui.
 
-**[Proceduri](proceduri/)** — pașii concreți, scriși o singură dată și folosiți din mai multe posturi.
-Închiderea zilei e aceeași procedură fie că o face șeful de tură de la Drunken Rat sau cel de la Astur.
+**`proceduri/`** — pașii concreți, pentru locația aceea, cu echipamentul și orele ei.
 
-Un post trimite la procedurile lui. O procedură nu se repetă în pagina fiecărui post — se linkează.
-Așa, când se schimbă o procedură, se schimbă într-un singur loc.
+Un post trimite la procedurile lui. În interiorul unei locații, o procedură se scrie o dată și se
+linkează din fiecare post care o execută.
 
 ## Cum se modifică
 
@@ -26,50 +44,23 @@ Manualul stă în proiectul aplicației, pe GitHub, deci are istoric: se vede ci
 
 - **Modificare de conținut** (o oră, un prag, un pas nou): se cere lui Claude, se scrie, se face
   `git pull` pe calculator. Nu se editează în două locuri deodată.
-- **Decizii care privesc oamenii** (salarii, KPI, înlocuiri): **nu** intră aici. Stau în
+- **Modificare care privește o singură locație** se face în manualul ei. Nu se „sincronizează" cu
+  cealaltă din reflex — dacă schimbarea e validă la amândouă, se spune explicit.
+- **Decizii care privesc oamenii** (salarii, KPI în lei, înlocuiri): **nu** intră aici. Stau în
   `CLAUDE.local.md`, local. Aici intră doar ce poate citi omul de la post.
 - **Ce e estimare, nu măsurătoare**, se marchează „de calibrat". Nu se șterge marcajul până nu
   măsoară cineva.
 
-## Posturile
-
-| Post | Rol în aplicație | Stare |
-|---|---|---|
-| [Șef de bucătărie](posturi/sef-bucatarie.md) | `head_chef` | **scris** |
-| Manager de locație | `location_manager` | de scris — e următorul |
-| Șef de tură | `shift_lead` | de scris |
-| Bucătar | — | de scris |
-| Ospătar | — | de scris |
-| Barman | — | de scris |
-| Vase și curățenie | — | de scris |
-| Ambalare (livrare) | — | de scris |
-| Administrator | `owner` | de scris la final — ce rămâne la voi după ce posturile de mai sus funcționează |
-
-Centrul de producție (`kitchen_manager`, `production_staff`) nu are posturi scrise:
-**nu e activ** în octombrie 2026, fiecare locație produce la ea.
-
-## Procedurile
-
-| Procedură | Cine o execută | Ce apără |
-|---|---|---|
-| [Închiderea zilei](proceduri/inchiderea-zilei.md) | Șef de tură | Casa peste plafon (190.140 lei), încasările de card care nu ajung în cont (~57.000 lei/an) |
-| [Formularul de seară al bucătăriei](proceduri/formular-seara-bucatarie.md) | Șef de bucătărie | Consumul neînregistrat (~45% din lipsuri), pierderile fără motiv, masa personalului, uleiul |
-| [Energie în intervalul mort](proceduri/energie-interval-mort.md) | Șef de tură bucătărie | Cărbunele Josperului (4.900–5.800 lei/lună la Astur), GPL-ul, durata de viață a uleiului |
-
-**De scris**, în ordinea banilor pe care îi apără:
-
-1. **Recepția cântărită** — apără cele 150 kg de pulpe de pui lipsă din 589 intrate la Astur (25%) și
-   ceafa de 137 kg. Fără cântar la recepție, diferența se vede abia la inventar, când nu mai ai de la
-   cine să ceri.
-2. **Inventarul critic zilnic** — lista scurtă de la Astur: pui, ceafă, obrăjori, burrata, mozzarella.
-3. **Masa personalului** — bonată pe ingrediente, nu „din partea casei".
-4. **Deschiderea turei** — checklist, temperaturi de frigidere, casa de deschidere.
-5. **Transferul între locații** — după ce modulul intră pe live.
-
-## Reguli care se aplică la toate posturile
+## Reguli care se aplică la toate posturile, în amândouă locațiile
 
 - **Ce nu e scris, nu s-a întâmplat.** Marfa consumată și nescrisă apare ca lipsă pe numele tău.
 - **Nicio ieșire de bani fără document.** Niciun leu din casă fără bon de ieșire.
 - **Symbai e sistemul în care se operează.** Nu se ține evidență paralelă pe hârtie sau pe telefon.
 - **Alergenii se verifică pe eticheta reală a produsului**, nu se presupun.
 - **Ce rămâne nerezolvat se scrie la predarea turei**, nu se spune.
+- **Marfa se cântărește la recepție**, înainte de semnătură.
+
+## Centrul de producție
+
+Nu are posturi scrise: **nu e activ** în octombrie 2026, fiecare locație produce la ea. Rolurile
+`kitchen_manager` și `production_staff` există în aplicație, dar nu au oameni pe ele.
