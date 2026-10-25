@@ -122,6 +122,8 @@ Apoi fișierele:
 
 ## KPI-uri hotărâte (propuse, de confirmat pe act adițional)
 
+> Sumele din secțiunea asta rămân în repository — decis de Andrei pe 25.10.2026, după ce a fost pusă întrebarea. Nu le muta în `CLAUDE.local.md` și nu rescrie istoricul pentru ele.
+
 - **Manager DR:** 4.000 lei net fix + până la 3.000 bonus. Condiție de bază: disciplina banilor. KPI: lipsa la inventar față de rețete, cost personal %, **consumabile**, vânzări față de anul trecut, calitate.
 - **Manager Astur:** aceeași arhitectură; ponderi: cost personal 35%, lipsă marfă 25%, **consumabile 10%**, vânzări extrasezon 20%, calitate 10%.
 - **Șefi de bucătărie:** 4.500 fix + până la 2.500. Lipsa la inventar față de rețete (DR ≤5% întreg, 5–8% jumătate; Astur nov–dec ≤10%/≤15%, apoi ca DR), rețete și înregistrări complete, calitate și porționare, HACCP. Fără țigări în calcul. **Consumabilele nu intră la șefii de bucătărie** — managerul comandă și recepționează.
