@@ -2,7 +2,7 @@
 
 Context pentru orice sesiune nouă de lucru pe acest proiect (CP). Decizii luate cu Andrei pe 24.10.2026.
 
-Citește și `docs/proceduri-bucatarie.md` — procedurile zilnice de bucătărie, care devin sarcini în aplicație la pasul 5.
+Citește și `docs/manual-operare/` — manualul de operare pe posturi și proceduri. Procedurile de acolo devin sarcini în aplicație la pasul 5.
 
 Citește și:
 - `CLAUDE.md` din rădăcina proiectului — contextul complet: cifrele și analizele din spatele planului (vânzări, contabilitate, marfă, partea casei, reforma salarială, întrebările deschise). Fișierul ăsta spune *ce* construim; acela spune *de ce* și cu ce numere. **Nu e în repository, intenționat** — conține salarii și alte cifre sensibile, și e ținut în afara GitHub prin `.gitignore`. Dacă lipsește din folderul tău, cere-l lui Andrei.

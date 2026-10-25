@@ -122,8 +122,8 @@ Context pentru orice sesiune nouă de Claude (Claude Code sau chat). Citește-l 
 
 ## 9. Unde sunt lucrurile
 
-- **Aplicația CP:** GitHub `andreimuresan5-del/new`; ramura de lucru `claude/roluri-locatii` (bazată pe `claude/wizardly-mendel-0anktt`). Documentație în `docs/` (`plan-reforma.md`, `proceduri-bucatarie.md`, `plan-faza3.md`, `arhitectura-faza1-si-faza2.md`, `agent-concurenta.md`).
-- **Proceduri de bucătărie:** `docs/proceduri-bucatarie.md`. Prima intrată: reducerea consumului în intervalul mort 15:00–18:00 (friteuze pe temperatură de așteptare, un arzător liber pe minim, repornire la 17:45). Regula de siguranță scrisă acolo: un arzător pe care stă mâncare caldă nu se trece pe minim — mâncarea trebuie să rămână peste 63 °C.
+- **Aplicația CP:** GitHub `andreimuresan5-del/new`; ramura de lucru `claude/roluri-locatii` (bazată pe `claude/wizardly-mendel-0anktt`). Documentație în `docs/` (`plan-reforma.md`, `manual-operare/`, `plan-faza3.md`, `arhitectura-faza1-si-faza2.md`, `agent-concurenta.md`).
+- **Manual de operare:** `docs/manual-operare/`. Organizat pe **posturi** (ce răspunde fiecare om, programul zilei, procedurile lui, ce i se măsoară) și **proceduri** (pașii concreți, scriși o dată și folosiți din mai multe posturi). Scris până acum: postul de șef de bucătărie; procedurile de închidere a zilei, formular de seară al bucătăriei și energie în intervalul mort. Deciziile despre oameni (salarii, sume de bonus) NU intră în manual — rămân în `CLAUDE.local.md`. Vezi `docs/manual-operare/README.md` pentru ce urmează și cum se modifică.
 - **Pagini pe claude.ai** (contul lui Andrei):
   - „Panou Drunken & Astur”: cifrele grupului, lista Reforma și Deciziile
   - „Aplicația de control pe roluri”: 9 ecrane de prototip
