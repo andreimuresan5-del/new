@@ -48,7 +48,7 @@ Lipsa la inventar față de rețete: **bucătărie +4,7%**, **bar +2,6%**. Mult 
 | [Șef de tură](posturi/sef-tura.md) | `shift_lead` | **scris** |
 | Bucătar | — | de scris |
 | Ospătar | — | de scris |
-| Barman | — | de scris |
+| [Barman](posturi/barman.md) | — | **scris** |
 | Vase și curățenie | — | de scris |
 | Ambalare (livrare) | — | de scris — post care la Astur nu există separat |
 | Administrator | `owner` | de scris la final |
