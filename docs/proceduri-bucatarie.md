@@ -11,7 +11,7 @@ cu reamintire — până atunci se ține pe hârtie și se confirmă în formula
 **De ce.** Între 15:00 și 18:00 bucătăria merge aproape în gol: la Astur prânzul (11–15) face ~60%
 din încasări, iar seara pornește târziu; la Drunken Rat echipa de bucătărie scade de la 4 la 3
 oameni după ora 15. În intervalul ăsta friteuzele stau la temperatură de lucru fără să frigă nimic,
-iar plita arde fără să gătească.
+plita arde fără să gătească la Drunken Rat, iar Josperul arde cărbune fără să coacă nimic la Astur.
 
 Două efecte, nu unul:
 - **gaz și curent mai puțin** — la Drunken Rat, în septembrie, s-au consumat 788 lei de GPL îmbuteliat;
@@ -19,21 +19,51 @@ Două efecte, nu unul:
   Coborârea temperaturii în gol încetinește oxidarea. Conta: în analiza pe marfă, uleiul de friteuză
   apare cu 375 l la Astur și 228 l la Drunken Rat, aproape neînregistrat în rețete.
 
-### Ce se face
+### Ce se face — la amândouă locațiile: friteuzele
 
 **La ora 15:00 — șeful de tură din bucătărie**
 
 1. **Friteuzele trec pe temperatură de așteptare.** Dacă friteuza are buton de *standby* sau *idle*,
    se apasă. Dacă nu are, se coboară termostatul la **120 °C** (de lucru: 175–180 °C).
-2. **Un arzător de la plită trece pe minim.** Se alege arzătorul liber — cel pe care nu stă nimic.
-3. Se notează ora pe formularul de seară, la rubrica „Energie 15:00".
+2. Se notează ora pe formularul de seară, la rubrica „Energie 15:00".
 
 **La ora 17:45 — același om**
 
-4. **Friteuzele se urcă înapoi la temperatura de lucru.** Durează 5–8 minute până ajung, de aceea se
+3. **Friteuzele se urcă înapoi la temperatura de lucru.** Durează 5–8 minute până ajung, de aceea se
    pornesc la 17:45, nu la 18:00. Prima comandă de la 18:00 trebuie să prindă uleiul la temperatură.
-5. **Arzătorul revine la regimul normal.**
-6. Se notează ora la rubrica „Energie 18:00".
+4. Se notează ora la rubrica „Energie 18:00".
+
+### Drunken Rat, în plus: un arzător de la plită
+
+La 15:00, **un arzător liber trece pe minim** — cel pe care nu stă nimic. La 17:45 revine la normal.
+Vezi mai jos regula cu mâncarea caldă: dacă pe plită stă ceva, se alege alt arzător.
+
+### Astur, în plus: Josperul
+
+Astur nu are plancha, are **Josper** — cuptor pe cărbune. De aici vine tot consumul de cărbune și
+lemn al grupului: 4.900–5.800 lei pe lună, zero la Drunken Rat. Josperul e singurul loc din bucătărie
+unde intervalul mort se vede direct în bani, pentru că arde combustibil și când nu gătește nimic.
+
+**La ora 15:00**
+
+1. **Se reduc clapetele de aer** la regimul de menținere (focul se „bancuiește"): aerul de jos se
+   închide parțial, tirajul de sus rămâne deschis. Josperul e bine izolat și ține temperatura mult
+   timp cu foc mic.
+2. Se notează ora.
+
+**La ora 17:30 — cu un sfert de oră mai devreme decât friteuzele**
+
+3. **Se deschid clapetele înapoi.** Cărbunele revine mai greu decât uleiul: de la foc bancuit până la
+   temperatura de lucru sunt cam 20–30 de minute, nu 5. De calibrat în primele zile și de scris aici
+   valoarea reală măsurată de șeful de bucătărie.
+
+> **Două lucruri care nu se fac la Josper, niciodată.**
+>
+> **Hota rămâne pornită tot timpul.** Cărbunele cu aer redus produce mai mult monoxid de carbon, iar
+> monoxidul nu se vede și nu se simte. Nu se închid clapetele cu hota oprită, în nicio situație.
+>
+> **Clapetele nu se închid complet.** Focul înăbușit face funingine și creozot — murdărește coșul și
+> dă gust de fum ars la primul preparat. Se reduce aerul, nu se taie.
 
 ### Ce NU se face niciodată
 
@@ -54,12 +84,23 @@ Verifici cu termometrul, nu din ochi. Temperatura se trece în fișa HACCP, ca o
 | Șef de bucătărie | Verifică la închidere că ambele rubrici sunt completate |
 | Manager de locație | Urmărește lunar consumul de gaz și curent față de luna anterioară |
 
-### De clarificat
+### De calibrat în primele zile
 
-- Procedura e scrisă după stațiile de la **Drunken Rat**: aragaz + friteuza 1 (tempura/pané),
-  plancha/grill + friteuza 2 (doar cartofi). **De confirmat dacă bucătăria Astur are aceeași
-  configurație** și dacă intervalul 15–18 e la fel de gol acolo.
-- Temperatura de așteptare de 120 °C e valoarea uzuală. Dacă friteuzele au propriul regim de
-  *standby* recomandat de producător, acela are prioritate — se scrie aici valoarea reală.
-- După prima lună, comparăm consumul de GPL și de curent cu luna dinainte, ca să vedem dacă
-  procedura chiar produce economia așteptată sau doar adaugă doi pași.
+- **Minutele de revenire la Josper.** Cele 20–30 de minute sunt o estimare. Șeful de bucătărie de la
+  Astur măsoară o dată, cu termometrul, cât durează de la foc bancuit la temperatura de lucru, și
+  scrie aici cifra reală. Dacă iese peste 30 de minute, ora de la pasul 3 se mută mai devreme.
+- **Temperatura de așteptare a friteuzelor.** 120 °C e valoarea uzuală. Dacă friteuzele au propriul
+  regim de *standby* recomandat de producător, acela are prioritate — se scrie aici valoarea reală.
+- **Dacă intervalul 15–18 e la fel de gol la Astur** ca la Drunken Rat. La Astur prânzul se termină
+  pe la 15 și seara pornește târziu, deci probabil da, dar merită verificat o săptămână înainte de a
+  fixa orele.
+
+### Cum se vede dacă a funcționat
+
+- **La Astur:** consumul de cărbune și lemn pe lună, din gestiunea `Consumabile` (septembrie: 4.931
+  lei; august: 5.800). E cel mai direct indicator din toată procedura.
+- **La Drunken Rat:** consumul de GPL îmbuteliat (septembrie: 788 lei) și factura de curent.
+- **La amândouă:** litrii de ulei de friteuză pe lună. Dacă uleiul chiar ține mai mult, se vede acolo.
+
+Se compară cu luna dinainte, nu cu o țintă inventată. Dacă după două luni nu se mișcă nimic,
+procedura doar adaugă doi pași și o scoatem.
