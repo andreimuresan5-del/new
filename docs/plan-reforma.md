@@ -38,7 +38,9 @@ Regula de locație e în baza de date (RLS), nu doar în ecrane. Rolurile de loc
 ## Plan
 
 1. **Roluri și vizibilitate pe locații** — făcut pe ramura `claude/roluri-locatii` (migrările `20261024000000*` și `20261024000001*`, pagina Echipa, pagina „Locația mea”). De aplicat pe live.
-2. **Crearea conturilor din aplicație** — funcție pe server (service role) apelabilă doar de owner.
+2. **Crearea conturilor din aplicație** — **făcut** (25.10.2026): Edge Function `staff-admin` (service role, verifică la fiecare apel că cel care cere e owner activ) + pagina Echipa. Creează contul cu PIN generat, arată PIN-ul o singură dată, face PIN nou la cerere, și **închide/redeschide** contul unui om care pleacă. Migrarea `20261025000000_creare_conturi`: `disabled_at`, `created_by`, PIN-urile banale refuzate, și firma nu poate rămâne fără administrator activ (nici prin ștergere, nici prin dezactivare, nici prin cascadă din `auth.users`). Test: `supabase/tests/creare_conturi.sql`.
+   - **Conturile se închid, nu se șterg.** Ștergerea unui om cu activitate înregistrată e oprită de cheile străine — și bine, altfel pleacă istoricul cu el. Ștergerea definitivă există în funcție, dar nu e pusă în interfață.
+   - `disabled_at` **nu** se poate scrie din client (fără `grant update` pe coloană): închiderea trebuie să treacă prin funcție, care blochează în același timp și contul din `auth.users`. Altfel, cu `VITE_LOGIN_MODE=email`, omul ar intra în continuare cu emailul sintetic și PIN-ul drept parolă.
 3. **Modulul Cereri** — fiecare cerere (recepție, transfer, inventar, întrebare de rețetă) e un card separat, cu tip, locație, autor, stadiu și conversația ei. Notificări doar către cine trebuie. Înlocuiește grupurile de WhatsApp unde azi se amestecă tot.
 4. **Mitică în cereri** — asistentul care azi citește formularele de seară și facturile în grupul „Symbai Operațional” răspunde în cardul cererii și cere confirmarea doar celui care a trimis-o. Depinde de accesul la Symbai din server (de lămurit: cheie API Symbai).
 5. **Ziua mea + notificări + follow-up** — rutine zilnice pe rol (manager, șef bucătărie, șef tură), ghid pas cu pas pentru închidere/recepție/inventar, reamintire cu 30 min înainte, la termen, apoi manager (+30 min), apoi administratori (+1 h, doar sarcini critice). Notificări web push (PWA), cu WhatsApp privat ca rezervă.
@@ -59,9 +61,9 @@ Starea la 24.10.2026. Pe ramura `claude/roluri-locatii` e scris și funcțional 
 | **Roluri pe locație** (pasul 1) — pagina Echipa, pagina „Locația mea” | `src/features/team/`, `src/features/locationHome/`, `src/lib/roles.ts` | — |
 | **Reforma** (pasul 7, prima parte) — lista de probleme și deciziile, mutate din Panoul de pe claude.ai; doar `owner` | `src/features/reform/` | — |
 
-### 1. Migrări neaplicate (19)
+### 1. Migrări neaplicate (20)
 
-De la `20261011000000_competitor_intel.sql` până la `20261024000005_restrange_marketing.sql`, în ordinea din numele fișierelor. Se testează întâi local (`supabase start` + `supabase db reset`), apoi `npx supabase db push` — conform regulii din „Reguli de lucru”.
+De la `20261011000000_competitor_intel.sql` până la `20261025000000_creare_conturi.sql`, în ordinea din numele fișierelor. Se testează întâi local (`supabase start` + `supabase db reset`), apoi `npx supabase db push` — conform regulii din „Reguli de lucru”.
 
 Patru dintre ele schimbă drepturi, nu doar adaugă — de aceea proba locală nu e opțională:
 
@@ -71,8 +73,11 @@ Patru dintre ele schimbă drepturi, nu doar adaugă — de aceea proba locală n
 | `20261024000003_reforma` | tabelele listei Reforma, vizibile numai pentru `owner` |
 | `20261024000004_ascunde_pin_code` | retrage dreptul de citire pe `staff_profiles` și îl redă pe coloane, fără `pin_code` — PIN-ul e și parola contului |
 | `20261024000005_restrange_marketing` | scoate rolul `marketing` din producție, HACCP, stocuri și praguri |
+| `20261025000000_creare_conturi` | conturile se pot închide (`disabled_at`), logarea cu PIN sare peste cele închise, firma nu poate rămâne fără administrator activ |
 
 **Starea probei locale la 24.10.2026, seara:** toate cele 28 de migrări aplicate pe o bază locală proaspătă, importul listei Reforma intrat complet (19 probleme, 6 decizii, 2 administratori), logarea cu PIN funcțională, iar `supabase/tests/vizibilitate_roluri.sql` trecut pe toate cele 10 conturi de probă. Rămâne de făcut pe live: copie de siguranță, `db push`, importul, publicarea.
+
+**25.10.2026:** cele 29 de migrări (cu `20261025000000_creare_conturi`) aplicate pe un Postgres simplu cu stub-uri, iar `supabase/tests/creare_conturi.sql` trecut pe toate șase secțiunile. `tsc -b` și `vite build` trec. Edge Function-ul `staff-admin` **nu a fost încă rulat** — are nevoie de un Supabase pornit, deci se probează pe local sau direct după deploy, creând un cont de probă și ștergându-l.
 
 ### 2. Secrete pentru Edge Functions
 
@@ -88,7 +93,11 @@ npx supabase secrets set COMPETITOR_SCAN_CRON_SECRET=$(openssl rand -hex 32)
 ```bash
 npx supabase functions deploy competitor-scan
 npx supabase functions deploy marketing-agent
+npx supabase functions deploy staff-admin
 ```
+
+`staff-admin` nu are nevoie de niciun secret pus de mână: folosește doar variabilele injectate
+automat de Supabase. Fără ea, pagina Echipa poate schimba roluri, dar nu poate crea conturi.
 
 ### 4. Vault + cron — de rulat MANUAL în SQL Editor
 

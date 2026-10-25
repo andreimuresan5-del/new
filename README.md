@@ -32,9 +32,23 @@ Autentificare cu PIN (6 cifre), nu email/parolă vizibil. Cont inițial seed-uit
 
 - **Andrei (owner)** — PIN: `482913` (schimbă-l după primul login, vezi mai jos)
 
-## Adăugare angajați noi (fără UI momentan)
+## Adăugare angajați noi
 
-Nu există încă un ecran de management utilizatori (nu era în scope-ul Fazei 1). Adaugă manual din Supabase Studio → SQL Editor (`http://127.0.0.1:54323`), rulând:
+**Din aplicație: pagina Echipa → „Adaugă om"** (doar `owner`). Alegi numele, rolul și locația;
+PIN-ul se generează singur și se arată **o singură dată** — după aceea nu se mai poate citi de
+nimeni, nici de owner, și dacă se pierde se face unul nou cu „PIN nou".
+
+Din aceeași pagină se **închide** contul unui om care pleacă („Închide contul"). Contul închis nu
+se mai poate loga — nici cu PIN, nici cu email — dar rândul rămâne, ca să nu dispară producțiile și
+fișele HACCP de pe numele lui. Ștergerea definitivă nu e în interfață, intenționat.
+
+Totul trece prin Edge Function-ul `staff-admin` (service role, verifică la fiecare apel că cel care
+cere e owner activ) — vezi „Deploy funcții" în `docs/plan-reforma.md`.
+
+### Varianta pe SQL (primul owner, sau dezvoltare locală)
+
+Pentru contul inițial, înainte să existe cineva care să poată folosi pagina Echipa, sau pe un
+Supabase local: Supabase Studio → SQL Editor (`http://127.0.0.1:54323`), rulând:
 
 ```sql
 -- generează un id nou

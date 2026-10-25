@@ -45,6 +45,32 @@ Capcană de reținut: cu RLS, un `update` sau `delete` pe rânduri invizibile **
 eroare** — atinge zero rânduri. Un test care așteaptă o excepție raportează greșit
 o gaură inexistentă. De aceea testul numără rândurile afectate.
 
+## Ce acoperă `creare_conturi.sql`
+
+Pasul 2: conturile. Rulează pe o bază curată, înainte de orice alte fixtures
+(își face propriile locații și conturi):
+
+- PIN-urile banale (`123456`, `111111`, …) nu intră în bază
+- singurul administrator activ **nu** poate fi nici dezactivat, nici șters — și nici
+  prin cascadă, ștergând rândul din `auth.users`
+- cu doi administratori, unul se poate închide; reactivarea nu e blocată niciodată
+- un cont închis nu mai iese din `get_login_email_by_pin`, deci nu se poate loga;
+  după redeschidere, PIN-ul funcționează iar
+- **owner-ul nu poate scrie `disabled_at` din client** (fără `grant update` pe coloană):
+  închiderea trece obligatoriu prin `staff-admin`, care blochează și contul de auth.
+  Aici testul chiar așteaptă o excepție — e un drept pe coloană, nu RLS, deci dă eroare
+  în loc să atingă zero rânduri.
+
+Dacă rulezi de două ori pe aceeași bază, a doua rulare cade pe fixtures (chei duplicate).
+Pe Postgres simplu, refacerea bazei cere și ștergerea rolurilor, pentru că sunt la nivel
+de cluster, nu de bază:
+
+```bash
+psql -d postgres -c "drop database cp" \
+  -c "drop role anon" -c "drop role authenticated" -c "drop role service_role" \
+  -c "create database cp"
+```
+
 ## Conturi de probă și vizibilitatea pe roluri
 
 Doar pe Supabase local, după `db reset` (folosesc locațiile și owner-ul din `seed.sql`):
