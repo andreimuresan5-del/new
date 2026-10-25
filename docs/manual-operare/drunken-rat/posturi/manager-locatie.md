@@ -138,9 +138,16 @@ ianuarie 2027**, după două luni de date curate. Motivul e simplu: la 3,78% man
 zero, iar nu se știe încă dacă cifra e reală sau un efect de clasificare. Detaliile:
 `docs/plan-reforma.md`, secțiunea „Consumabile: definiția indicatorului".
 
-## Trei lucruri de reparat în Symbai, până în ianuarie
+## Patru lucruri de reparat în Symbai, până în ianuarie
 
 Fără ele, indicatorii lui nu se pot calcula corect — deci nici bonusul.
+
+**0. Recepțiile înregistrate la timp, și inventarul dus până la capăt.** Pus primul fiindcă fără el
+celelalte nu se pot măsura. Verificat pe 25.10.2026, la Bar Drunken Rat: din 7.367 de linii de
+inventar deschise în 14 sesiuni între 25.09 și 23.10, **numărate efectiv 402** (5%); iar din cele
+402, **128 (31,8%) stăteau pe stoc negativ** — s-a vândut din marfă neînregistrată încă la recepție.
+Consecința: lipsa de la bar, +2,6%, nu e credibilă, iar nimănui nu i se poate cere socoteală pe ea.
+Recepțiile sunt ale managerului. Vezi [pagina de barman](barman.md).
 
 **1. Obiectele de inventar.** În tot Symbai există **un singur** produs marcat „obiect de inventar".
 Restul durabilelor stau la Consumabile, aproximativ **3.000 lei pe lună** greșit încadrați. Se face
