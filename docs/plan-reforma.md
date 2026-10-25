@@ -159,7 +159,21 @@ Același tipar ca „fără țigări în calcul" la șefii de bucătărie: din K
 
 Pragurile propuse, de fixat **din ianuarie 2027**, după două luni de date curate: sub 3,0% bonus întreg, 3,0–3,5% jumătate, peste 3,5% zero. Până atunci indicatorul se măsoară și se arată, fără bani legați de el.
 
-**Trei lucruri de reparat înainte de a lega bani de prag:**
+**Patru lucruri de reparat înainte de a lega bani de prag:**
+
+0. **Gestiunea `Consumabile` nu se inventariază deloc.** Verificat în Symbai pe 25.10.2026:
+   `Consumabile Drunken` are 74 de produse și **zero sesiuni de inventar, vreodată**; la fel
+   `Consumabile Astur` (102 produse) și `Tigari Drunken` (11 produse). Fără inventar de început și
+   de sfârșit de lună, **consumul nu se poate calcula** — cifra lunară e cât s-a *cumpărat*, nu cât
+   s-a *folosit*.
+
+   Consecința directă pe indicator: creșterea de la 2,94% (august) la 3,78% (septembrie) la Drunken
+   Rat poate fi, în întregime, o lună în care s-a cumpărat mai mult. O comandă mare de caserole o
+   dată la două luni arată ca risipă în luna în care intră și ca economie în următoarea. **Un prag
+   pus pe cumpărare îl pedepsește pe manager exact când cumpără bine** — în cantitate, cu discount.
+
+   Deci primul pas nu e explicarea cifrei din facturi, e inventarierea gestiunii. Fără asta,
+   celelalte trei reparații curăță o cifră care oricum nu măsoară consum.
 
 1. **Tipurile de produs în Symbai.** Un singur produs din tot sistemul e marcat „obiect de inventar" (o veioză); restul lucrurilor durabile stau la „Consumabile" — circa 3.000 lei pe lună pe ambele locații. Fără separare, pragul are o marjă de eroare de aproape un punct, adică ~4.400 lei pe lună.
 2. **Marcarea ridicării personale la bonare.** Câmpul `order_type` există, dar în septembrie există o singură comandă marcată ca ridicare (Astur, 119 lei) și niciuna la Drunken Rat — restul se bonează ca „în sală", deși Drunken Rat a consumat 5.073 lei de ambalaje, inclusiv pahare „Take Away". Fără bifă, ambalajul nu se poate împărți pe canale.
