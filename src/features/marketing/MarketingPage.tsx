@@ -57,7 +57,7 @@ function PlanTab({ brand }: { brand: Brand }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-gray-500">Planul nou vine automat lunea dimineața. Îl poți cere și acum.</p>
+        <p className="text-sm text-gray-500">Planul pentru săptămâna următoare vine automat sâmbătă dimineața. Îl poți cere și acum (sâmbăta și duminica e pentru săptămâna următoare).</p>
         <button type="button" className={primaryButton} disabled={running} onClick={() => generate.mutate(brand.id)}>
           {running ? 'Se pregătește... (1-2 min)' : 'Generează plan acum'}
         </button>
@@ -237,7 +237,7 @@ function ProfileTab({ brand }: { brand: Brand }) {
           checked={form.weekly_plan_enabled}
           onChange={(e) => setForm((prev) => ({ ...prev, weekly_plan_enabled: e.target.checked }))}
         />
-        Plan automat în fiecare luni
+        Plan automat în fiecare sâmbătă, pentru săptămâna următoare
       </label>
       {save.error && <p className="text-sm text-red-700">{(save.error as Error).message}</p>}
       <button type="submit" className={primaryButton} disabled={save.isPending}>

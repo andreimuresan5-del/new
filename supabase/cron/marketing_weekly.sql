@@ -1,10 +1,11 @@
--- Plan de marketing automat, lunea la 05:00 UTC (08:00 vara / 07:00 iarna, ora României).
+-- Plan de marketing automat, sâmbăta la 06:00 UTC (09:00 vara / 08:00 iarna, ora României),
+-- pentru săptămâna care începe lunea următoare.
 -- De rulat MANUAL (SQL Editor), după deploy-ul funcției `marketing-agent`.
 -- Folosește aceleași secrete din Vault ca agentul de concurență (vezi competitor_scan.sql).
 
 select cron.schedule(
   'marketing-weekly',
-  '0 5 * * 1',
+  '0 6 * * 6',
   $$
   select net.http_post(
     url := (select decrypted_secret from vault.decrypted_secrets where name = 'project_url')

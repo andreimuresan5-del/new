@@ -336,23 +336,26 @@ async function runWeeklyPlan(db: SupabaseClient, anthropic: Anthropic, brandId: 
   try {
     const brand = await loadBrand(db, brandId)
     const now = new Date()
-    const today = now.toISOString().slice(0, 10)
-    const weekEnd = new Date(now.getTime() + 6 * 86400_000).toISOString().slice(0, 10)
+    // sâmbăta și duminica planul e pentru săptămâna care începe lunea următoare
+    const dow = now.getUTCDay()
+    const start = dow === 6 || dow === 0 ? new Date(now.getTime() + (dow === 6 ? 2 : 1) * 86400_000) : now
+    const startDate = start.toISOString().slice(0, 10)
+    const weekEnd = new Date(start.getTime() + 6 * 86400_000).toISOString().slice(0, 10)
     const [notes, approved, learnings, perf, menus, packages] = await Promise.all([
       competitorNotes(db, brandId),
       recentTitles(db, brandId, ['approved', 'published']),
       loadLearnings(db, brandId, ['post', 'promo']),
       performance(db, brandId),
       db.from('daily_menus').select('menu_date, items, price').eq('brand_id', brandId)
-        .gte('menu_date', today).lte('menu_date', weekEnd).order('menu_date'),
+        .gte('menu_date', startDate).lte('menu_date', weekEnd).order('menu_date'),
       db.from('event_packages').select('name, price_per_person, min_guests, max_guests, season')
         .eq('brand_id', brandId).eq('active', true),
     ])
     if (menus.error) throw menus.error
     if (packages.error) throw packages.error
     const { output, inputTokens, outputTokens } = await weeklyPlan(anthropic, brand, {
-      startDate: now.toISOString().slice(0, 10),
-      startWeekday: WEEKDAYS[now.getUTCDay()],
+      startDate,
+      startWeekday: WEEKDAYS[start.getUTCDay()],
       competitorNotes: notes,
       approvedTitles: approved,
       performance: perf,
