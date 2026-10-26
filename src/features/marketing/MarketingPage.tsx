@@ -178,6 +178,7 @@ const PROFILE_FIELDS: { key: keyof BrandInput; label: string; placeholder: strin
   { key: 'facebook_url', label: 'Facebook', placeholder: 'https://facebook.com/...', rows: 1 },
   { key: 'instagram_url', label: 'Instagram', placeholder: 'https://instagram.com/...', rows: 1 },
   { key: 'menu_text', label: 'Meniul cu prețuri', placeholder: 'Lipește meniul: produs — preț, pe categorii', rows: 10 },
+  { key: 'working_rules', label: 'Reguli de lucru (agentul le respectă; le adaugă și singur din chat)', placeholder: 'Câte postări pe săptămână, pe ce canale, ce produse promovăm...', rows: 4 },
   { key: 'extra_notes', label: 'Alte note pentru agent', placeholder: 'Meciuri difuzate, evenimente recurente, ce să evite...', rows: 3 },
 ]
 

@@ -22,6 +22,7 @@ export interface Brand {
   instagram_url: string | null
   menu_text: string | null
   extra_notes: string | null
+  working_rules: string | null
 }
 
 // Ce a învățat agentul din folosire (vezi index.ts → loadLearnings).
@@ -102,6 +103,7 @@ function describeBrand(b: Brand): string {
     field('Facebook', b.facebook_url),
     field('Instagram', b.instagram_url),
     field('Note de la owner', b.extra_notes),
+    field('Reguli de lucru stabilite cu echipa (respectă-le întotdeauna; au prioritate față de recomandările tale implicite)', b.working_rules),
     b.menu_text?.trim() ? `Meniu (cu prețuri):\n${b.menu_text.trim()}` : 'Meniu: necompletat încă.',
   ]
     .filter(Boolean)
@@ -257,7 +259,7 @@ ${describeLearnings(learnings)}
 Fă planul săptămânii:
 1. Caută pe web ce se întâmplă în zona localului (localitatea din profil și Timișoara) în zilele astea (meciuri, concerte, festivaluri, sărbători, zile speciale) și ce vreme se anunță — doar ce e relevant pentru un local.
 2. Ține cont de sezon și de ce spune profilul despre el: ce merge vara, ce merge iarna, unde e localul puternic și unde e slab. Strategia de marketing trebuie să se schimbe cu sezonul.
-3. Propune 4-5 postări (Facebook/Instagram), răspândite pe zile și ore bune, legate de meniu și de ce se întâmplă în zonă.
+3. Propune postările (Facebook/Instagram), răspândite pe zile și ore bune, legate de meniu și de ce se întâmplă în zonă. Numărul, canalele și ce intră sau nu ca postare le iei din regulile de lucru ale echipei, dacă există; altfel 4-5 postări.
 4. Propune 1-2 oferte concrete, realiste pentru marjă (folosește prețurile din meniu), cu motivul pentru care au sens acum.
 Dacă meniul sau profilul sunt incomplete, lucrează cu ce ai și spune în summary ce ar trebui completat.`
 
@@ -590,6 +592,7 @@ export type ChatAction =
   | { tool: 'add_promo'; input: { title: string; details: string; rationale: string; channel: string; start_date: string | null; end_date: string | null } }
   | { tool: 'add_event_lead'; input: { name: string; contact_person: string | null; phone: string | null; email: string | null; event_type: string | null; event_date: string | null; guests: number | null; budget: string | null; notes: string | null } }
   | { tool: 'save_daily_menu'; input: { menu_date: string; ciorba: string | null; supa: string | null; mains: string[]; price: string | null } }
+  | { tool: 'save_rule'; input: { rule: string } }
   | { tool: 'add_review_reply'; input: { review: string; reply: string; platform: string | null; rating: number | null } }
 
 // Execută o acțiune și întoarce o propoziție scurtă despre ce s-a făcut (sau aruncă eroare).
@@ -639,6 +642,9 @@ const CHAT_TOOLS: Anthropic.Tool[] = [
     mains: { type: 'array', items: { type: 'string' }, description: 'Felurile principale (max 3)' },
     price: optional('string', 'ex. 39 lei'),
   }, ['menu_date', 'mains']),
+  tool('save_rule', 'Salvează în profil o regulă de lucru pe termen lung stabilită de Bianca (ex. câte postări pe săptămână, pe ce canale, ce produse promovăm, ce evităm). Planurile viitoare o vor respecta.', {
+    rule: { type: 'string', description: 'Regula, formulată scurt și clar, la persoana a III-a (ex. „Toate postările merg pe Facebook și Instagram.”)' },
+  }, ['rule']),
   tool('add_review_reply', 'Salvează un răspuns la o recenzie în tabul Recenzii (ciornă), când Bianca lipește o recenzie și vrea răspunsul acolo.', {
     review: { type: 'string', description: 'Textul recenziei' },
     reply: { type: 'string', description: 'Răspunsul public' },
@@ -661,6 +667,8 @@ Cum răspunzi:
 Poze: când Bianca trimite o poză, spune-i concret dacă e bună de postat (lumină, încadrare, fundal, cum arată mâncarea, ce distrage atenția), ce ar îmbunătăți la următoarea (un lucru-două, practice, cu telefonul) și, dacă e bună, propune textul postării sau story-ului. Descrie doar ce vezi în poză; dacă nu recunoști preparatul, întreabă.
 
 Acțiuni în aplicație: ai unelte care pun lucruri direct în aplicație (postări și oferte în Plan, cereri în Evenimente, meniul zilei, răspunsuri la recenzii). Totul intră ca ciornă pe care Bianca o aprobă. Folosește-le când îți cere explicit („pune-o în plan”, „salvează meniul de mâine”, „adaugă cererea”) sau când acceptă o propunere de-a ta — nu din proprie inițiativă. După ce le folosești, spune pe scurt ce ai pus și unde găsește (tabul). Pentru date relative („mâine”, „vineri”) folosește data de azi din context.
+
+Reguli de lucru: când Bianca stabilește ceva pentru viitor (cuvinte ca „de acum”, „pe viitor”, „pentru săptămânile următoare”, „vreau să stabilim”, „mereu”, „niciodată”), salvează regula cu save_rule și spune-i că planurile următoare o vor respecta și că o găsește în Profil, la Reguli de lucru. Nu salva preferințe de o singură dată și nu repeta o regulă care e deja în profil. Dacă o regulă nouă o contrazice pe una existentă, salvează-o pe cea nouă și spune-i Biancăi să o șteargă pe cea veche din Profil.
 
 Aplicația are taburi: Meniul zilei (story zilnic), Plan (plan săptămânal), Evenimente (cereri, oferte, pachete), Chat, Recenzii, Meniu (descrieri de produse pentru livrare), Rezultate (rezultatele postărilor, raport lunar) și Profil (profilul localului — inclusiv meniul cu prețuri și capacitatea pentru evenimente se completează aici).
 

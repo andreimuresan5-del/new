@@ -45,7 +45,7 @@ function json(body: unknown, status = 200) {
 }
 
 const BRAND_COLUMNS =
-  'id, name, description, audience, tone, differentiators, competition, event_info, address, opening_hours, website_url, facebook_url, instagram_url, menu_text, extra_notes'
+  'id, name, description, audience, tone, differentiators, competition, event_info, address, opening_hours, website_url, facebook_url, instagram_url, menu_text, extra_notes, working_rules'
 
 const WEEKDAYS = ['duminică', 'luni', 'marți', 'miercuri', 'joi', 'vineri', 'sâmbătă']
 
@@ -253,6 +253,17 @@ function chatActions(db: SupabaseClient, brandId: string): ActionExecutor {
         )
         if (error) throw error
         return `Meniul zilei pentru ${i.menu_date} e în tabul Meniul zilei, gata de story.`
+      }
+      case 'save_rule': {
+        const rule = a.input.rule.trim()
+        if (!rule) throw new Error('Regula e goală')
+        const { data, error: readError } = await db.from('marketing_brands').select('working_rules').eq('id', brandId).single()
+        if (readError) throw readError
+        const day = new Date().toLocaleDateString('ro-RO', { timeZone: 'Europe/Bucharest' })
+        const rules = [data.working_rules?.trim(), `- ${rule} (${day})`].filter(Boolean).join('\n')
+        const { error } = await db.from('marketing_brands').update({ working_rules: rules, updated_at: new Date().toISOString() }).eq('id', brandId)
+        if (error) throw error
+        return 'Regula e salvată în Profil, la Reguli de lucru.'
       }
       case 'add_review_reply': {
         const i = a.input

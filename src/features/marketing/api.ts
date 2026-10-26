@@ -23,6 +23,7 @@ export interface Brand {
   instagram_url: string | null
   menu_text: string | null
   extra_notes: string | null
+  working_rules: string | null
   weekly_plan_enabled: boolean
 }
 
