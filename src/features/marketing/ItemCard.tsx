@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDeleteItem, useUpdateItem, type ItemStatus, type MarketingItem, type ResultFields } from './api'
+import { useDraft } from './useDraft'
 
 export const inputClass = 'w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm'
 export const primaryButton = 'rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50'
@@ -36,13 +37,14 @@ const toNumber = (v: string) => (v.trim() === '' ? null : Math.max(0, Math.round
 function ResultsEditor({ item }: { item: MarketingItem }) {
   const update = useUpdateItem()
   const hasResults = item.result_reach != null || item.result_engagement != null || item.result_orders != null || !!item.result_note
-  const [open, setOpen] = useState(false)
-  const [form, setForm] = useState({
+  const initial = {
     reach: item.result_reach?.toString() ?? '',
     engagement: item.result_engagement?.toString() ?? '',
     orders: item.result_orders?.toString() ?? '',
     note: item.result_note ?? '',
-  })
+  }
+  const [form, setForm, draft] = useDraft(`item:${item.id}:results`, initial)
+  const [open, setOpen] = useState(draft.restored)
 
   if (!open) {
     return (
@@ -69,7 +71,7 @@ function ResultsEditor({ item }: { item: MarketingItem }) {
       result_orders: toNumber(form.orders),
       result_note: form.note.trim() || null,
     }
-    update.mutate({ id: item.id, patch }, { onSuccess: () => setOpen(false) })
+    update.mutate({ id: item.id, patch }, { onSuccess: () => { draft.commit(form); setOpen(false) } })
   }
   const field = (key: 'reach' | 'engagement' | 'orders', label: string) => (
     <label className="block text-xs text-gray-600">
@@ -102,7 +104,7 @@ function ResultsEditor({ item }: { item: MarketingItem }) {
         <button type="button" className={primaryButton} disabled={update.isPending} onClick={save}>
           Salvează
         </button>
-        <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => setOpen(false)}>
+        <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => { setForm(initial); setOpen(false) }}>
           Renunță
         </button>
       </div>
@@ -113,11 +115,11 @@ function ResultsEditor({ item }: { item: MarketingItem }) {
 export function ItemCard({ item }: { item: MarketingItem }) {
   const update = useUpdateItem()
   const remove = useDeleteItem()
-  const [editing, setEditing] = useState(false)
-  const [body, setBody] = useState(item.body)
+  const [body, setBody, bodyDraft] = useDraft(`item:${item.id}:body`, item.body)
+  const [editing, setEditing] = useState(bodyDraft.restored)
   const [copied, setCopied] = useState(false)
-  const [rejecting, setRejecting] = useState(false)
-  const [reason, setReason] = useState('')
+  const [reason, setReason, reasonDraft] = useDraft(`item:${item.id}:reason`, '')
+  const [rejecting, setRejecting] = useState(reasonDraft.restored)
 
   async function copy() {
     try {
@@ -160,7 +162,7 @@ export function ItemCard({ item }: { item: MarketingItem }) {
               type="button"
               className={primaryButton}
               disabled={update.isPending}
-              onClick={() => update.mutate({ id: item.id, patch: { body } }, { onSuccess: () => setEditing(false) })}
+              onClick={() => update.mutate({ id: item.id, patch: { body } }, { onSuccess: () => { bodyDraft.commit(body); setEditing(false) } })}
             >
               Salvează
             </button>
@@ -212,13 +214,13 @@ export function ItemCard({ item }: { item: MarketingItem }) {
               onClick={() =>
                 update.mutate(
                   { id: item.id, patch: { status: 'rejected', rejection_reason: reason.trim() || null } },
-                  { onSuccess: () => setRejecting(false) },
+                  { onSuccess: () => { reasonDraft.commit(); setRejecting(false) } },
                 )
               }
             >
               Respinge
             </button>
-            <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => setRejecting(false)}>
+            <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => { setReason(''); setRejecting(false) }}>
               Renunță
             </button>
           </div>

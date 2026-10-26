@@ -15,6 +15,7 @@ import { EventsTab } from './EventsTab'
 import { ItemCard, inputClass, primaryButton } from './ItemCard'
 import { ResultsTab } from './ResultsTab'
 import { StoryTab } from './StoryTab'
+import { readDraft, useDraft, writeDraft } from './useDraft'
 import { useQueryClient } from '@tanstack/react-query'
 
 type Tab = 'story' | 'plan' | 'events' | 'chat' | 'reviews' | 'menu' | 'results' | 'profile'
@@ -87,10 +88,10 @@ function PlanTab({ brand }: { brand: Brand }) {
 function ReviewsTab({ brand }: { brand: Brand }) {
   const { data: items } = useItems(brand.id, ['review_reply'])
   const generate = useGenerateReviewReply()
-  const [review, setReview] = useState('')
-  const [platform, setPlatform] = useState('Google')
-  const [rating, setRating] = useState('')
-  const [author, setAuthor] = useState('')
+  const [review, setReview] = useDraft(`review:${brand.id}:text`, '')
+  const [platform, setPlatform] = useDraft(`review:${brand.id}:platform`, 'Google')
+  const [rating, setRating] = useDraft(`review:${brand.id}:rating`, '')
+  const [author, setAuthor] = useDraft(`review:${brand.id}:author`, '')
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -134,7 +135,7 @@ function ReviewsTab({ brand }: { brand: Brand }) {
 function MenuTab({ brand }: { brand: Brand }) {
   const { data: items } = useItems(brand.id, ['menu_text'])
   const generate = useGenerateMenuTexts()
-  const [products, setProducts] = useState('')
+  const [products, setProducts] = useDraft(`menu-texts:${brand.id}`, '')
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -182,10 +183,12 @@ const PROFILE_FIELDS: { key: keyof BrandInput; label: string; placeholder: strin
 
 function ProfileTab({ brand }: { brand: Brand }) {
   const save = useSaveBrand()
-  const [form, setForm] = useState<BrandInput>(() => {
+  const base = (() => {
     const { id: _id, name: _name, logo_url: _logo, logo_dark_url: _logoDark, color_scheme: _scheme, ...rest } = brand
-    return rest
-  })
+    return rest as BrandInput
+  })()
+  const [form, setForm, draft] = useDraft<BrandInput>(`profile:${brand.id}`, base)
+  const [unsaved, setUnsaved] = useState(draft.restored)
   const [saved, setSaved] = useState(false)
 
   async function submit(e: React.FormEvent) {
@@ -194,6 +197,8 @@ function ProfileTab({ brand }: { brand: Brand }) {
       Object.entries(form).map(([k, v]) => [k, typeof v === 'string' && v.trim() === '' ? null : v]),
     ) as BrandInput
     await save.mutateAsync({ id: brand.id, input: cleaned })
+    draft.commit(form)
+    setUnsaved(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -201,6 +206,18 @@ function ProfileTab({ brand }: { brand: Brand }) {
   return (
     <form onSubmit={(e) => void submit(e)} className="space-y-3">
       <p className="text-sm text-gray-500">Tot ce scrii aici e contextul agentului. Cu cât e mai concret, cu atât materialele sunt mai bune.</p>
+      {unsaved && (
+        <div className="flex items-center justify-between gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          <span>Ai modificări nesalvate de data trecută.</span>
+          <button
+            type="button"
+            className="whitespace-nowrap underline"
+            onClick={() => { setForm(base); draft.commit(base); setUnsaved(false) }}
+          >
+            Renunță la ele
+          </button>
+        </div>
+      )}
       {PROFILE_FIELDS.map((f) => (
         <label key={f.key} className="block">
           <span className="text-sm font-medium text-gray-700">{f.label}</span>
@@ -232,7 +249,9 @@ function ProfileTab({ brand }: { brand: Brand }) {
 export function MarketingPage() {
   const { data: brands, isLoading } = useBrands()
   const [brandId, setBrandId] = useState<string | null>(null)
-  const [tab, setTab] = useState<Tab>('story')
+  // tabul rămâne același și dacă telefonul reîncarcă pagina
+  const [tab, setTabState] = useState<Tab>(() => readDraft<Tab>('marketing-tab') ?? 'story')
+  const setTab = (t: Tab) => { setTabState(t); writeDraft('marketing-tab', t) }
   const brand = brands?.find((b) => b.id === brandId) ?? brands?.[0]
 
   return (

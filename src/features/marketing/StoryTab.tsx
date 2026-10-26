@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDailyMenus, useSaveDailyMenu, useStoryHeadlines, useUploadLogo, type Brand } from './api'
 import { inputClass, primaryButton } from './ItemCard'
 import { COLOR_SCHEMES, loadStoryFonts, renderStory, type ColorScheme, type StoryStyle } from './storyRenderer'
+import { clearDraft, readDraft, writeDraft } from './useDraft'
 
 const HOURS = '12:00 – 16:00'
 const STYLES: { key: StoryStyle; label: string }[] = [
@@ -92,15 +93,29 @@ export function StoryTab({ brand }: { brand: Brand }) {
   const [shareError, setShareError] = useState<string | null>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
 
-  // la schimbarea zilei, încarcă meniul salvat (dacă există)
+  // la schimbarea zilei, încarcă ciorna nesalvată pentru ziua aceea sau, dacă nu e, meniul salvat
   const saved = menus?.find((m) => m.menu_date === date)
+  const draftKey = `story:${brand.id}:${date}`
+  const loadedKey = `${draftKey}:${saved?.id ?? ''}`
+  const [loaded, setLoaded] = useState<string | null>(null)
   useEffect(() => {
-    setMenu(parse(saved?.items))
-    setPrice(saved?.price ?? '')
-    setHeadline(saved?.headline ?? '')
+    const draft = readDraft<{ menu: MenuFields; price: string; headline: string }>(draftKey)
+    setMenu(draft?.menu ?? parse(saved?.items))
+    setPrice(draft?.price ?? saved?.price ?? '')
+    setHeadline(draft?.headline ?? saved?.headline ?? '')
+    setLoaded(loadedKey)
     headlines.reset()
     setCaption(null)
   }, [date, saved?.id])
+
+  // ce scrie Bianca rămâne în telefon până se salvează, chiar dacă schimbă tabul sau aplicația
+  useEffect(() => {
+    if (loaded !== loadedKey) return
+    const same = serialize(menu) === serialize(parse(saved?.items)) &&
+      price === (saved?.price ?? '') && headline === (saved?.headline ?? '')
+    if (same) clearDraft(draftKey)
+    else writeDraft(draftKey, { menu, price, headline })
+  }, [menu, price, headline, loaded])
 
   useEffect(() => {
     void loadStoryFonts().finally(() => setFontsReady(true))
@@ -161,6 +176,7 @@ export function StoryTab({ brand }: { brand: Brand }) {
 
   const persist = () =>
     saveMenu.mutateAsync({ brandId: brand.id, menu_date: date, items: itemsText, price: price.trim() || null, headline: headline.trim() || null })
+      .then((r) => { clearDraft(draftKey); return r })
 
   async function share() {
     setShareError(null)

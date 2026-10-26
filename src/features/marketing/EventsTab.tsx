@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { readDraft, useDraft } from './useDraft'
 import {
   useDeletePackage,
   useGenerateLeadMessage,
@@ -52,9 +53,11 @@ function CopyButton({ text }: { text: string }) {
   )
 }
 
+const leadFormKey = (brandId: string, leadId?: string) => `lead-form:${brandId}:${leadId ?? 'new'}`
+
 function LeadForm({ brandId, packages, lead, onDone }: { brandId: string; packages: EventPackage[]; lead?: EventLead; onDone: () => void }) {
   const save = useSaveLead()
-  const [f, setF] = useState({
+  const [f, setF, draft] = useDraft(leadFormKey(brandId, lead?.id), {
     name: lead?.name ?? '',
     contact_person: lead?.contact_person ?? '',
     phone: lead?.phone ?? '',
@@ -86,6 +89,7 @@ function LeadForm({ brandId, packages, lead, onDone }: { brandId: string; packag
     }
     if (!lead) input.next_followup_date = today()
     await save.mutateAsync({ id: lead?.id, brandId, input })
+    draft.commit()
     onDone()
   }
 
@@ -114,7 +118,7 @@ function LeadForm({ brandId, packages, lead, onDone }: { brandId: string; packag
       {save.error && <p className="text-sm text-red-700">{(save.error as Error).message}</p>}
       <div className="flex gap-2">
         <button type="submit" className={primaryButton} disabled={save.isPending}>Salvează</button>
-        <button type="button" onClick={onDone} className="px-3 py-1.5 text-sm text-gray-600">Renunță</button>
+        <button type="button" onClick={() => { draft.commit(); onDone() }} className="px-3 py-1.5 text-sm text-gray-600">Renunță</button>
       </div>
     </form>
   )
@@ -123,13 +127,13 @@ function LeadForm({ brandId, packages, lead, onDone }: { brandId: string; packag
 function LeadCard({ brandId, lead, packages }: { brandId: string; lead: EventLead; packages: EventPackage[] }) {
   const save = useSaveLead()
   const generate = useGenerateLeadMessage()
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(() => readDraft(leadFormKey(brandId, lead.id)) !== undefined)
   const [channel, setChannel] = useState<'email' | 'whatsapp'>(lead.email ? 'email' : 'whatsapp')
   const [note, setNote] = useState<string | null>(null)
-  const [message, setMessage] = useState(lead.last_message ?? '')
-  const [editingMessage, setEditingMessage] = useState(false)
-  const [losing, setLosing] = useState(false)
-  const [lostReason, setLostReason] = useState('')
+  const [message, setMessage, messageDraft] = useDraft(`lead:${lead.id}:message`, lead.last_message ?? '')
+  const [editingMessage, setEditingMessage] = useState(messageDraft.restored)
+  const [lostReason, setLostReason, lostDraft] = useDraft(`lead:${lead.id}:lost`, '')
+  const [losing, setLosing] = useState(lostDraft.restored)
   const pkg = packages.find((p) => p.id === lead.package_id)
   const info = statusInfo(lead.status)
   const due = OPEN.includes(lead.status) && lead.next_followup_date && lead.next_followup_date <= today()
@@ -188,11 +192,11 @@ function LeadCard({ brandId, lead, packages }: { brandId: string; lead: EventLea
                 <button
                   type="button"
                   className={primaryButton}
-                  onClick={() => save.mutate({ id: lead.id, brandId, input: { last_message: message } }, { onSuccess: () => setEditingMessage(false) })}
+                  onClick={() => save.mutate({ id: lead.id, brandId, input: { last_message: message } }, { onSuccess: () => { messageDraft.commit(message); setEditingMessage(false) } })}
                 >
                   Salvează
                 </button>
-                <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => setEditingMessage(false)}>
+                <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => { setMessage(lead.last_message ?? ''); setEditingMessage(false) }}>
                   Renunță
                 </button>
               </div>
@@ -220,8 +224,8 @@ function LeadCard({ brandId, lead, packages }: { brandId: string; lead: EventLea
         <div className="mt-3 space-y-2">
           <input autoFocus value={lostReason} onChange={(e) => setLostReason(e.target.value)} placeholder="De ce l-am pierdut? (preț, dată ocupată, a ales altceva...)" className={inputClass} />
           <div className="flex gap-2">
-            <button type="button" className={primaryButton} onClick={() => setStatus('lost', { lost_reason: lostReason.trim() || null })}>Marchează pierdut</button>
-            <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => setLosing(false)}>Renunță</button>
+            <button type="button" className={primaryButton} onClick={() => { lostDraft.commit(); setStatus('lost', { lost_reason: lostReason.trim() || null }) }}>Marchează pierdut</button>
+            <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => { setLostReason(''); setLosing(false) }}>Renunță</button>
           </div>
         </div>
       ) : (
@@ -245,14 +249,15 @@ function LeadCard({ brandId, lead, packages }: { brandId: string; lead: EventLea
 function PackageCard({ pkg }: { pkg: EventPackage }) {
   const save = useSavePackage()
   const remove = useDeletePackage()
-  const [editing, setEditing] = useState(false)
-  const [f, setF] = useState({
+  const initial = {
     name: pkg.name,
     description: pkg.description,
     price: pkg.price_per_person?.toString() ?? '',
     min: pkg.min_guests?.toString() ?? '',
     max: pkg.max_guests?.toString() ?? '',
-  })
+  }
+  const [f, setF, draft] = useDraft(`package:${pkg.id}`, initial)
+  const [editing, setEditing] = useState(draft.restored)
 
   if (editing) {
     return (
@@ -271,13 +276,13 @@ function PackageCard({ pkg }: { pkg: EventPackage }) {
             onClick={() =>
               save.mutate(
                 { id: pkg.id, input: { name: f.name.trim(), description: f.description.trim(), price_per_person: numOrNull(f.price), min_guests: numOrNull(f.min), max_guests: numOrNull(f.max) } },
-                { onSuccess: () => setEditing(false) },
+                { onSuccess: () => { draft.commit(f); setEditing(false) } },
               )
             }
           >
             Salvează
           </button>
-          <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => setEditing(false)}>Renunță</button>
+          <button type="button" className="px-3 py-1.5 text-sm text-gray-600" onClick={() => { setF(initial); setEditing(false) }}>Renunță</button>
         </div>
       </div>
     )
@@ -308,8 +313,8 @@ export function EventsTab({ brand }: { brand: Brand }) {
   const { data: leads } = useLeads(brand.id)
   const { data: packages } = usePackages(brand.id)
   const generatePackages = useGeneratePackages()
-  const [adding, setAdding] = useState(false)
-  const [request, setRequest] = useState('')
+  const [adding, setAdding] = useState(() => readDraft(leadFormKey(brand.id)) !== undefined)
+  const [request, setRequest] = useDraft(`packages-request:${brand.id}`, '')
   const [packagesNote, setPackagesNote] = useState<string | null>(null)
   const [showClosed, setShowClosed] = useState(false)
 

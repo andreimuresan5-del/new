@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useChatImageUrls, useChatMessages, useClearChat, useSendChat, type Brand } from './api'
 import { primaryButton } from './ItemCard'
+import { useDraft } from './useDraft'
 
 // Exemple pentru o conversație nouă
 const SUGGESTIONS = [
@@ -23,7 +24,7 @@ export function ChatTab({ brand }: { brand: Brand }) {
   const { data: messages, isLoading } = useChatMessages(brand.id)
   const send = useSendChat()
   const clear = useClearChat()
-  const [text, setText] = useState('')
+  const [text, setText] = useDraft(`chat:${brand.id}`, '')
   const [image, setImage] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [pending, setPending] = useState<{ text: string; image: string | null } | null>(null)
