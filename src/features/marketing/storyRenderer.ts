@@ -306,7 +306,8 @@ export function renderStory(canvas: HTMLCanvasElement, c: StoryContent) {
 
     if (c.price?.trim()) {
       gap(64)
-      const label = c.price.trim()
+      // „35” scris fără monedă devine „35 lei”
+      const label = /^\d+([.,]\d+)?$/.test(c.price.trim()) ? `${c.price.trim()} lei` : c.price.trim()
       ctx.font = `700 ${px(52)}px ${SANS}`
       const w = ctx.measureText(label).width + px(90)
       blocks.push({
