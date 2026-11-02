@@ -4,6 +4,12 @@ Context pentru orice sesiune nouă de lucru pe acest proiect (CP). Decizii luate
 
 Citește și `docs/manual-operare/` — manualul de operare, **separat pe locație** (`drunken-rat/`, `astur/`), fiecare cu posturile și procedurile ei. Procedurile de acolo devin sarcini în aplicație la pasul 5, pe locația căreia aparțin.
 
+> **Citește întâi `docs/symbai-ce-exista.md`** (02.11.2026). Verificarea arată că **5 din cei 8 pași
+> de mai jos există deja în Symbai** — rutinele zilnice cu notificări, recepția din poză, transferul,
+> pontajul, reconcilierea, P&L-ul pe livrări. Planul rămâne scris ca atunci, cu pașii dublați marcați,
+> ca să se vadă ce s-a hotărât și de ce s-a oprit. **Nu te apuca de un pas fără să treci prin
+> documentul ăla.** Singurul pas care lipsește cu adevărat din Symbai e 7 — scorecardurile și KPI-ul.
+
 Citește și:
 - `CLAUDE.md` din rădăcina proiectului — contextul complet: cifrele și analizele din spatele planului (vânzări, contabilitate, marfă, partea casei, reforma salarială, întrebările deschise). Fișierul ăsta spune *ce* construim; acela spune *de ce* și cu ce numere. **Nu e în repository, intenționat** — conține salarii și alte cifre sensibile, și e ținut în afara GitHub prin `.gitignore`. Dacă lipsește din folderul tău, cere-l lui Andrei.
 - `docs/agent-concurenta.md` — agentul Iscoada, înainte de a atinge modulul de concurență.
@@ -41,12 +47,12 @@ Regula de locație e în baza de date (RLS), nu doar în ecrane. Rolurile de loc
 2. **Crearea conturilor din aplicație** — **făcut** (25.10.2026): Edge Function `staff-admin` (service role, verifică la fiecare apel că cel care cere e owner activ) + pagina Echipa. Creează contul cu PIN generat, arată PIN-ul o singură dată, face PIN nou la cerere, și **închide/redeschide** contul unui om care pleacă. Migrarea `20261025000000_creare_conturi`: `disabled_at`, `created_by`, PIN-urile banale refuzate, și firma nu poate rămâne fără administrator activ (nici prin ștergere, nici prin dezactivare, nici prin cascadă din `auth.users`). Test: `supabase/tests/creare_conturi.sql`.
    - **Conturile se închid, nu se șterg.** Ștergerea unui om cu activitate înregistrată e oprită de cheile străine — și bine, altfel pleacă istoricul cu el. Ștergerea definitivă există în funcție, dar nu e pusă în interfață.
    - `disabled_at` **nu** se poate scrie din client (fără `grant update` pe coloană): închiderea trebuie să treacă prin funcție, care blochează în același timp și contul din `auth.users`. Altfel, cu `VITE_LOGIN_MODE=email`, omul ar intra în continuare cu emailul sintetic și PIN-ul drept parolă.
-3. **Modulul Cereri** — fiecare cerere (recepție, transfer, inventar, întrebare de rețetă) e un card separat, cu tip, locație, autor, stadiu și conversația ei. Notificări doar către cine trebuie. Înlocuiește grupurile de WhatsApp unde azi se amestecă tot.
+3. **Modulul Cereri** — ⏸ **oprit, de reevaluat** (02.11.2026): Symbai are deja jurnal de cereri de aprobare (retur, discount, din partea casei, transferuri, ajustări de stoc din aplicația Staff, concedii), tipizate. Ce nu are e cererea liberă cu fir de discuție. Înainte de a construi, de verificat dacă o sarcină cu descriere și comentarii acoperă cazul. Vezi `docs/symbai-ce-exista.md`.
 4. **Mitică în cereri** — asistentul care azi citește formularele de seară și facturile în grupul „Symbai Operațional” răspunde în cardul cererii și cere confirmarea doar celui care a trimis-o. Depinde de accesul la Symbai din server (de lămurit: cheie API Symbai).
-5. **Ziua mea + notificări + follow-up** — rutine zilnice pe rol (manager, șef bucătărie, șef tură), ghid pas cu pas pentru închidere/recepție/inventar, reamintire cu 30 min înainte, la termen, apoi manager (+30 min), apoi administratori (+1 h, doar sarcini critice). Notificări web push (PWA), cu WhatsApp privat ca rezervă.
-6. **Operațional** — recepție din poză, transfer între locații, pontaj, închiderea zilei.
+5. **Ziua mea + notificări + follow-up** — ❌ **nu se construiește** (02.11.2026): **există complet în Symbai.** Liste de sarcini cu țintă pe rol / tură / secție, recurență, oră-limită, „sarcinile mele" grupate întârziate → azi → viitoare, dashboard de manager cu procent de finalizare, push pe telefon cu preferințe pe angajat și ore de liniște. De făcut în Symbai: transcrise cele 8 proceduri din manualul DR ca liste de sarcini (azi există **două** liste în toată firma). Rămâne de probat doar escaladarea automată pe lanțul reamintire → manager → administratori.
+6. **Operațional** — ❌ **nu se construiește** (02.11.2026): toate există în Symbai — recepție din poză sau PDF de pe WhatsApp (cu gard anti-dublă-intrare), transfer între locații și branduri (cu „pe drum", diferențe, poze la primire), pontaj din telefon și kiosk plus planificator de ture, închiderea zilei (raport de sfârșit de zi, registru Z).
 7. **Reforma, Decizii, Scorecarduri** — lista de probleme și deciziile sunt **făcute** (`src/features/reform/`, migrarea `20261024000003_reforma`), mutate din Panoul de pe claude.ai și vizibile numai pentru `owner`. Datele reale intră din `supabase/import/reforma.sql`, ținut în afara repository-ului. Rămân scorecardurile: KPI-uri și bonusuri calculate automat (disciplina = sarcini făcute la timp) — au nevoie de lipsa la inventar din Symbai, costul cu personalul și vânzările, care încă nu intră în aplicație.
-8. **Banii** — POS vs bancă zilnic, profit pe livrări (Glovo/Wolt, comisioanele nu sunt încă completate în Symbai).
+8. **Banii** — ❌ **nu se construiește** (02.11.2026): reconcilierea casă–bancă există în Symbai (cu sugestii și învățare de tipare), iar `get_delivery_pnl` dă profitul pe livrări pe platformă și pe comandă, cu comision, taxe, promoții și ambalaj pe comandă. Îi lipsește o singură configurare: **comisionul pe fiecare canal** (Glovo 20% + TVA, Wolt și Tazz 24% + TVA).
 
 ## Ce e construit și ce trebuie deployat
 

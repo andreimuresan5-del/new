@@ -88,6 +88,13 @@ Context pentru orice sesiune nouă de Claude (Claude Code sau chat). Citește-l 
 | `kitchen_manager`, `production_staff`, `marketing` | CP și marketing | ca înainte |
 
 ### Plan
+
+> **Verificat pe 02.11.2026: 5 din cei 8 pași de mai jos există deja în Symbai.** Citește
+> `docs/symbai-ce-exista.md` înainte de a te apuca de orice pas. Oprite: 3 (Cereri — de reevaluat),
+> 5 („Ziua mea" și notificările — există complet), 6 (operațional), 8 (banii). Singurul pas care
+> lipsește cu adevărat din Symbai e **7, scorecardurile și KPI-ul** — miezul reformei. Restul e
+> configurare în Symbai, nu programare.
+
 1. **Roluri și vizibilitate pe locații — făcut**, pe ramura `claude/roluri-locatii`: migrările `20261024000000_location_roles.sql` și `20261024000001_location_roles_policies.sql`, pagina Echipa, pagina „Locația mea”, plan în `docs/plan-reforma.md`. Testat pe o bază locală cu 6 conturi de probă. **De aplicat pe live și de publicat.** Alex trebuie trecut pe rolul owner.
 2. **Crearea conturilor din aplicație — făcut** (25.10.2026): Edge Function `staff-admin` + pagina Echipa. Owner-ul creează contul (PIN generat, arătat o singură dată), face PIN nou, și **închide** contul cuiva care pleacă — contul închis nu se mai poate loga, dar rândul rămâne ca să nu dispară producțiile și fișele HACCP de pe numele lui. Migrarea `20261025000000_creare_conturi` + testul `supabase/tests/creare_conturi.sql`. Alex se poate trece pe owner de aici.
 3. **Modulul Cereri:** fiecare cerere (recepție, transfer, inventar, întrebare de rețetă) e un card separat, cu locație, autor, stadiu și conversația ei. Notificările merg doar la cine trebuie. Înlocuiește grupurile de WhatsApp.
@@ -106,7 +113,7 @@ Context pentru orice sesiune nouă de Claude (Claude Code sau chat). Citește-l 
 
 ## 8. Întrebări deschise
 
-1. Oferă Symbai o cheie API pentru integrări (ca Mitică să lucreze din aplicație)?
+1. ~~Oferă Symbai o cheie API pentru integrări?~~ **Închisă (02.11.2026): da, și e deja pornită** — conexiunea prin care Claude citește și scrie în Symbai e chiar integrarea. Mitică are nevoie de aceeași conexiune, nu de ceva construit de noi. Rămâne doar unde rulează (întrebarea 2) și cu ce drepturi.
 2. Mitică și Banuț rulează prin Symbai Connect pe calculatorul de birou?
 3. Orele reale ale rutinelor pe fiecare locație.
 4. Cine vede rapoartele financiare (în grupul lui Banuț sunt și alți membri în afară de administratori).
@@ -122,7 +129,8 @@ Context pentru orice sesiune nouă de Claude (Claude Code sau chat). Citește-l 
 
 ## 9. Unde sunt lucrurile
 
-- **Aplicația CP:** GitHub `andreimuresan5-del/new`; ramura de lucru `claude/roluri-locatii` (bazată pe `claude/wizardly-mendel-0anktt`). Documentație în `docs/` (`plan-reforma.md`, `manual-operare/`, `plan-faza3.md`, `arhitectura-faza1-si-faza2.md`, `agent-concurenta.md`).
+- **Aplicația CP:** GitHub `andreimuresan5-del/new`; ramura de lucru `claude/roluri-locatii` (bazată pe `claude/wizardly-mendel-0anktt`). Documentație în `docs/` (`symbai-ce-exista.md`, `plan-reforma.md`, `manual-operare/`, `plan-faza3.md`, `arhitectura-faza1-si-faza2.md`, `agent-concurenta.md`).
+- **`docs/symbai-ce-exista.md`** — ce face deja Symbai din tot ce planificam (verificat 02.11.2026, doar citire). **De citit înaintea oricărui pas din plan.** Conține și lista a ce e de configurat în Symbai, în ordinea banilor pe care o apără, plus constatarea că motivele de ieșire din stoc configurate în Symbai (8, fiecare cu categoria lui în P&L) nu se potrivesc cu lista de motive de pierdere propusă în manual — de aliniat.
 - **Manual de operare:** `docs/manual-operare/`. **Un manual pe locație, nu unul comun:** `drunken-rat/` și `astur/`. Posturile se numesc la fel, dar diferă prin dotări (Josper și cuptor de pizza doar la Astur; plancha/grill, 2 friteuze și cuptor doar pentru producție la DR), prin mărimea echipei (10 oameni în bucătărie la Astur, 3–4 la DR), prin program (DR până la 02:00; la Astur prânzul face ~60%) și prin posturi care există doar într-un loc (ambalare la DR; pizzaiolo, evenimente și brunch la Astur). **Meniul zilei există la amândouă locațiile** — la DR cu aceleași feluri de ~2 ani, de refăcut; la Astur face ~20% din vânzările de luni–vineri. Fiecare manual are `posturi/` și `proceduri/`. Regulile chiar comune stau o dată în `docs/manual-operare/README.md`. **Nu copia o pagină de la o locație la alta** — se scrie separat. **Manualul Drunken Rat e complet** (25.10.2026): 9 posturi — manager de locație, șef de bucătărie, șef de tură, barman, bucătar, ospătar, ambalare, vase și curățenie, administrator — și 8 proceduri: închiderea zilei, recepția cântărită, deschiderea turei, predarea turei, inventarul critic, formularul de seară al bucătăriei, masa personalului, energia în intervalul mort. Toate punctele „de calibrat" sunt adunate în `posturi/administrator.md`: 27 de decizii, grupate pe cine le ia. **Managerul de locație la DR există** (confirmat 25.10.2026) și nu era numărat în structura de iarnă de 15 oameni, deci echipa e de 16. Astur: doar lista a ce diferă și ce blochează scrierea (`astur/README.md`). Deciziile despre oameni (salarii, sume de bonus) NU intră în manual — rămân în `CLAUDE.local.md`.
 - **Pagini pe claude.ai** (contul lui Andrei):
   - „Panou Drunken & Astur”: cifrele grupului, lista Reforma și Deciziile
