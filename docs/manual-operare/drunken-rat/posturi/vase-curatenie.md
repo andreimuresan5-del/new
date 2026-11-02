@@ -124,10 +124,11 @@ Ce se măsoară oricum:
 
 - **Zonele și frecvențele**, scrise concret: ce se face pe tură, ce zilnic, ce săptămânal, ce lunar.
   Fără ele, „curățenie" nu se poate nici cere, nici verifica. *Punctul cel mai important al postului.*
-- **Cum se numără vesela spartă** — un carnet la zona de spălare, sau direct în Symbai la pierderi. De
-  ales una, nu amândouă. **Numărătoarea are de acum un destinatar:** vesela intră în urmărirea lunară
-  a [managerului](manager-locatie.md), pe bucăți și pe fel (hotărât 25.10.2026). Fără numărătoare,
-  linia lui rămâne goală.
+- ~~Cum se numără vesela spartă~~ **rezolvat pe 02.11.2026:** în Symbai există acum motivul de ieșire
+  **„Veselă spartă"**, creat exact pentru asta. Nu carnet, nu hârtie: se trece în Symbai, pe produs și
+  pe bucăți, cu motivul ăla. Așa ajunge singură pe linia ei în urmărirea lunară a
+  [managerului](manager-locatie.md) și nu se mai amestecă cu ambalajele și detergenții.
+  *Rămâne de stabilit* cine o trece — cine spală și vede, sau șeful de tură la închidere.
 - **Un inventar de veselă**, măcar la început și la sfârșit de lună. Fără el nu se știe câte pahare au
   dispărut, ci doar câte s-au cumpărat — exact problema de la consumabile, în mic.
 - **Dozajele**, scrise pe perete lângă mașină, pentru fiecare produs. Dozajul ținut minte e dozajul

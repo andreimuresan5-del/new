@@ -42,17 +42,32 @@ minus la ceva ce există fizic în frigider.
 
 ### 2. Pierderi — cu motiv obligatoriu
 
-Fiecare pierdere, cu **cantitatea și motivul ales din listă**:
+Fiecare pierdere, cu **cantitatea și motivul ales din listă**. Astea sunt motivele reale din Symbai,
+nu o listă de pe hârtie — se aleg din aplicație, iar fiecare intră în raportul de profit la pierderi:
 
-- expirat
-- deteriorat la manipulare
-- ars sau greșit la preparare
-- refuzat de client
-- produs neconform la recepție
+| Motivul | Când se alege |
+|---|---|
+| **Pierdere / perisabil bucătărie** | Marfa s-a stricat sau a expirat. La expirat se bifează și „expirat": atunci cantitatea se scade din loturile expirate, nu din marfa bună |
+| **Ars sau greșit la preparare** | Preparat ars, sărat greșit, făcut din altceva decât comanda, sau refăcut |
+| **Deteriorat la manipulare** | Marfa era bună și s-a pierdut dintr-un accident: scăpată, spartă, vărsată la transport, porționare sau depozitare |
+| **Refuzat de client** | Preparat trimis înapoi din sală sau de la livrare și aruncat |
+
+Primul exista; celelalte trei au fost create în Symbai pe **02.11.2026**, cu acordul lui Andrei,
+exact pentru formularul ăsta.
 
 > **„Altul" și „fără motiv" nu sunt motive.** Până acum o parte din pierderi au fost trecute așa, iar
 > o pierdere fără motiv nu se poate nici repara, nici apăra. Dacă niciunul din motivele de mai sus nu
 > se potrivește, scrie în clar ce s-a întâmplat — o propoziție e de ajuns.
+
+> **Marfa refuzată la recepție nu e pierdere.** Propusesem și un motiv pentru ea; nu are ce căuta
+> aici. Dacă marfa e neconformă la recepție, **nu intră pe stoc** — se corectează recepția, cu
+> furnizorul, cât timp mai ai de la cine să ceri. Trecută ca pierdere, plătești marfa pe care ai
+> refuzat-o. Vezi [recepția cântărită](receptia-cantarita.md).
+
+Cele trei motive separate nu sunt birocrație: **arată ce se poate repara.** „Ars la preparare" se
+repară cu instruire și cu rețete respectate; „deteriorat la manipulare" se repară cu rafturi, navete
+și două mâini libere; „refuzat de client" se repară la calitate și la porționare. Toate trei adunate
+sub „perisabil" nu spun nimic și nu se pot repara.
 
 ### 3. Masa personalului
 
@@ -105,9 +120,10 @@ bine decât unul care nu scrie nimic și are 10 kg lipsă la inventar.
 
 ## De calibrat
 
-- **Lista de motive de pierdere** de mai sus e propunerea mea. De confirmat cu șeful de bucătărie de
-  la **Drunken Rat** — separat de cel de la Astur, pentru că la DR cazurile reale sunt altele (bar,
-  tempura, grill) și lista trebuie să acopere ce se întâmplă aici.
+- ~~Lista de motive de pierdere~~ **rezolvat pe 02.11.2026:** cele trei motive lipsă sunt create în
+  Symbai și se aleg din aplicație. Rămâne doar de văzut, după prima lună, dacă șeful de bucătărie de
+  la DR chiar le folosește pe toate trei sau le pune pe toate într-unul — atunci lista e prea fină
+  sau prea groasă și se ajustează.
 - **Ora limită** de completare, cu programul până la 02:00: înainte de plecarea șefului de bucătărie,
   cu predare către șeful de tură dacă mai lucrează bucătăria.
 - **Dacă rubrica 1 are nevoie de loturi** sau e de ajuns cantitatea, până intră producția în aplicație.

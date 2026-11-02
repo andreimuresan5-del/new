@@ -100,14 +100,33 @@ nimeni n-a apăsat pe ea.
 
 ---
 
-## 4. Ceva ce schimbă manualul: motivele de pierdere
+## 4. Motivele de pierdere — **făcut pe 02.11.2026**
 
-Manualul propune, în [formularul de seară](manual-operare/drunken-rat/proceduri/formular-seara-bucatarie.md),
-cinci motive de pierdere: expirat · deteriorat la manipulare · ars sau greșit la preparare · refuzat
-de client · produs neconform la recepție.
+Manualul propunea cinci motive de pierdere în formularul de seară, și **niciunul nu exista** ca motiv
+de ieșire în Symbai. Cu acordul lui Andrei, patru au fost create (`create_stock_exit_type`), toate în
+categoria „Pierderi, risipă & casare":
 
-**Niciunul nu există ca motiv de ieșire în Symbai.** Motivele configurate azi sunt opt, iar fiecare
-are o categorie în P&L:
+| id | Motivul nou | Când se alege |
+|---|---|---|
+| 9 | **Ars sau greșit la preparare** | Preparat ars, sărat greșit, făcut din altceva decât comanda, sau refăcut |
+| 10 | **Deteriorat la manipulare** | Marfa era bună: scăpată, spartă, vărsată la transport, porționare sau depozitare |
+| 11 | **Refuzat de client** | Trimis înapoi din sală sau de la livrare și aruncat (diferit de „Refuz client B2B") |
+| 12 | **Veselă spartă** | Pahare, farfurii, tacâmuri, ustensile — pe linia lor, ca să nu se amestece în indicatorul managerului |
+
+**Două din lista propusă nu s-au creat, intenționat:**
+
+- **„Expirat"** — există deja „Pierdere / perisabil bucătărie", iar Symbai are pe deasupra o bifă de
+  expirat care face cantitatea să se scadă **din loturile expirate întâi**, nu din marfa bună. Un
+  motiv separat ar fi fost un al doilea nume pentru același lucru.
+- **„Produs neconform la recepție"** — ar fi fost o greșeală. Marfa refuzată la recepție **nu intră
+  pe stoc**; se corectează recepția, cu furnizorul. Trecută ca pierdere, plătești marfa pe care ai
+  refuzat-o.
+
+De ce trei motive în loc de unul: **arată ce se poate repara.** „Ars la preparare" se repară cu
+instruire, „deteriorat la manipulare" cu rafturi și navete, „refuzat de client" la calitate și
+porționare. Toate sub „perisabil" nu spun nimic.
+
+Lista completă e acum de **12 motive**. Cele opt care existau:
 
 | Motiv | Unde intră în profit |
 |---|---|
@@ -120,15 +139,9 @@ are o categorie în P&L:
 | Reglaje materii prime vechi | pierderi |
 | Refuz client B2B (neconform) | pierderi |
 
-Două consecințe:
+Rămâne consecința a doua, care nu s-a schimbat:
 
-**a) Lista din manual trebuie aliniată.** Ori scriem în manual motivele care există (atunci bucătăria
-are un singur motiv real de pierdere: „perisabil bucătărie"), ori **creăm în Symbai motivele de care
-avem nevoie.** A doua variantă e mai bună — un singur motiv de pierdere nu spune nimic, și tot acolo
-ajungem la „fără motiv". **Se poate face singur**, cu `create_stock_exit_type` (nume + categoria din
-P&L), deci nu e tichet la Symbai; e o modificare în Symbai, deci cere acordul lui Andrei.
-
-**b) Definiția indicatorului de consumabile se simplifică mult.** În `plan-reforma.md` am definit-o
+**Definiția indicatorului de consumabile se simplifică mult.** În `plan-reforma.md` am definit-o
 prin excluderi: tot din gestiunea `Consumabile`, minus plante, minus obiecte de inventar, minus
 cărbune. Symbai separă deja asta **prin motivul de ieșire**: ambalajele într-o parte, curățenia în
 alta, obiectele de inventar a treia. Indicatorul se poate construi pe motive, nu pe excluderi — mai
@@ -165,7 +178,7 @@ confirmare că procentul de consumabile e pe cumpărare.
 4. **Inventar la consumabile**, de început și de sfârșit de lună. Fără el, KPI-ul de consumabile nu
    măsoară consum.
 5. **Tara și densitatea** pe produsele de bar, plus greutatea brută la numărare.
-6. **Motivele de pierdere** de care are nevoie bucătăria.
+6. ~~Motivele de pierdere~~ — **făcut pe 02.11.2026**, vezi secțiunea 4.
 7. **Tip separat pentru obiectele de inventar**, și mutarea durabilelor acolo.
 
 ### De probat înainte de a decide

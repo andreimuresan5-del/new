@@ -151,7 +151,7 @@ Ce urmărește managerul, lunar:
 
 | Ce | De unde | De ce |
 |---|---|---|
-| **Câte bucăți s-au spart**, pe fel (pahare de bere, de cocktail, farfurii, tacâmuri) | numărătoarea scrisă la zona de spălare — vezi [vase și curățenie](vase-curatenie.md) | Un tipar se vede în bucăți, nu în lei: dacă se sparg mereu paharele de cocktail, problema e la bar sau la coș, nu „la oameni" |
+| **Câte bucăți s-au spart**, pe fel (pahare de bere, de cocktail, farfurii, tacâmuri) | din Symbai, pe motivul de ieșire **„Veselă spartă"** (creat pe 02.11.2026) — vezi [vase și curățenie](vase-curatenie.md) | Un tipar se vede în bucăți, nu în lei: dacă se sparg mereu paharele de cocktail, problema e la bar sau la coș, nu „la oameni" |
 | **Cât s-a cumpărat**, în lei | facturile de veselă din luna respectivă | Cumpărarea vine în salturi; fără bucăți lângă ea nu se poate citi |
 | **Diferența între ce s-a spart și ce s-a cumpărat** | cele două de mai sus | Dacă se cumpără mult mai mult decât se sparge scris, lipsește evidența, nu vesela |
 
