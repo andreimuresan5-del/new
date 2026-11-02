@@ -73,19 +73,30 @@ escaladarea automată pe lanțul ăsta se poate configura. *De probat.*
 
 Astea nu sunt lipsuri de software. Sunt lucruri neconfigurate.
 
-| Ce | Starea reală, verificată |
-|---|---|
-| **Liste de sarcini** | **Două, în toată firma:** „To do Andrei" (Drunken Rat, fără recurență) și „DESCHIDERE TERASA" (Astur, rol 16, dimineața, zilnic, ora-limită 10:00). Cele 8 proceduri din manualul Drunken Rat nu sunt în niciuna. |
-| **Reguli de masă a personalului** | **Zero.** Funcția e pornită, nicio regulă creată. De aceea masa echipei se bonează ca „din partea casei" — la Astur, Staff/Personal ~13.000 lei în cinci săptămâni. Symbai spune negru pe alb că asta strică P&L-ul. |
-| **Inventar la consumabile și țigări** | Zero sesiuni, vreodată. Deci cifra lunară e cumpărare, nu consum. |
-| **Inventar de bar** | 5% din liniile deschise, numărate; o treime din ele pe stoc negativ. |
-| **Tara și densitatea sticlelor** | Goale pe toate cele 603 produse de bar, deși barul se cântărește. Niciun cântar conectat. |
-| **Comisionul platformelor de livrare** | Necompletat pe niciun canal — iar `get_delivery_pnl` îl cere ca să calculeze profitul. Raportul există, îi lipsește o cifră de configurare. |
-| **Ridicarea personală la bonare** | Zero comenzi marcate la DR în septembrie. |
-| **Obiecte de inventar** | Un singur produs marcat așa, în tot sistemul. |
+> **Recitit pe 02.11.2026.** Jumătate din tabelul ăsta s-a schimbat în opt zile — Alex lucrează cu
+> echipa Symbai pe exact punctele astea (197 de tichete deschise de firmă până acum, cu corecturi
+> livrate în câteva zile). Cifrele de mai jos sunt cele de azi, nu cele din 25.10.
 
-**Tiparul e același de șapte ori: unealta există, nimeni n-a apăsat pe ea.** De aceea nu construim.
-Configurăm.
+| Ce | Starea la 02.11.2026 | Față de 25.10 |
+|---|---|---|
+| **Liste de sarcini** | **Tot două, în toată firma:** „To do Andrei" (DR, fără recurență) și „DESCHIDERE TERASA" (Astur, rol 16, dimineața, zilnic, 10:00). Cele 8 proceduri din manualul DR nu sunt în niciuna. | neschimbat |
+| **Reguli de masă a personalului** | **Tot zero.** Funcția e pornită, nicio regulă creată. De aceea masa echipei se bonează ca „din partea casei". | neschimbat |
+| **Inventar la consumabile** | **Tot zero sesiuni**, la ambele locații. Deci cifra lunară rămâne cumpărare, nu consum. | neschimbat |
+| **Inventar de bar, DR** | 15 sesiuni, **661 de linii numărate**, ultima **azi, 02.11**. | era 402 |
+| **Tara și densitatea sticlelor** | **121 din 607** produse de bar au tară, densitate și cântărire activă. Cântarul e în aplicația Symbai Staff, pe ecranul de numărare. | era **zero** |
+| **Inventar la țigări** | DR: o sesiune, 14 linii, 31.10. Astur: trei sesiuni, ultima 01.11. | era zero la DR |
+| **Comisionul platformelor de livrare** | Necompletat pe niciun canal — `get_delivery_pnl` îl cere ca să calculeze. | neschimbat |
+| **Ridicarea personală la bonare** | Zero comenzi marcate la DR în septembrie. | neschimbat |
+| **Obiecte de inventar** | Un singur produs marcat așa, în tot sistemul. | neschimbat |
+
+**Cântărirea barului s-a rezolvat prin tichet, nu prin cod de-al nostru.** Alex a cerut-o pe 29.10
+(SYM-00785), Symbai a livrat pe 01.11 unealta `configure_product_weighing`, care completează tara,
+conținutul și densitatea pe până la 200 de produse dintr-un apel. Merită reținut ca tipar: **drumul
+cel mai scurt la o lipsă din Symbai e un tichet, nu o aplicație pe lângă.**
+
+Ce a rămas neschimbat în opt zile e tot **configurare pe care o putem face noi**: listele de sarcini,
+regula de masă a personalului, inventarul la consumabile, comisionul pe canale. Unealta există,
+nimeni n-a apăsat pe ea.
 
 ---
 
@@ -114,7 +125,8 @@ Două consecințe:
 **a) Lista din manual trebuie aliniată.** Ori scriem în manual motivele care există (atunci bucătăria
 are un singur motiv real de pierdere: „perisabil bucătărie"), ori **creăm în Symbai motivele de care
 avem nevoie.** A doua variantă e mai bună — un singur motiv de pierdere nu spune nimic, și tot acolo
-ajungem la „fără motiv". Dar e o modificare în Symbai, deci cere acordul lui Andrei.
+ajungem la „fără motiv". **Se poate face singur**, cu `create_stock_exit_type` (nume + categoria din
+P&L), deci nu e tichet la Symbai; e o modificare în Symbai, deci cere acordul lui Andrei.
 
 **b) Definiția indicatorului de consumabile se simplifică mult.** În `plan-reforma.md` am definit-o
 prin excluderi: tot din gestiunea `Consumabile`, minus plante, minus obiecte de inventar, minus
@@ -163,7 +175,20 @@ confirmare că procentul de consumabile e pe cumpărare.
 
 ---
 
-## 6. O întrebare deschisă care se închide aici
+## 6. Ce am cerut echipei Symbai (02.11.2026)
+
+Decis de Andrei: ce lipsește, îl cerem lor, nu îl construim. Verificat înainte că niciuna din cele
+trei nu era deja cerută în cele 197 de tichete ale firmei.
+
+| Referință | Ce am cerut |
+|---|---|
+| **SYM-00800** | **Scorecard pe rol, cu KPI calculat lunar și bonusul rezultat.** Cei cinci indicatori (lipsă la inventar cu gestiune exclusă, cost personal %, consumabile pe motiv de ieșire, vânzări față de anul trecut, procent de sarcini la timp), ponderi pe rol **și** pe locație, trepte pe fiecare indicator, **condiția de bază care anulează tot bonusul**, rezultat lunar pe om cu detalierea, și legătura cu `set_employee_monthly_bonus` — calcul pe care administratorul confirmă, nu care se plătește singur. Am legat-o de SYM-00689 (costul cu personalul proratat greșit): fără acela corect, indicatorul nu se poate folosi la bonus. |
+| **SYM-00801** | **Escaladare pe sarcini:** reamintire cu 30 de minute înainte, la termen, managerul la +30, administratorii la +1 h și numai pentru sarcinile critice. Argumentul: la DR se închide după 02:00, fără manager deasupra, iar închiderea casei e cea mai importantă sarcină a zilei. |
+| **SYM-00802** | **Fir de discuție pe o sarcină**, cu poze și notificare doar către cei implicați, citibil și scriibil prin MCP ca să poată răspunde asistentul. Am spus explicit că **nu** cerem un modul de tichete interne — am renunțat la el după ce am văzut ce există deja. |
+
+Răspunsurile vin pe `andrei.muresan5@gmail.com` și se citesc cu `list_my_symbai_tickets`.
+
+## 7. O întrebare deschisă care se închide aici
 
 Întrebarea 1 din `CLAUDE.md` — *„Oferă Symbai o cheie API pentru integrări, ca Mitică să lucreze din
 aplicație?"* — **are răspuns: da, și e deja pornită.** Conexiunea prin care a fost făcută verificarea
