@@ -195,11 +195,45 @@ trei nu era deja cerută în cele 197 de tichete ale firmei.
 
 | Referință | Ce am cerut |
 |---|---|
-| **SYM-00800** | **Scorecard pe rol, cu KPI calculat lunar și bonusul rezultat.** Cei cinci indicatori (lipsă la inventar cu gestiune exclusă, cost personal %, consumabile pe motiv de ieșire, vânzări față de anul trecut, procent de sarcini la timp), ponderi pe rol **și** pe locație, trepte pe fiecare indicator, **condiția de bază care anulează tot bonusul**, rezultat lunar pe om cu detalierea, și legătura cu `set_employee_monthly_bonus` — calcul pe care administratorul confirmă, nu care se plătește singur. Am legat-o de SYM-00689 (costul cu personalul proratat greșit): fără acela corect, indicatorul nu se poate folosi la bonus. |
+| **SYM-00800** ✅ **IMPLEMENTAT în 3 ore** (răspuns 02.11, 11:44) | **Scorecard pe rol, cu KPI calculat lunar și bonusul rezultat.** Cei cinci indicatori (lipsă la inventar cu gestiune exclusă, cost personal %, consumabile pe motiv de ieșire, vânzări față de anul trecut, procent de sarcini la timp), ponderi pe rol **și** pe locație, trepte pe fiecare indicator, **condiția de bază care anulează tot bonusul**, rezultat lunar pe om cu detalierea, și legătura cu `set_employee_monthly_bonus` — calcul pe care administratorul confirmă, nu care se plătește singur. Am legat-o de SYM-00689 (costul cu personalul proratat greșit): fără acela corect, indicatorul nu se poate folosi la bonus. |
 | **SYM-00801** | **Escaladare pe sarcini:** reamintire cu 30 de minute înainte, la termen, managerul la +30, administratorii la +1 h și numai pentru sarcinile critice. Argumentul: la DR se închide după 02:00, fără manager deasupra, iar închiderea casei e cea mai importantă sarcină a zilei. |
 | **SYM-00802** | **Fir de discuție pe o sarcină**, cu poze și notificare doar către cei implicați, citibil și scriibil prin MCP ca să poată răspunde asistentul. Am spus explicit că **nu** cerem un modul de tichete interne — am renunțat la el după ce am văzut ce există deja. |
 
-Răspunsurile vin pe `andrei.muresan5@gmail.com` și se citesc cu `list_my_symbai_tickets`.
+Răspunsurile vin pe mailul lui Andrei și se citesc cu `list_my_symbai_tickets`.
+
+### SYM-00800: implementat. Pasul 7 nu se mai construiește nici el.
+
+Cerut pe 02.11 la 08:48, răspuns la 11:44, **în trei ore**. E în **Personal → Scorecard KPI**, iar
+uneltele MCP sunt deja active (verificat `get_kpi_scorecard` pe 03.11).
+
+Ce a intrat, din ce am cerut: scorecard pe rol **×** locație (deci ponderi diferite la Unirii și
+Dumbrăvița), ponderi care însumează 100, **trepte** pe fiecare indicator (întreg până la pragul A, o
+fracțiune configurabilă — implicit jumătate — până la B, zero peste), **consumabilele calculate pe
+motivul de ieșire** exact cum am cerut, lipsa la inventar cu gestiuni excluse (țigările), sarcinile
+făcute la timp, vânzările față de aceeași lună de anul trecut, toate raportate la vânzările nete din
+P&L. „Calitatea" e indicator introdus de administrator la aprobare.
+
+**Condițiile de bază au intrat întregi** — partea pe care insistasem: casa reconciliată zilnic (fila
+închisă **cu numerarul numărat**), depunere zilnică, nicio ieșire de bani fără document, inventar
+zilnic. Fiecare cu o toleranță configurabilă de zile ratate. Și bonusul **nu se plătește singur**:
+administratorul apasă „Aprobă bonusul", numai după încheierea lunii și numai dacă P&L-ul lunii e
+complet.
+
+**SYM-00689 era deja rezolvat**, deci costul cu personalul se poate folosi la bonus.
+
+> **Ce ne-au spus pe lângă, și e cea mai importantă propoziție din tot răspunsul.** Au rulat
+> condițiile de bază pe datele de octombrie de la **Dumbrăvița**: casa a fost închisă în toate
+> zilele, **dar fără numerarul numărat**; depuneri au fost în **2 zile** din lună; plăți din casă
+> **fără document în 5 zile**. Cu condițiile de bază active, **bonusul pe octombrie ar fi ieșit
+> zero.**
+>
+> Asta e exact ce prevedeam, dar acum e măsurat de sistem, nu de noi. Și ridică o decizie pe care
+> n-o aveam pe listă: **pornim scorecardul acum, și prima lună iese zero ca mesaj, sau îl pornim
+> după ce disciplina banilor e în picioare?** Prima variantă e mai cinstită și mai dură.
+
+**Zero scorecarduri configurate** la 03.11 — funcția e vie și goală. Configurarea cere trei decizii
+care încă nu sunt luate: **ponderile pentru Drunken Rat** (la Astur sunt decise), **câte zile ratate
+se tolerează** la fiecare condiție de bază, și **de la ce lună pornește**.
 
 ## 7. O întrebare deschisă care se închide aici
 

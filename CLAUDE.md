@@ -89,11 +89,13 @@ Context pentru orice sesiune nouă de Claude (Claude Code sau chat). Citește-l 
 
 ### Plan
 
-> **Verificat pe 02.11.2026: 5 din cei 8 pași de mai jos există deja în Symbai.** Citește
-> `docs/symbai-ce-exista.md` înainte de a te apuca de orice pas. Oprite: 3 (Cereri — de reevaluat),
-> 5 („Ziua mea" și notificările — există complet), 6 (operațional), 8 (banii). Singurul pas care
-> lipsește cu adevărat din Symbai e **7, scorecardurile și KPI-ul** — miezul reformei. Restul e
-> configurare în Symbai, nu programare.
+> **Nu mai construim niciunul din cei 8 pași de mai jos** (verificat 02–03.11.2026). Citește
+> `docs/symbai-ce-exista.md` înainte de orice. Pașii 1, 2, 3, 5, 6 și 8 existau deja în Symbai.
+> Pasul **7, scorecardurile și KPI-ul** — singurul care lipsea, miezul reformei — a fost **cerut la
+> Symbai pe 02.11 și implementat de ei în trei ore** (SYM-00800, Personal → Scorecard KPI, cu unelte
+> MCP active). Rămâne al nostru doar lista Reforma și Deciziile, care nu e un lucru de restaurant.
+> **De aici înainte munca e configurare în Symbai și tichete la ei, nu programare.** Motivele de
+> pierdere lipsă au fost create pe 02.11 (ids 9–12), cu acordul lui Andrei.
 
 1. **Roluri și vizibilitate pe locații — făcut**, pe ramura `claude/roluri-locatii`: migrările `20261024000000_location_roles.sql` și `20261024000001_location_roles_policies.sql`, pagina Echipa, pagina „Locația mea”, plan în `docs/plan-reforma.md`. Testat pe o bază locală cu 6 conturi de probă. **De aplicat pe live și de publicat.** Alex trebuie trecut pe rolul owner.
 2. **Crearea conturilor din aplicație — făcut** (25.10.2026): Edge Function `staff-admin` + pagina Echipa. Owner-ul creează contul (PIN generat, arătat o singură dată), face PIN nou, și **închide** contul cuiva care pleacă — contul închis nu se mai poate loga, dar rândul rămâne ca să nu dispară producțiile și fișele HACCP de pe numele lui. Migrarea `20261025000000_creare_conturi` + testul `supabase/tests/creare_conturi.sql`. Alex se poate trece pe owner de aici.
