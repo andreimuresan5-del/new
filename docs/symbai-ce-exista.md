@@ -231,9 +231,71 @@ complet.
 > n-o aveam pe listă: **pornim scorecardul acum, și prima lună iese zero ca mesaj, sau îl pornim
 > după ce disciplina banilor e în picioare?** Prima variantă e mai cinstită și mai dură.
 
-**Zero scorecarduri configurate** la 03.11 — funcția e vie și goală. Configurarea cere trei decizii
-care încă nu sunt luate: **ponderile pentru Drunken Rat** (la Astur sunt decise), **câte zile ratate
-se tolerează** la fiecare condiție de bază, și **de la ce lună pornește**.
+### Configurate pe 03.11.2026, la cererea lui Andrei („pornește acum")
+
+Două scorecarduri, pentru cele **două roluri care există în Symbai** și au schema decisă:
+
+| id | Scorecard | Rol / locație | Bonus brut la 100 de puncte |
+|---|---|---|---|
+| 1 | Manager Drunken Rat | `Manager` (brand 1) / Unirii | 5.130 |
+| 2 | Șef bucătărie Astur | `Bucatar Sef` (brand 3) / Dumbravita | 4.275 |
+
+> **Două atenționări pe sumele alea.** Sunt **brutul derivat** din netul decis (3.000 și 2.500), cu
+> raportul net/brut de 0,585 — verificat că dă costul de firmă din `CLAUDE.local.md` (~4.300 peste fix
+> pentru un șef). **De confirmat cu contabilul**; se schimbă cu un apel și nimic nu se plătește fără
+> aprobare.
+
+> **Lipsesc două roluri în Symbai:** nu există `Manager` pe brandul Astur și nu există `Bucatar Sef`
+> pe brandul Drunken Rat. Deci scorecardul managerului de la Astur și al șefului de bucătărie de la DR
+> **nu se pot face** până nu există rolurile. De decis dacă se creează sau oamenii sunt pe alte roluri.
+
+### Rulajul pe octombrie: ce a ieșit
+
+Am rulat ambele scorecarduri pe o lună încheiată, înainte să conteze. **Amândouă dau bonus zero**,
+dar nu din punctaj — din condițiile de bază.
+
+| | Manager DR | Șef bucătărie Astur |
+|---|---|---|
+| Punctaj | 46 / 100 | 48 / 100 |
+| Condiții de bază | **toate patru picate** | **picată** (inventar zilnic) |
+| Bonus | **0** | **0** |
+
+**Condițiile de bază la Drunken Rat, octombrie** — astea sunt cifrele care contează:
+
+| Condiția | Zile ratate din 31 |
+|---|---|
+| Casa reconciliată zilnic | **31 din 31** — 31 de file închise, niciuna cu numerarul numărat |
+| Depunere zilnică | **29 din 31** |
+| Nicio ieșire fără document | 1 (15.10) |
+| Inventar zilnic | 18 |
+
+### Șapte lucruri pe care le-a scos rulajul
+
+1. **„Casa reconciliată" nu înseamnă „casa închisă".** Fila se închide în fiecare zi, dar **fără
+   numerarul numărat** — adică exact pasul 2 din [închiderea zilei](manual-operare/drunken-rat/proceduri/inchiderea-zilei.md).
+   Treizeci și una de zile din treizeci și una. Asta e, singură, cea mai mare schimbare de
+   comportament pe care o cere reforma.
+2. **Vânzările an/an nu se pot calcula.** Istoricul din Symbai începe la 01.07.2026 (balanța
+   inițială), deci „aceeași lună de anul trecut" e **zero** până în iulie 2027. Configurasem
+   indicatorul cu pondere 30 la DR; l-am coborât la 1 (se arată, nu dă bani) și am mutat ponderea pe
+   lipsa la inventar, cost personal, sarcini și calitate. *Altfel 30% din bonus era pierdut pe un
+   indicator care nu se poate măsura.*
+3. **Sarcinile la timp: „nicio sarcină scadentă în lună".** Confirmă negru pe alb de ce listele de
+   sarcini sunt prioritatea: 25% din bonusul managerului stă pe un indicator care azi n-are date.
+4. **Consumabilele ies 0%** — numărătorul e **0,73 lei** pe toată luna. Nimeni nu scoate consumabile
+   pe motivele de ieșire; se trec altfel. Definiția pe motiv e corectă, dar nu are date până nu se
+   face descărcarea lunară pe motivul potrivit.
+5. **Lipsa la inventar la DR e negativă: −0,71%**, adică **plus** la inventar. Consistent cu ce
+   găsisem: recepții înregistrate târziu, stoc pe minus, apoi inventarul găsește marfa.
+6. **Lipsa la bucătăria Astur în octombrie: 4,98%** — nu 18,5% ca în analiza august–septembrie.
+   **Asta cere lămurire înainte de orice decizie despre om**, fiindcă decizia de înlocuire s-a luat pe
+   +18,5%. Atenție: 13 produse n-au inventar la ambele capete, deci cifra e parțială.
+7. **P&L-ul lunii e incomplet la ambele locații** și **blochează aprobarea bonusului**: 6 produse la
+   DR și 9 la Astur n-au cost FIFO realizat (cafelele, open bar, două meniuri). De reparat înainte de
+   prima aprobare reală.
+
+Cost personal, pentru referință: **DR 21,07%** din 408.453 lei vânzări nete (mai bun decât cele 25,2%
+din eșantionul de trei zile); **Astur 33,7%** din 248.368.
 
 ## 7. O întrebare deschisă care se închide aici
 
