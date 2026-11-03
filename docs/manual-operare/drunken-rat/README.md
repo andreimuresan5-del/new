@@ -44,7 +44,7 @@ Lipsa la inventar față de rețete: **bucătărie +4,7%**, **bar +2,6%**. Mult 
 | Post | Rol în aplicație | Stare |
 |---|---|---|
 | [Manager de locație](posturi/manager-locatie.md) | `location_manager` | **scris** |
-| [Șef de bucătărie](posturi/sef-bucatarie.md) | `head_chef` | **scris** |
+| [Șef de bucătărie](posturi/sef-bucatarie.md) | `head_chef` · Symbai: `Sef Bucatarie` (id 27) | **scris** |
 | [Șef de tură](posturi/sef-tura.md) | `shift_lead` | **scris** |
 | [Bucătar](posturi/bucatar.md) | — | **scris** |
 | [Ospătar](posturi/ospatar.md) | — | **scris** |
@@ -145,10 +145,12 @@ Se repară cu [recepția la timp](proceduri/receptia-cantarita.md) și cu
 - **Pontajul în bucătărie și al managerului.** 5 zile din 31 la bucătărie, 11 la manager (octombrie).
   Cât timp nu se pontează, niciuna din procedurile de bucătărie nu ajunge la om, oricât de bine e
   scrisă. **Primul lucru de rezolvat din tot capitolul de sarcini.**
-- **Rol și PIN pentru șeful de bucătărie.** LUCIAN-ELVIS CURCA e șeful de bucătărie (confirmat
-  04.11.2026) și în Symbai n-are nici rol, nici PIN — nu se poate loga. Și nu există rolul
-  `Bucatar Sef` pe brandul Drunken Rat; cel existent e pe Astur. Același gol blochează și scorecardul
-  lui.
+- ~~Rol și PIN pentru șeful de bucătărie~~ — **făcut pe 04.11.2026.** LUCIAN-ELVIS CURCA e pe rolul
+  nou `Sef Bucatarie` (36 de drepturi, zero avertismente de acces), cu cont activ și PIN generat de
+  server; ecusonul se tipărește din Personal → Listă Personal. Listele #6 și #8 sunt pe rolul lui.
+  **Scorecardul lui se poate face acum** — nu mai e blocat de lipsa rolului.
+- **Formularul de seară (#8) are termen 23:00 și e al șefului de bucătărie.** Dacă el pleacă la
+  15:00, ori ora e greșită, ori proprietarul. **De ales una din două.**
 - **Un bucătar desemnat pe tura de seară** — procedura de energie de la 15:00 n-are proprietar după
   plecarea șefului de bucătărie.
 - **Ora la care managerul duce plicul la bancă** dimineața, din cauza programului până la 02:00.

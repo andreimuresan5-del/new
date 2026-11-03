@@ -170,8 +170,9 @@ confirmare că procentul de consumabile e pe cumpărare.
 ### Facem în Symbai (configurare, nu programare)
 În ordinea în care apără bani:
 
-1. **Rol și PIN pentru șeful de bucătărie de la DR, și pontaj zilnic în bucătărie.** Urcat pe primul
-   loc pe 04.11: fără pontaj, listele de sarcini nu ajung la nimeni, și din noiembrie indicatorul de
+1. ~~Rol și PIN pentru șeful de bucătărie de la DR~~ — **făcut pe 04.11.2026** (rol `Sef Bucatarie`
+   id 27, Lucian Curca pe el, cu PIN). **Rămâne pontajul zilnic în bucătărie și la manager**, care nu
+   se configurează, se cere: fără el listele nu ajung la nimeni, și din noiembrie indicatorul de
    sarcini cântărește 25 din 100 în bonusul managerului. Vezi secțiunea 9.
 2. **O regulă de masă a personalului**, cu plafon. Scoate masa echipei din „din partea casei".
 3. ~~Comisionul pe fiecare canal de livrare~~ — **făcut pe 03.11.2026**, din facturile platformelor.
@@ -453,17 +454,46 @@ ceva ce nu depinde de el direct.
 **Deci ordinea e: întâi pontajul, apoi pragurile pe sarcini.** La fel ca la consumabile — un prag pus
 pe o măsurătoare care nu se face încă pedepsește omul greșit.
 
-### Ce blochează pontajul bucătăriei la DR
+### Ce blocase pontajul bucătăriei la DR — **rezolvat pe 04.11.2026**
 
-- **Șeful de bucătărie, LUCIAN-ELVIS CURCA (id 49), n-are rol și n-are PIN** (`role_id` null, PIN
-  nesetat). Nu se poate loga, deci nu poate nici ponta, nici vedea o sarcină. Confirmat de Andrei pe
-  04.11 că el e șeful de bucătărie la Drunken Rat.
-- **Nu există rolul `Bucatar Sef` pe brandul Drunken Rat** — cel existent (id 18) e pe brandul Astur.
-  Același gol blochează și scorecardul șefului de bucătărie de la DR.
-- Listele #6, #7 și #8 sunt azi țintite pe `Bucatar` (id 11, 9 oameni). Manualul le dă **șefului de
-  bucătărie**, nu fiecărui bucătar. După ce rolul există, se reorientează.
+Trei scrieri în Symbai, cerute de Andrei („fa toate 3"):
+
+1. **Rol nou: `Sef Bucatarie` (id 27), pe brandul Drunken Rat.** Nu exista — cel de la Astur
+   (`Bucatar Sef`, id 18) e pe brandul 3, iar numele de rol sunt unice pe firmă, deci nu se putea
+   duplica. Pornit de la setul de 32 de drepturi al celui de la Astur, plus patru pe care
+   procedurile din manual le cer și care lipseau acolo: `tasks_view`, `stock_consumption_record`
+   (masa personalului și consumul din formularul de seară), `attendance_view` și `haccp_record`.
+   **36 de drepturi, zero avertismente de acces.** Symbai îl recunoaște singur ca profil
+   `restaurant_chef` („Bucătar-șef / șef de tură bucătărie"), cu tab de Pontaj și de Sarcini.
+2. **LUCIAN-ELVIS CURCA (id 49) pe rolul ăsta, cu cont activ și PIN.** Angajat din 15.12.2018,
+   contract 101. N-avea nici rol, nici PIN, nici cont de utilizator — nu se putea loga, deci nu putea
+   nici ponta. Poziția trecută „Șef de bucătărie". **PIN-ul l-a generat serverul și nu trece prin
+   nicio conversație și niciun fișier:** ecusonul cu codul de bare se tipărește din Personal → Listă
+   Personal → „Printează ecusoane".
+3. **Listele #6 („Dimineața în bucătărie") și #8 („Formularul de seară") mutate de pe `Bucatar`
+   (9 oameni) pe `Sef Bucatarie`** — manualul le dă șefului de bucătărie, nu fiecărui bucătar.
+
+**Lista #7 („Energie în intervalul mort", ora 17:45) a rămas pe `Bucatar`, intenționat.** Era în
+plan, n-am făcut-o: șeful de bucătărie nu e în clădire la 17:45 (bucătăria scade de la 4 la 3 oameni
+la 15:00), deci i-aș fi dat o sarcină pe care n-o poate face. Pe `Bucatar` o vede măcar cine e pontat
+atunci. **Golul rămâne cel scris în manual:** un bucătar desemnat pe tura de seară. Vezi
+`manual-operare/drunken-rat/posturi/administrator.md`.
+
+> **Două întrebări deschise, pe ore, nu pe roluri.** Formularul de seară (#8) are termen **23:00** și
+> acum e al șefului de bucătărie — dacă el pleacă la 15:00, ori ora e greșită, ori proprietarul. Una
+> din două trebuie schimbată; n-am ales eu. Aceeași întrebare, mai mică, la inventarul critic din #6
+> (termen 12:00, acolo e în regulă).
+
+> **`Bucatar Sef` de la Astur (id 18) n-are nici el `tasks_view`.** Deci Filomela n-ar vedea nicio
+> sarcină nici dacă i s-ar da una. Nu l-am atins — la Astur nu există încă liste — dar **se adaugă
+> înainte de prima listă de acolo.**
+
 - Contul comun **„Bucatarie Drunken Rat" (id 38)** are un singur pontaj, din iulie. Un cont de
   bucătărie partajat nu rezolvă pontajul: nu se știe cine a lucrat, deci nici cine a făcut sarcina.
+- **Configurarea e gata, livrarea nu.** Verificat imediat după: `get_my_tasks` pentru Lucian întoarce
+  tot **zero** — și e corect, fiindcă nu e pontat. Rolul, PIN-ul și listele sunt pe poziție; prima
+  sarcină ajunge la el în clipa în care bate intrarea. **Partea care rămâne nu e de configurat, e de
+  cerut oamenilor.**
 
 ### Două corecturi la ce am scris mai sus
 
