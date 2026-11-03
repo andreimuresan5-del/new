@@ -79,8 +79,9 @@ s-a numărat când s-a făcut structura.
 > (#7) · formularul de seară, cu masa personalului (#8) · ziua managerului (#9). Predarea turei e un
 > pas în #4 și în #5.
 >
-> **Atenție:** #4 și #5 țintesc rolul `Sef Tura Sala`, care în Symbai n-are niciun om. Până e numit
-> cineva, cele două liste nu ajung la nimeni. Vezi `docs/symbai-ce-exista.md`.
+> **Șefii de tură sunt Ana și Adi** (confirmat de Andrei, 03.11.2026), amândoi trecuți în Symbai pe
+> rolul `Sef Tura Sala`, care primește listele #4 și #5. Rolul n-avea dreptul de a vedea sarcinile —
+> adăugat, împreună cu registrul de casă.
 
 | Procedură | Cine o execută | Ce apără |
 |---|---|---|

@@ -171,9 +171,10 @@ confirmare că procentul de consumabile e pe cumpărare.
 În ordinea în care apără bani:
 
 1. **O regulă de masă a personalului**, cu plafon. Scoate masa echipei din „din partea casei".
-2. **Comisionul pe fiecare canal de livrare** — Glovo 20% + TVA, Wolt și Tazz 24% + TVA. Deblochează
-   un raport de profit complet pe livrări, pentru 22,6% din vânzările DR.
-3. **Cele 8 proceduri din manual, ca liste de sarcini** cu rol, tură, recurență și oră-limită. Avem
+2. ~~Comisionul pe fiecare canal de livrare~~ — **făcut pe 03.11.2026**, din facturile platformelor.
+   Vezi secțiunea 9.
+3. ~~Cele 8 proceduri din manual, ca liste de sarcini~~ — **făcut pe 03.11.2026**, vezi secțiunea 7.
+   Textul original: cu rol, tură, recurență și oră-limită. Avem
    deja orele scrise în manual — se transcriu.
 4. **Inventar la consumabile**, de început și de sfârșit de lună. Fără el, KPI-ul de consumabile nu
    măsoară consum.
@@ -357,7 +358,77 @@ Celelalte patru liste merg: `Bucatar` are 9 oameni, `Manager` are 1.
 > stabilită — am pus în sarcină propunerea coaste / carne de burger / rață, de fixat cu șeful de
 > bucătărie.
 
-## 8. O întrebare deschisă care se închide aici
+## 8. Ana și Adi, pe rolul de șef de tură (03.11.2026)
+
+Andrei: la Drunken Rat șefii de tură sunt **Ana** și **Adi**, și sunt în structura de iarnă. În Symbai:
+**ANA MARIA BOLETA** (id 8) și **ADRIAN IONESCU** (id 7) — amândoi erau **fără rol atribuit**, deci
+trecuți pe `Sef Tura Sala` (id 7) fără să pierdem nimic. Blocajul de la secțiunea 7 e rezolvat:
+listele #4 și #5 ajung acum la cineva.
+
+> **Dar rolul nu avea `tasks_view`.** Cu 63 de permisiuni și 58 de pagini vizibile, rolul „Sef Tura
+> Sala" **nu avea dreptul de a vedea sarcinile** — adică Ana și Adi ar fi fost pe rol și tot n-ar fi
+> văzut nimic. Adăugate: `tasks_view`, `cashbook.view` (registrul de casă, de care are nevoie
+> „casa = POS") și `attendance_view`. Rolul are acum 66.
+
+Două lucruri de verificat cu ei:
+
+- **Ana are unitatea principală la Astur** (brand 3, Dumbrăvița), cu acces și la Drunken Rat. Dacă
+  lucrează mai mult la DR, unitatea principală ar trebui schimbată — afectează unde se alocă
+  salariul ei. N-am schimbat-o.
+- **Rolul nu are `manageCashShift`.** Deschide și închide casa prin `daily_close_access`, dar nu
+  gestionează tura de casierie. De verificat practic, la prima închidere, că poate face tot ce cere
+  procedura.
+
+## 9. Comisionul de livrare, luat din facturile platformelor (03.11.2026)
+
+Andrei: „comisionul pe canalele de delivery ia-l din facturile lor". Facturile sunt în Symbai — Wolt
+57 de facturi din 15.06, Glovo 23 — și spun ratele.
+
+### Wolt nu are o rată, are două
+
+Facturile scriu rata în descrierea fiecărei linii:
+
+| Linia de pe factură | Rata |
+|---|---|
+| Comision comenzi cu livrare prin Wolt | **23%** |
+| Comision comenzi cu livrare prin Wolt **și subscripție Wolt+** | **25,5%** |
+| Comision comenzi cu ridicare personală | 23% |
+| Comision forfetar de tranzacție | **+1%** |
+
+**Partea mare a comenzilor e la rata mare.** În octombrie, la Drunken Rat: 14.572 lei comision la
+25,5% față de 6.321 lei la 23% — adică **70% din comision vine de pe comenzile Wolt+**. La Astur, 77%.
+
+Rata efectivă, calculată de Symbai din facturi: **25,73% la Drunken Rat, 25,87% la Astur.**
+Noi aveam în context 24%. Diferența e de ~1,8 puncte pe 84.627 lei de vânzări Wolt într-o lună la
+DR — **în jur de 1.500 lei pe lună, numai la o locație.**
+
+### Glovo iese exact 20%
+
+Facturile Glovo nu scriu procentul, dar pe fereastra pe care o acoperă (01–15.10) comisionul împărțit
+la vânzări dă **20,00%** la amândouă canalele, la bănuț. Facturile au și linii separate pentru taxa
+de platformă (17,50 lei pe perioadă), taxa de comandă Glovo Prime și serviciile de promovare — alea
+nu sunt comision și intră separat în P&L.
+
+### Ce am setat
+
+| Canal | Comision | De ce |
+|---|---|---|
+| Glovo Drunken Rat | **20%** | rata dovedită de facturi |
+| Glovo Astur | **20%** | idem |
+| Wolt Drunken Rat | 26% | **doar ca rezervă** — raportul ia oricum rata reală din facturi |
+| Wolt Astur | 26% | idem |
+
+**De ce conta:** Glovo nu trimite comisionul prin integrare, iar facturile acopereau 15 din 31 de
+zile. Pentru restul lunii raportul arăta comision zero, deci „profitul arăta prea bine" — exact
+cuvintele lui Symbai. Acum are de unde să completeze.
+
+Pentru octombrie, livrările au dat **1.733 de comenzi, 146.928 lei vânzări, 67.132 lei profit**
+(50,8% marjă, 38,74 lei pe comandă). **Pe comandă, Glovo lasă 50,25 lei și Wolt 34,98** — Wolt aduce
+de trei ori volumul, dar la o rată mult mai mare.
+
+*Mic rest de curățat:* 3 comenzi de pe platforme nu sunt legate de o notă în POS și nu intră în calcul.
+
+## 10. O întrebare deschisă care se închide aici
 
 Întrebarea 1 din `CLAUDE.md` — *„Oferă Symbai o cheie API pentru integrări, ca Mitică să lucreze din
 aplicație?"* — **are răspuns: da, și e deja pornită.** Conexiunea prin care a fost făcută verificarea
