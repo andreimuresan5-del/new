@@ -422,9 +422,55 @@ unitatea principală. Niciuna nu era.
 | ADRIAN IONESCU (id 7) | `Sef Tura Sala` | **deschisă**, pontat la 11:37 | **12 sarcini** |
 | ANA MARIA BOLETA (id 8) | `Sef Tura Sala` | închisă la 14:27 | **0** |
 
-Deci **sarcina pe rol ajunge la omul care e pontat, nu la rol.** Fără pontaj, lista nu există pentru
-nimeni. E o decizie de proiectare rezonabilă — n-ai de ce să-i dai checklistul de deschidere cuiva
-care e liber azi — dar schimbă complet ce înseamnă „am încărcat procedurile".
+Deci **sarcina pe rol ajunge la omul care e în tură azi, nu la rol.** E o decizie de proiectare
+rezonabilă — n-ai de ce să-i dai checklistul de deschidere cuiva care e liber azi — dar schimbă
+complet ce înseamnă „am încărcat procedurile".
+
+### Precizare importantă (04.11, după ce Andrei a spus că șeful și managerul vor fi logați permanent)
+
+Regula exactă, din ghidul Symbai, nu din testul meu:
+
+> „o listă cu o **ȚINTĂ** apare automat la angajații care sunt **în tură azi** și se potrivesc
+> țintei" · „o văd doar cei care au **azi o tură/program** în fereastra respectivă" · iar la
+> depanare: „e azi în tură / **în program**? (fără tură azi, ținta pe tură nu-l prinde)".
+
+**„În tură *sau* în program" — sunt două căi, nu una.** Testul meu cu Ana și Adi nu le putea
+deosebi, fiindcă la Drunken Rat nu există program în Planificator, deci pontajul rămăsese singura
+cale vizibilă. Corect e:
+
+| Cale | Ce cere | Stare la DR |
+|---|---|---|
+| **Pontaj** (tură deschisă) | omul bate intrarea | bar și sală da, bucătărie 5 zile din 31, manager 11 |
+| **Program** (Planificator) | managerul face programul | **niciodată folosit la DR** |
+
+**Logarea nu e niciuna din cele două.** Aplicația ținută deschisă toată ziua nu pune pe nimeni în
+tură, deci singură nu livrează nicio sarcină.
+
+**Planificatorul e folosit doar la Astur** (`staff_schedules`: 314 poziții, 18 oameni, 14.06–31.10,
+toate pe locația 1), **zero la Drunken Rat**. Și **după 31.10 nu există program nicăieri** — nici la
+Astur. Deci pentru noiembrie, pe ambele locații, calea „program" e azi goală.
+
+**Drumul cel mai scurt la DR e programul, nu pontajul.** Managerul are oricum sarcina de la 16:00
+„programul de mâine față de vânzarea estimată" — dacă programul ăla se face în Planificator și nu pe
+hârtie, toți cei programați își văd listele a doua zi, fără să depindă de cine bate intrarea. Pontajul
+rămâne necesar pentru costul de personal și pentru disciplină, dar nu mai e singura cale.
+
+> **Nu l-am probat pe program**, doar pe pontaj: la DR nu există nicio poziție de program, deci nu
+> există ce să testez fără să scriu în Planificator. Regula e din documentația Symbai, citată mai sus.
+
+### Ce ajută totuși logarea permanentă, și e un punct pentru Andrei
+
+Din același ghid, o capcană pe care n-o știam:
+
+> „Instanțele zilei se generează **la prima deschidere** a listei de sarcini (`/my-tasks`,
+> dashboardul sau `get_my_tasks`) — nu în avans, peste noapte... retroactiv **nu** se generează. Dacă
+> nimeni nu deschide sarcinile într-o zi, instanțele acelei zile nu se creează."
+
+Adică **o zi în care nimeni nu deschide ecranul de sarcini nu lasă nicio urmă** — nici pentru KPI,
+nici pentru un control ANSVSA sau ISU, unde tocmai urma zilnică e dovada. Ghidul recomandă exact ce
+spune Andrei: aplicația pe primul ecran al rolului care începe tura, ca deschiderea să se întâmple de
+la sine. **Deci șeful și managerul logați permanent rezolvă problema asta**, doar nu pe cea a
+vizibilității.
 
 ### Cine pontează la Drunken Rat, octombrie 2026
 

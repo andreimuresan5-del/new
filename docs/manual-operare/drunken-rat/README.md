@@ -83,12 +83,24 @@ s-a numărat când s-a făcut structura.
 > rolul `Sef Tura Sala`, care primește listele #4 și #5. Rolul n-avea dreptul de a vedea sarcinile —
 > adăugat, împreună cu registrul de casă.
 >
-> **Sarcina ajunge la cine e pontat, nu la rol** (verificat pe 04.11.2026: Ana și Adi, același rol,
-> aceeași zi — Adi pontat primește 12 sarcini, Ana cu tura închisă primește zero). **Fără pontaj,
-> lista nu există pentru nimeni.** În octombrie, la Drunken Rat: barul și sala au pontat 30 de zile
-> din 31, **bucătăria 5 și managerul 11**. Deci listele #6, #7, #8 și #9 sunt încărcate corect și nu
-> ajung la nimeni. Din noiembrie indicatorul „sarcini la timp" cântărește **25 din 100** în bonusul
-> managerului, pe toată locația — deci pontajul bucătăriei îi mută banii lui.
+> **Sarcina ajunge la cine e azi în tură sau în program, nu la rol** (verificat pe 04.11.2026: Ana și
+> Adi, același rol, aceeași zi — Adi pontat primește 12 sarcini, Ana cu tura închisă primește zero).
+> Sunt **două căi**: pontajul, sau programul din Planificator. **Logarea nu e niciuna din ele** —
+> aplicația ținută deschisă nu pune pe nimeni în tură.
+>
+> La Drunken Rat, azi: pontaj da (barul și sala 30 de zile din 31, **bucătăria 5, managerul 11**),
+> **program în Planificator — niciodată.** De aceea listele #6, #7, #8 și #9 sunt încărcate corect și
+> nu ajung la nimeni. Din noiembrie indicatorul „sarcini la timp" cântărește **25 din 100** în bonusul
+> managerului, pe toată locația.
+>
+> **Drumul cel mai scurt e programul.** Managerul are oricum sarcina de la 16:00 „programul de mâine
+> față de vânzarea estimată" — făcut în Planificator și nu pe hârtie, toți cei programați își văd
+> listele a doua zi, fără să depindă de cine bate intrarea.
+>
+> **Și încă una:** instanțele zilei se creează **la prima deschidere** a ecranului de sarcini, nu
+> peste noapte, și **nu se generează retroactiv**. O zi în care nimeni nu deschide sarcinile nu lasă
+> nicio urmă — nici pentru KPI, nici pentru un control. De aceea aplicația trebuie să fie pe primul
+> ecran al celui care începe tura.
 
 | Procedură | Cine o execută | Ce apără |
 |---|---|---|
