@@ -65,6 +65,23 @@ s-a numărat când s-a făcut structura.
 
 ## Procedurile de la Drunken Rat
 
+> **Din 03.11.2026 procedurile rulează în Symbai**, ca liste de sarcini recurente cu rol, tură,
+> oră-limită, reamintire la −30 de minute și escaladare la manager (+30) și la administratori (+90,
+> doar pentru sarcinile critice). Pașii care contează cer dovadă: numărul numerarului numărat, poza
+> plicului, temperaturile, litrii de ulei.
+>
+> **Împărțeala e simplă: Symbai ține pașii, manualul ține motivul.** Omul vede sarcina zilnic; pagina
+> de aici o citește o dată, când preia postul, și când nu înțelege de ce. Când se schimbă un pas, se
+> schimbă în amândouă.
+>
+> Cele 8 proceduri au intrat în 6 liste: închiderea zilei (#4) · deschiderea turei (#5) · dimineața
+> în bucătărie, cu HACCP, inventarul critic și recepția cântărită (#6) · energie în intervalul mort
+> (#7) · formularul de seară, cu masa personalului (#8) · ziua managerului (#9). Predarea turei e un
+> pas în #4 și în #5.
+>
+> **Atenție:** #4 și #5 țintesc rolul `Sef Tura Sala`, care în Symbai n-are niciun om. Până e numit
+> cineva, cele două liste nu ajung la nimeni. Vezi `docs/symbai-ce-exista.md`.
+
 | Procedură | Cine o execută | Ce apără |
 |---|---|---|
 | [Recepția cântărită](proceduri/receptia-cantarita.md) | Șef de bucătărie · manager pentru bar, țigări, consumabile | Cantitatea plătită, și **stocul negativ**: 45,7% din liniile de bucătărie, 31,8% din cele de bar |

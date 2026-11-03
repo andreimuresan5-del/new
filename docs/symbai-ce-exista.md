@@ -297,7 +297,67 @@ dar nu din punctaj — din condițiile de bază.
 Cost personal, pentru referință: **DR 21,07%** din 408.453 lei vânzări nete (mai bun decât cele 25,2%
 din eșantionul de trei zile); **Astur 33,7%** din 248.368.
 
-## 7. O întrebare deschisă care se închide aici
+## 7. Procedurile, încărcate ca liste de sarcini (03.11.2026)
+
+**SYM-00801 e implementat și el** — listele au acum `reminderMinutes` și o scară de escaladare pe
+trepte (`escalationSteps`), cu țintă `manager` / `admin` / `shift_lead` / un rol anume, și
+`criticalOnly` pe treaptă. Exact lanțul cerut. Sarcinile au, pe deasupra, `critical: true`, care le
+trece și peste orele de liniște ale omului.
+
+Cele 8 proceduri din manual au intrat în **6 liste recurente**, cu 28 de sarcini-șablon. Lista
+generează singură instanțele zilei.
+
+| # | Lista | Rol țintă | Tură | Oră-limită | Pași |
+|---|---|---|---|---|---|
+| 4 | Închiderea zilei | `Sef Tura Sala` | noaptea | 03:00 | 7 |
+| 5 | Deschiderea turei | `Sef Tura Sala` | dimineața | 11:30 | 5 |
+| 6 | Dimineața în bucătărie | `Bucatar` | dimineața | 12:00 | 4 |
+| 7 | Energie în intervalul mort | `Bucatar` | după-amiaza | 17:45 | 2 |
+| 8 | Formularul de seară al bucătăriei | `Bucatar` | seara | 23:00 | 4 |
+| 9 | Ziua managerului | `Manager` | dimineața | 16:00 | 6 |
+
+Escaladarea: reamintire **30 de minute înainte**, la termen omul, **managerul la +30**, iar
+**administratorii la +90** — numai pentru sarcinile marcate critice. La lista managerului,
+administratorii la +120, fără pasul intermediar.
+
+### Partea care face diferența: dovada la finalizare
+
+Nu sunt bife. Pașii care contează cer o dovadă, iar dovada e exact ce lipsea în octombrie:
+
+| Pasul | Dovada cerută |
+|---|---|
+| Numără banii din casă și scrie suma | **număr** — și scris înainte de a te uita în Symbai |
+| Casa = POS: scrie diferența | **număr** |
+| Plicul de depunere | **poză** + **semnătura managerului** la verificare |
+| Bacșiș card plătit cash | **notă** cu suma și cui s-a dat |
+| Casa de deschidere, fondul de rest | **număr** |
+| Temperaturi frigidere (HACCP) | **număr** |
+| Țigările la preluare | **număr** |
+| Inventarul critic | **notă** + verificare de manager |
+| Uleiul de friteuză | **număr** |
+| Du plicul la bancă | **număr** — suma depusă |
+
+**Pasul care repară condiția de bază picată în octombrie e „Numără banii din casă și scrie suma",
+cu dovadă numerică.** Fără el, fila se închidea fără numerar numărat în 31 de zile din 31.
+
+### Blocajul: rolul „Sef Tura Sala" are zero angajați
+
+Listele **#4 închiderea** și **#5 deschiderea** — cele mai importante — țintesc rolul `Sef Tura Sala`,
+care în Symbai are **0 oameni**. Deci azi nu le vede nimeni; se vor întârzia singure și vor escalada
+la manager în fiecare noapte.
+
+E același gol pe care manualul îl semnalează: la Drunken Rat postul de șef de tură nu există separat
+în structura de iarnă — e un ospătar sau un barman desemnat. **Până pune cineva pe rolul ăla, cele
+două liste nu funcționează.** De decis cine, pe ce seri.
+
+Celelalte patru liste merg: `Bucatar` are 9 oameni, `Manager` are 1.
+
+> **Două lucruri de calibrat după prima săptămână.** Ora-limită a formularului de seară (am pus
+> 23:00, iar manualul o lăsase deschisă) și lista de inventar critic pentru DR, care încă nu e
+> stabilită — am pus în sarcină propunerea coaste / carne de burger / rață, de fixat cu șeful de
+> bucătărie.
+
+## 8. O întrebare deschisă care se închide aici
 
 Întrebarea 1 din `CLAUDE.md` — *„Oferă Symbai o cheie API pentru integrări, ca Mitică să lucreze din
 aplicație?"* — **are răspuns: da, și e deja pornită.** Conexiunea prin care a fost făcută verificarea
