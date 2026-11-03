@@ -361,20 +361,40 @@ Celelalte patru liste merg: `Bucatar` are 9 oameni, `Manager` are 1.
 ## 8. Ana și Adi, pe rolul de șef de tură (03.11.2026)
 
 Andrei: la Drunken Rat șefii de tură sunt **Ana** și **Adi**, și sunt în structura de iarnă. În Symbai:
-**ANA MARIA BOLETA** (id 8) și **ADRIAN IONESCU** (id 7) — amândoi erau **fără rol atribuit**, deci
-trecuți pe `Sef Tura Sala` (id 7) fără să pierdem nimic. Blocajul de la secțiunea 7 e rezolvat:
-listele #4 și #5 ajung acum la cineva.
+**ANA MARIA BOLETA** (id 8) și **ADRIAN IONESCU** (id 7), trecuți pe `Sef Tura Sala` (id 7). Blocajul
+de la secțiunea 7 e rezolvat: listele #4 și #5 ajung acum la cineva.
 
-> **Dar rolul nu avea `tasks_view`.** Cu 63 de permisiuni și 58 de pagini vizibile, rolul „Sef Tura
-> Sala" **nu avea dreptul de a vedea sarcinile** — adică Ana și Adi ar fi fost pe rol și tot n-ar fi
-> văzut nimic. Adăugate: `tasks_view`, `cashbook.view` (registrul de casă, de care are nevoie
-> „casa = POS") și `attendance_view`. Rolul are acum 66.
+> **O greșeală de-a mea, corectată pe 04.11.** Scrisesem că erau „fără rol atribuit". Nu erau:
+> jurnalul arată `roleId: 16 → 7` la amândoi, adică erau pe **`Ospatar`** — rolul de pe brandul
+> Astur. În lista de personal a brandului Drunken Rat apărea „?" pentru că rolul aparține altui brand,
+> iar vederea aceea nu-l putea numi. **Lecția:** un rol afișat „?" înseamnă „nu-l pot numi de aici",
+> nu „nu există". Se verifică cu `jurnal_activitate` sau cu `describe_role` înainte de a-l înlocui.
+>
+> **Ce s-a rupt, și ce nu.** POS-ul nu: Ana a luat 18 comenzi la Astur în ziua următoare, între 11:54
+> și 14:21. Dar `Sef Tura Sala` **nu avea trei drepturi pe care `Ospatar` le avea**, și exact alea
+> țin procedura de închidere:
+>
+> | Dreptul pierdut | Ce bloca |
+> |---|---|
+> | `fiscal_reports.view` / `.extract` | **Raportul Z** — primul pas al închiderii zilei |
+> | `cashbook.day.close` | **Închiderea zilei de casă** — adică însăși condiția de bază din bonus |
+> | `transfer_*_with_accept`, `accept_transfer_pin`, `shared_table_access`, `pos_guest_access_tables` | Primirea unei mese sau a unor produse de la un ospătar |
+>
+> Adăugate toate opt; rolul are acum **74** de permisiuni și e superset peste `Ospatar`. Verificat.
+> Dacă nu se observa, Ana și Adi ar fi ajuns la prima închidere fără să poată scoate Z-ul.
+
+> **Rolul nu avea nici `tasks_view`.** Cu 63 de permisiuni și 58 de pagini vizibile, rolul „Sef Tura
+> Sala" **nu avea dreptul de a vedea sarcinile** — adică ar fi fost pe rol și tot n-ar fi văzut nimic.
+> Adăugate atunci: `tasks_view`, `cashbook.view` și `attendance_view`.
 
 Două lucruri de verificat cu ei:
 
-- **Ana are unitatea principală la Astur** (brand 3, Dumbrăvița), cu acces și la Drunken Rat. Dacă
-  lucrează mai mult la DR, unitatea principală ar trebui schimbată — afectează unde se alocă
-  salariul ei. N-am schimbat-o.
+- **Ana lucrează pe ambele locații.** Unitatea ei principală e Astur (brand 3, Dumbrăvița), cu acces
+  și la Drunken Rat — iar pe 04.11 a fost detașată la Astur pentru prânz, deci nu e un caz teoretic.
+  Consecința pe sarcini: **listele de la DR sunt legate de locația Unirii**, deci într-o zi în care e
+  la Astur nu le vede, și corect — dar nici nu le face nimeni, dacă Adi nu e pe tură. Când Ana e
+  detașată, **cineva trebuie să preia închiderea la DR.** Unitatea principală afectează și alocarea
+  salariului ei; n-am schimbat-o.
 - **Rolul nu are `manageCashShift`.** Deschide și închide casa prin `daily_close_access`, dar nu
   gestionează tura de casierie. De verificat practic, la prima închidere, că poate face tot ce cere
   procedura.
