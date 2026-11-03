@@ -66,6 +66,7 @@ Programul locației e 11:00–02:00. **Managerul nu acoperă tot** — și nici 
 | Dimineața | Recepțiile pe care nu le face bucătăria — **consumabile, bar, țigări**, cântărite și verificate la cantitate și preț |
 | **12:00** | Verifică [inventarul critic](../posturi/sef-bucatarie.md) trimis de șeful de bucătărie, și că formularul de seară de ieri are toate patru rubricile |
 | **15:00** | Comenzile pentru mâine |
+| **10:00** | **Casa reconciliată** — numerarul numărat față de fila de registru, cu diferența scrisă în lei. Numărătoarea fizică o face șeful de tură la închidere; aici se confirmă că s-a făcut. *Condiție de bază pentru bonus, ratată 31 de zile din 31 în octombrie* |
 | **16:00** | Programul de mâine față de vânzările estimate — aici se face sau se pierde costul de personal |
 | La predare | Ce rămâne pentru tura de seară se scrie, nu se spune |
 

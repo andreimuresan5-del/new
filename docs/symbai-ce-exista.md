@@ -476,6 +476,65 @@ indiferent de rol/tură".**
   textul nou ar fi intrat abia de a doua zi. Fără asta, programul s-ar fi făcut o dată în aplicație și
   apoi s-ar fi întors pe hârtie.
 
+### Sarcinile adăugate pe 04.11, la cererea lui Andrei
+
+**HACCP, pe amândouă bucătăriile** — cerute verbal înainte, acum cu dovadă și cu nume:
+
+| Sarcina | DR (lista #6) | Astur (lista #10, nouă) | Dovadă |
+|---|---|---|---|
+| **Probele de laborator** | pe numele lui **Luci** | pe numele **Filomelei** | **poză + notă**, critică, termen 07.11, până o face |
+| Poză la fișele de temperatură, completate | zilnic | zilnic | poză |
+| Poze în frigidere și la termometre | zilnic | zilnic | poză |
+| Fișa de schimbare a uleiului, la zi | zilnic | zilnic | poză |
+
+Probele sunt **pe nume**, nu pe rol, exact ca sarcina lui Zoltan: ajung chiar dacă nu sunt pontați, și
+răspunsul are un nume pe el. Scris explicit în sarcină: **dacă nu există, se scrie asta și data la
+care se programează** — așa primești o dată calendaristică, nu o amânare. În descrieri am pus și ce
+costă: uleiul neînregistrat (228 l la DR, 375 l la Astur) și pierderile din frigidere la Astur
+(150 kg de pulpe din 589 intrate).
+
+**Reconcilierea casei, la amândoi managerii** — Andrei: „fa reconcilierea pentru zoltan la drunken si
+iulia la astur". Numerarul numărat față de fila de registru, zilnic, **dovadă numerică: diferența în
+lei**, critică:
+
+- **Zoltan** — șablon în lista #9, pe rolul de manager, ora 10:00. Instanța zilei de 04.11 s-a generat
+  singură, deși ziua era deja creată.
+- **Iulia Pascu (id 46)** — lista **#11 „Banii zilnici — Astur"**, nouă, **pe numele ei**: e manager la
+  Astur dar și administrator, deci pe rol sarcina ar fi ajuns la toți cei 7 administratori. Verificat
+  că instanța păstrează atribuirea și că **nu** apare la alt angajat al locației.
+
+> **De ce era nevoie de ea, deși nu e automatizabilă.** Andrei voia reconcilierea automată, prin
+> legarea băncilor. Legarea rezolvă cardul față de cont — **nu** condiția de bază din bonus, care e
+> „fila de registru închisă **și numerarul numărat**". În octombrie: 31 de file închise, **0 cu
+> numerarul numărat**. Nicio bancă nu numără banii din sertar. De asta sarcina rămâne, separat de
+> bănci.
+
+### Băncile: ce suportă Symbai (verificat 04.11.2026)
+
+**Conectare directă — open banking, PSD2, API bancar: NU EXISTĂ.** Căutat în trei formulări.
+
+Ce există e import de extras, puternic, care **recunoaște nativ toate cele patru bănci ale firmei**:
+BT („Lista de tranzacții" CSV și extrasul PDF), **BRD „UMS" — arhiva .zip zilnică**, ING Business
+(„Istoric conturi" CSV), ProCredit CSV; plus MT940/MT942, CAMT.052/053/054 și OFX. Cu **control de
+sold** (sold inițial + mișcări = sold final, altfel importul se blochează) și **antiduplicare** după
+referința bancară, soldul rulant sau fișier+linie — deci importul zilnic e sigur.
+
+**Potrivirea cu facturile e deja automată** și deterministă: IBAN, CUI, număr de document, sumă
+exactă. Partea de „reconciliere automată" există; ce lipsește e aducerea fișierului.
+
+Starea reală, care e problema:
+
+- **Toate cele 6 conturi au extrase doar până la 30.09.** Octombrie și noiembrie nu sunt importate
+  deloc — de asta nu se știe dacă cei ~4.800 lei pe lună de card neajuns în cont sunt tot acolo.
+- **Din 6 conturi, doar unul e declarat „cont propriu"** (ING-ul de POS, nefolosit). Pentru celelalte
+  cinci, **un transfer între conturile firmei arată ca o plată către un necunoscut** — deci o parte din
+  cei 318.544 lei „ieșiți fără documente" poate fi exact asta. Se repară cu `add_own_bank_account` plus
+  o repotrivire pe extrasele vechi. **Propus, nu făcut** — Andrei a cerut întâi sarcinile de
+  reconciliere.
+- **Nicio adresă de email nu e conectată** (`/my-email`). Symbai poate citi o cutie Google sau
+  Microsoft, doar cu drept de citire, deci drumul până la automat e: banca trimite extrasul zilnic pe
+  o adresă → adresa e conectată → importul și potrivirea merg fără om.
+
 ### Ce ajută totuși logarea permanentă, și e un punct pentru Andrei
 
 Din același ghid, o capcană pe care n-o știam:

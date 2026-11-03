@@ -53,6 +53,47 @@ ore reale.
 **Brunch de iarnă de la 7:00**, în proiect (model Black Elk Espresso, fără pizzaiolo dimineața). Dacă
 intră, adaugă o tură întreagă care la DR nu există.
 
+## Ce există deja în Symbai la Astur (04.11.2026)
+
+Manualul nu e scris, dar **primele două liste de sarcini de la Astur rulează**, create pentru lucruri
+care nu puteau aștepta manualul:
+
+| Listă | Pentru cine | Ce conține |
+|---|---|---|
+| **#10 „HACCP și dovezi — bucătăria Astur"**, zilnic, 10:30 | rolul `Bucatar Sef` | poză la fișele de temperatură · poze în frigidere și la termometre · fișa de schimbare a uleiului · **probele de laborator**, pe numele Filomelei, critică, termen 07.11 |
+| **#11 „Banii zilnici — Astur"**, zilnic, 10:00 | **pe numele Iuliei Pascu** | casa reconciliată: numerarul numărat față de fila de registru, cu diferența în lei, critică |
+
+Termenul de 10:30 la bucătărie e pus **înainte de prânzul care face 60%** — de confirmat cu orele
+reale. Escaladarea pe lista de bani merge direct la administratori, nu prin manager: managerul **e**
+administrator (vezi mai jos).
+
+**Rolul `Bucatar Sef` n-avea dreptul de a vedea sarcinile** — adăugat pe 04.11, împreună cu
+`haccp_record`. Până atunci Filomela n-ar fi văzut nicio sarcină nici dacă i se dădea una.
+
+### Managerul de la Astur
+
+**Iulia Pascu (id 46) e managerul de la Astur** (confirmat de Andrei, 04.11.2026) și **e în același
+timp administrator** — în Symbai e pe rolul `Admin / Proprietar`, cu acces pe ambele locații. Așa e
+decis, nu e o scăpare de configurare.
+
+Două consecințe strict tehnice, care schimbă cum se lucrează cu ea în Symbai:
+
+1. **Sarcinile i se dau pe nume, nu pe rol.** Pe rol ar ajunge la toți cei 7 administratori. De aceea
+   sarcina de reconciliere e pusă pe numele ei, și așa se va face cu orice sarcină de manager la Astur.
+   Funcționează la fel de bine: verificat, instanța zilei păstrează atribuirea și **nu** apare la
+   ceilalți.
+2. **Scorecardul ei nu se poate lega de rolul `Admin / Proprietar`.** Un scorecard se leagă de rol plus
+   locație, iar rolul ăsta îi cuprinde și pe administratori — deci bonusul s-ar calcula pentru toți
+   șapte. Iar în Symbai un angajat are **un singur** rol, nu două: nu poate fi administrator și, în
+   plus, pe un rol de manager. Deci sunt două variante, și e o decizie despre autoritatea ei, nu o
+   reparație de configurare:
+   - **rămâne pe `Admin / Proprietar`** și partea variabilă i se calculează pe lângă sistem, de mână,
+     pe aceiași indicatori;
+   - **trece pe un rol de `Manager` pe brandul Astur** (nu există, se creează) și bonusul se calculează
+     automat ca la Zoltan — dar pierde autoritatea deplină.
+
+   *Nimic nu s-a schimbat la rolul ei.*
+
 ## Ce blochează scrierea
 
 1. **Echipa de iarnă** — câți oameni, pe ce posturi, la ce ore. Fără asta, paginile de post ar fi

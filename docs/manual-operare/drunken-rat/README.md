@@ -79,6 +79,11 @@ s-a numărat când s-a făcut structura.
 > (#7) · formularul de seară, cu masa personalului (#8) · ziua managerului (#9). Predarea turei e un
 > pas în #4 și în #5.
 >
+> **Adăugate pe 04.11.2026**, la cererea lui Andrei: în **#6** trei dovezi HACCP zilnice cu poză
+> (fișele de temperatură completate · frigiderele și termometrele · fișa de schimbare a uleiului) plus
+> **probele de laborator** pe numele lui Luci, critică, termen 07.11. În **#9** reconcilierea casei
+> la ora 10:00 — numerarul numărat față de fila de registru, cu diferența în lei, critică.
+>
 > **Șefii de tură sunt Ana și Adi** (confirmat de Andrei, 03.11.2026), amândoi trecuți în Symbai pe
 > rolul `Sef Tura Sala`, care primește listele #4 și #5. Rolul n-avea dreptul de a vedea sarcinile —
 > adăugat, împreună cu registrul de casă.
