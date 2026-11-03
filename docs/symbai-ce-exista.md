@@ -170,17 +170,22 @@ confirmare că procentul de consumabile e pe cumpărare.
 ### Facem în Symbai (configurare, nu programare)
 În ordinea în care apără bani:
 
-1. **O regulă de masă a personalului**, cu plafon. Scoate masa echipei din „din partea casei".
-2. ~~Comisionul pe fiecare canal de livrare~~ — **făcut pe 03.11.2026**, din facturile platformelor.
-   Vezi secțiunea 9.
-3. ~~Cele 8 proceduri din manual, ca liste de sarcini~~ — **făcut pe 03.11.2026**, vezi secțiunea 7.
+1. **Rol și PIN pentru șeful de bucătărie de la DR, și pontaj zilnic în bucătărie.** Urcat pe primul
+   loc pe 04.11: fără pontaj, listele de sarcini nu ajung la nimeni, și din noiembrie indicatorul de
+   sarcini cântărește 25 din 100 în bonusul managerului. Vezi secțiunea 9.
+2. **O regulă de masă a personalului**, cu plafon. Scoate masa echipei din „din partea casei".
+3. ~~Comisionul pe fiecare canal de livrare~~ — **făcut pe 03.11.2026**, din facturile platformelor.
+   Vezi secțiunea 10.
+4. ~~Cele 8 proceduri din manual, ca liste de sarcini~~ — **făcut pe 03.11.2026**, vezi secțiunea 7.
    Textul original: cu rol, tură, recurență și oră-limită. Avem
-   deja orele scrise în manual — se transcriu.
-4. **Inventar la consumabile**, de început și de sfârșit de lună. Fără el, KPI-ul de consumabile nu
-   măsoară consum.
-5. **Tara și densitatea** pe produsele de bar, plus greutatea brută la numărare.
-6. ~~Motivele de pierdere~~ — **făcut pe 02.11.2026**, vezi secțiunea 4.
-7. **Tip separat pentru obiectele de inventar**, și mutarea durabilelor acolo.
+   deja orele scrise în manual — se transcriu. **Încărcate, dar vezi secțiunea 9:** ajung doar la cine
+   pontează.
+5. **Inventar la consumabile**, de început și de sfârșit de lună. Fără el, KPI-ul de consumabile nu
+   măsoară consum. Pe octombrie indicatorul a ieșit **0,73 lei** pe toată luna — adică nu măsoară
+   nimic, consumabilele nu ies din gestiune pe motivele puse în indicator.
+6. **Tara și densitatea** pe produsele de bar, plus greutatea brută la numărare.
+7. ~~Motivele de pierdere~~ — **făcut pe 02.11.2026**, vezi secțiunea 4.
+8. **Tip separat pentru obiectele de inventar**, și mutarea durabilelor acolo.
 
 ### De probat înainte de a decide
 - Escaladarea automată pe lanțul reamintire → manager → administratori.
@@ -399,7 +404,81 @@ Două lucruri de verificat cu ei:
   gestionează tura de casierie. De verificat practic, la prima închidere, că poate face tot ce cere
   procedura.
 
-## 9. Comisionul de livrare, luat din facturile platformelor (03.11.2026)
+## 9. Listele ajung prin pontaj, nu prin rol (04.11.2026)
+
+**Constatarea cea mai importantă din toată configurarea sarcinilor**, și n-a ieșit din documentație, a
+ieșit dintr-un test pe oameni reali.
+
+Listele #4 și #5 (șef de tură) ajungeau. Listele #6, #7, #8 (bucătărie) și #9 (managerul) **nu
+ajungeau la nimeni**, deși aveau rol corect, locație corectă, instanțe generate și — după ce am
+adăugat — și dreptul de a vedea sarcinile. Am căutat în trei direcții greșite: rolul, permisiunile,
+unitatea principală. Niciuna nu era.
+
+**Testul care a lămurit-o:** Ana și Adi sunt pe **același rol**, aceeași locație, aceeași zi.
+
+| | Rol | Tură | `get_my_tasks` pe 04.11 |
+|---|---|---|---|
+| ADRIAN IONESCU (id 7) | `Sef Tura Sala` | **deschisă**, pontat la 11:37 | **12 sarcini** |
+| ANA MARIA BOLETA (id 8) | `Sef Tura Sala` | închisă la 14:27 | **0** |
+
+Deci **sarcina pe rol ajunge la omul care e pontat, nu la rol.** Fără pontaj, lista nu există pentru
+nimeni. E o decizie de proiectare rezonabilă — n-ai de ce să-i dai checklistul de deschidere cuiva
+care e liber azi — dar schimbă complet ce înseamnă „am încărcat procedurile".
+
+### Cine pontează la Drunken Rat, octombrie 2026
+
+Zile cu cel puțin un pontaj, din 31:
+
+| Rol | Zile cu pontaj | Oameni | Listele lui |
+|---|---|---|---|
+| Barman | **30** | 4 | — |
+| Șef tură sală | **30** | 2 | #4, #5 — **ajung** |
+| Ospătar | 14 | 2 | — |
+| **Bucătar** | **5** | 4 | #6, #7, #8 — **nu ajung** |
+| **Manager** | **11** | 1 | #9 — **nu ajunge** |
+| Spălător vase | 5 | 2 | — |
+
+Barul și sala pontează zilnic. **Bucătăria a pontat 5 zile din 31. Managerul 11.** Nu e o problemă de
+configurare și nu e un bug la Symbai: procedurile de bucătărie și ziua managerului sunt încărcate
+corect și n-are cine să le primească.
+
+### De ce nu e o chestiune de disciplină abstractă: costă 25 de puncte
+
+Scorecardul managerului are indicatorul **`tasks_on_time_pct` cu pondere 25**, pe toată locația. Pe
+octombrie a ieșit `null` („nicio sarcină scadentă în lună") fiindcă listele n-existau atunci, deci n-a
+dat nici puncte, nici pierdere. **Din noiembrie dă.** Iar sarcinile neajunse la nimeni rămân
+`pending` și trec ca ratate: dacă bucătăria nu pontează, managerul pierde cele 25 de puncte pentru
+ceva ce nu depinde de el direct.
+
+**Deci ordinea e: întâi pontajul, apoi pragurile pe sarcini.** La fel ca la consumabile — un prag pus
+pe o măsurătoare care nu se face încă pedepsește omul greșit.
+
+### Ce blochează pontajul bucătăriei la DR
+
+- **Șeful de bucătărie, LUCIAN-ELVIS CURCA (id 49), n-are rol și n-are PIN** (`role_id` null, PIN
+  nesetat). Nu se poate loga, deci nu poate nici ponta, nici vedea o sarcină. Confirmat de Andrei pe
+  04.11 că el e șeful de bucătărie la Drunken Rat.
+- **Nu există rolul `Bucatar Sef` pe brandul Drunken Rat** — cel existent (id 18) e pe brandul Astur.
+  Același gol blochează și scorecardul șefului de bucătărie de la DR.
+- Listele #6, #7 și #8 sunt azi țintite pe `Bucatar` (id 11, 9 oameni). Manualul le dă **șefului de
+  bucătărie**, nu fiecărui bucătar. După ce rolul există, se reorientează.
+- Contul comun **„Bucatarie Drunken Rat" (id 38)** are un singur pontaj, din iulie. Un cont de
+  bucătărie partajat nu rezolvă pontajul: nu se știe cine a lucrat, deci nici cine a făcut sarcina.
+
+### Două corecturi la ce am scris mai sus
+
+> **Unitatea principală a lui Zoltan.** Pe 04.11 am corectat-o (era brand 3 / Dumbrăvița, trecută pe
+> brand 1 / Unirii, cu acces la amândouă). Corectura era necesară — datele erau greșite — dar **nu a
+> rezolvat sarcinile:** verificat după, tot zero. Cauza era pontajul.
+>
+> **Permisiunile.** Am adăugat `tasks_view` și `tasks_manage` la `Manager` (127 de permisiuni) și
+> `tasks_view` la `Bucatar` (13). Niciuna n-a schimbat rezultatul. Le las — sunt corecte oricum — dar
+> nu erau explicația.
+>
+> **Nu s-a trimis niciun tichet la Symbai pe tema asta.** Era pregătit unul, ca bug. Ar fi fost
+> greșit: sistemul face exact ce trebuie.
+
+## 10. Comisionul de livrare, luat din facturile platformelor (03.11.2026)
 
 Andrei: „comisionul pe canalele de delivery ia-l din facturile lor". Facturile sunt în Symbai — Wolt
 57 de facturi din 15.06, Glovo 23 — și spun ratele.
@@ -448,7 +527,7 @@ de trei ori volumul, dar la o rată mult mai mare.
 
 *Mic rest de curățat:* 3 comenzi de pe platforme nu sunt legate de o notă în POS și nu intră în calcul.
 
-## 10. O întrebare deschisă care se închide aici
+## 11. O întrebare deschisă care se închide aici
 
 Întrebarea 1 din `CLAUDE.md` — *„Oferă Symbai o cheie API pentru integrări, ca Mitică să lucreze din
 aplicație?"* — **are răspuns: da, și e deja pornită.** Conexiunea prin care a fost făcută verificarea

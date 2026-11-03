@@ -82,6 +82,13 @@ s-a numărat când s-a făcut structura.
 > **Șefii de tură sunt Ana și Adi** (confirmat de Andrei, 03.11.2026), amândoi trecuți în Symbai pe
 > rolul `Sef Tura Sala`, care primește listele #4 și #5. Rolul n-avea dreptul de a vedea sarcinile —
 > adăugat, împreună cu registrul de casă.
+>
+> **Sarcina ajunge la cine e pontat, nu la rol** (verificat pe 04.11.2026: Ana și Adi, același rol,
+> aceeași zi — Adi pontat primește 12 sarcini, Ana cu tura închisă primește zero). **Fără pontaj,
+> lista nu există pentru nimeni.** În octombrie, la Drunken Rat: barul și sala au pontat 30 de zile
+> din 31, **bucătăria 5 și managerul 11**. Deci listele #6, #7, #8 și #9 sunt încărcate corect și nu
+> ajung la nimeni. Din noiembrie indicatorul „sarcini la timp" cântărește **25 din 100** în bonusul
+> managerului, pe toată locația — deci pontajul bucătăriei îi mută banii lui.
 
 | Procedură | Cine o execută | Ce apără |
 |---|---|---|
@@ -135,6 +142,13 @@ Se repară cu [recepția la timp](proceduri/receptia-cantarita.md) și cu
 - **Tara și densitatea sticlelor, în Symbai.** Barul se cântărește deja, dar conversia se face pe
   lângă sistem. **Decizie de Andrei** — Symbai nu se modifică fără acordul lui.
 - **Inventar lunar pe `Consumabile Drunken`**, fără care KPI-ul de consumabile măsoară cumpărarea.
+- **Pontajul în bucătărie și al managerului.** 5 zile din 31 la bucătărie, 11 la manager (octombrie).
+  Cât timp nu se pontează, niciuna din procedurile de bucătărie nu ajunge la om, oricât de bine e
+  scrisă. **Primul lucru de rezolvat din tot capitolul de sarcini.**
+- **Rol și PIN pentru șeful de bucătărie.** LUCIAN-ELVIS CURCA e șeful de bucătărie (confirmat
+  04.11.2026) și în Symbai n-are nici rol, nici PIN — nu se poate loga. Și nu există rolul
+  `Bucatar Sef` pe brandul Drunken Rat; cel existent e pe Astur. Același gol blochează și scorecardul
+  lui.
 - **Un bucătar desemnat pe tura de seară** — procedura de energie de la 15:00 n-are proprietar după
   plecarea șefului de bucătărie.
 - **Ora la care managerul duce plicul la bancă** dimineața, din cauza programului până la 02:00.
