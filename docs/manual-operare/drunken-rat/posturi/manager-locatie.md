@@ -82,6 +82,16 @@ vineri e pierdere curată.
 Regula: programul de mâine se face **după** vânzarea estimată pentru mâine, nu invers. Un om tăiat
 luni dimineață nu se mai poate tăia luni seara.
 
+**Se face în Planificatorul de ture, nu pe hârtie** (hotărât 04.11.2026; sarcina din Symbai e
+rescrisă în consecință). Personal → Planificator Ture: calendar săptămânal, se poate copia săptămâna
+anterioară, iar la final se apasă **„Salvează și Publică Program"** — fără publicare nu contează.
+
+Motivul nu e ordinea, e că altfel nu funcționează nimic: **o sarcină din Symbai ajunge doar la cine e
+în tură sau în program în ziua aia.** Programul publicat e ce face ca procedurile de dimineață ale
+bucătăriei, formularul de seară și închiderea să ajungă la oameni, fără să depindă de cine a bătut
+intrarea. Un program pe hârtie nu ajunge la nimeni și nu intră în nimic. Și e chiar indicatorul lui:
+„sarcini la timp" cântărește 25 din 100, pe toată locația.
+
 ## Procedurile lui
 
 - [Închiderea zilei](../proceduri/inchiderea-zilei.md) — o execută șeful de tură, o **verifică** el și

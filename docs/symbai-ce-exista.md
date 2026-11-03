@@ -458,6 +458,24 @@ rămâne necesar pentru costul de personal și pentru disciplină, dar nu mai e 
 > **Nu l-am probat pe program**, doar pe pontaj: la DR nu există nicio poziție de program, deci nu
 > există ce să testez fără să scriu în Planificator. Regula e din documentația Symbai, citată mai sus.
 
+### Pornirea, pe 04.11: o sarcină pe nume, care trece peste condiția de tură
+
+Era un cerc vicios: nu-i puteam trimite managerului **prin rol** o sarcină care să-i ceară exact
+lucrul care face rolul să funcționeze. Ieșirea e în ghid: **„atribuire pe nume — o vede doar el,
+indiferent de rol/tură".**
+
+- **Sarcina #1469, „Fă programul în Planificator Ture, nu pe hârtie"**, pe numele lui Zoltan, termen
+  04.11 ora 16:00, prioritate mare, **critică** (escaladează la administratori), valabilă **până o
+  face**, cu dovadă numerică: câte poziții a programat și publicat. În descriere: drumul exact,
+  avertismentul că fără „Salvează și Publică Program" nu contează, și motivul în cifre.
+- **Verificat, nu presupus:** `get_my_tasks` pentru Zoltan întorcea zero de la toate listele; după
+  creare întoarce **1 sarcină azi**. Deci atribuirea pe nume chiar trece peste condiția de tură.
+- **Rutina de la 16:00 rescrisă ca regulă permanentă** (cerut de Andrei): sarcina-șablon #40 din lista
+  #9 se numește acum „16:00 — programul de mâine **în Planificator**, față de vânzarea estimată", cu
+  motivul scris în ea. Rescrisă și instanța zilei de 04.11 (#236), care era deja generată — altfel
+  textul nou ar fi intrat abia de a doua zi. Fără asta, programul s-ar fi făcut o dată în aplicație și
+  apoi s-ar fi întors pe hârtie.
+
 ### Ce ajută totuși logarea permanentă, și e un punct pentru Andrei
 
 Din același ghid, o capcană pe care n-o știam:
