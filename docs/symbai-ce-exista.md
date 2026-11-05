@@ -621,6 +621,34 @@ pentru managerul de la Astur, care e pe rolul de administrator.
 că, în noiembrie, structura de salariu funcționează ca motivație doar dacă cineva le arată cifrele la
 mijlocul lunii, nu la final.
 
+### 05.11, seara: programul există pe ambele locații — blocajul s-a ridicat
+
+Andrei a făcut programul în Planificator **și la Drunken Rat**. Verificat: 10–11 poziții pe zi la DR,
+9–10 la Astur, pe tot restul lunii. La DR nu existase niciodată.
+
+**Ce se deblochează fără să mai fac nimic:** pe 06.11 sunt programați, la DR, 1 `Sef Bucatarie`
+(Lucian), 1 `Manager` (Zoltan), 2 `Bucatar`, 1 `Sef Tura Sala`, 2 `Barman`, 2 `Spalator Vase`,
+1 `Ospatar`. Deci **lista #8 (formularul de seară) și lista #7 (energia în intervalul mort) ajung de
+acum singure** — erau cele două care nu atingeau pe nimeni, și nu le atribuisem pe nume tocmai pentru
+că orele lor sunt încă nerezolvate.
+
+> **Atribuirile pe nume rămân deocamdată.** Funcționează, și e mai sigur decât să depind de program în
+> prima lună. Se revine la țintirea pe rol după ce se vede că programul se ține la zi câteva
+> săptămâni — atunci o absență trece singură la înlocuitor, ceea ce pe nume nu se întâmplă.
+
+> **Un om programat mâine la DR nu are rol** (`rol: null`). Nu primește nicio sarcină. De verificat
+> cine e.
+
+### Ziua managerului la Astur, pe numele Iuliei
+
+Lista #11 s-a redenumit din „Banii zilnici" în **„Ziua managerului — Astur"** și are acum 6 sarcini,
+aceeași structură ca a lui Zoltan, cu textul scris pentru Astur (Josper, prânzul de 60%, închiderea
+de seară, lista critică proprie). Detaliile: `manual-operare/astur/README.md`.
+
+**Nu am verificat prin `get_my_tasks` pe ziua de mâine**, deliberat: apelul ar fi materializat
+instanțele și i-ar fi apărut azi în telefon, exact greșeala de ieri. Am aliniat în schimb instanța de
+06.11 care exista deja, ca să nu vadă mâine titlul vechi lângă cel nou.
+
 ### Ce ajută totuși logarea permanentă, și e un punct pentru Andrei
 
 Din același ghid, o capcană pe care n-o știam:

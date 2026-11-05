@@ -61,11 +61,41 @@ care nu puteau aștepta manualul:
 | Listă | Pentru cine | Ce conține |
 |---|---|---|
 | **#10 „HACCP și dovezi — bucătăria Astur"**, zilnic, 10:30 | rolul `Bucatar Sef` | poză la fișele de temperatură · poze în frigidere și la termometre · fișa de schimbare a uleiului · **probele de laborator**, pe numele Filomelei, critică, termen 07.11 |
-| **#11 „Banii zilnici — Astur"**, zilnic, 10:00 | **pe numele Iuliei Pascu** | casa reconciliată: numerarul numărat față de fila de registru, cu diferența în lei, critică |
+| **#11 „Ziua managerului — Astur"**, zilnic | **pe numele Iuliei Pascu** | ziua ei întreagă, 6 sarcini — vezi mai jos |
 
 Termenul de 10:30 la bucătărie e pus **înainte de prânzul care face 60%** — de confirmat cu orele
-reale. Escaladarea pe lista de bani merge direct la administratori, nu prin manager: managerul **e**
-administrator (vezi mai jos).
+reale. Escaladarea listei managerului merge direct la administratori, nu prin manager: managerul
+**e** administrator (vezi mai jos).
+
+### Ziua managerului la Astur (05.11.2026)
+
+Andrei: „la Iulia aceleași sarcini ca la Zoli, dar pentru Astur". Aceeași structură ca lista #9 de la
+Drunken Rat, **scrisă pentru Astur**, nu copiată:
+
+| Oră | Sarcina | Dovadă | Critic |
+|---|---|---|---|
+| 09:30 | Pontajul și casa de deschidere | — | |
+| **09:45** | **Verifică închiderea de aseară** + diferența de casă | **număr** | **da** |
+| **10:30** | **Du plicul la bancă și scrie suma depusă** | **număr** | **da** |
+| 12:00 | Inventarul critic și formularul de seară de ieri | notă | |
+| 15:00 | Comenzile pentru mâine | — | |
+| 16:00 | Programul de mâine în Planificator | notă | |
+
+**Ce e scris altfel decât la DR**, fiindcă locația e alta:
+
+- **închiderea** — la Astur nu se închide la 02:00 și după ora 20 se vinde sub 7%, deci ea **poate fi
+  acolo la închidere**; dimineața e ultima ocazie, nu singura. La DR e singura;
+- **pontajul de la 9:30** — prânzul începe la 11:00 și face ~60%, deci o lipsă descoperită la 11:30 nu
+  se mai acoperă;
+- **comenzile** — includ **cărbunele și lemnul pentru Josper, 4.900–5.800 lei pe lună, numai aici**,
+  cel mai mare post de consumabile al locației;
+- **inventarul critic** — lista există deja (pui, ceafă, obrăjori, burrata, mozzarella) și sunt exact
+  pierderile reale;
+- **programul** — cost personal 33,7% în octombrie, ținta ~2.400 lei pe zi la ~8.000 vânzări; tura de
+  seară programată ca una de prânz e pierdere curată.
+
+Nu i-am dat dublura de la DR („casa reconciliată" la 10:00): la Astur reconcilierea e de la început
+**în** sarcina de la 9:45, cum a rămas și la Drunken Rat după ce am scos-o pe a doua.
 
 **Rolul `Bucatar Sef` n-avea dreptul de a vedea sarcinile** — adăugat pe 04.11, împreună cu
 `haccp_record`. Până atunci Filomela n-ar fi văzut nicio sarcină nici dacă i se dădea una.
