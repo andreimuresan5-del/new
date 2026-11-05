@@ -535,6 +535,56 @@ Starea reală, care e problema:
   Microsoft, doar cu drept de citire, deci drumul până la automat e: banca trimite extrasul zilnic pe
   o adresă → adresa e conectată → importul și potrivirea merg fără om.
 
+### 05.11: „multe nu le sunt afișate" — trei cauze, nu una
+
+Andrei, după două zile de rulaj: din tot ce s-a urcat pe roluri, multe nu apar; Iulia a găsit o
+singură sarcină. Verificat om cu om:
+
+**1. Bucătăria nu are conturi deloc.** Cea mai adâncă, și n-o văzusem:
+
+| Locație | Oameni de bucătărie fără PIN și fără cont |
+|---|---|
+| Drunken Rat | **toți 4 bucătarii** (Charly Payne, Chandra, Prem, Rabi) + ambii spălători + Sarala |
+| Astur | pizzarul Cristian Gunea, Sushila, Hari Prasad, 3 spălători, 4 „fără rol" |
+
+`loginEnabled: false`. Un om fără cont nu vede o sarcină **și nu poate nici ponta** — deci nu poate
+îndeplini nici condiția de tură. Cele două cauze se adună. Singurii din bucătărie cu cont: Lucian la
+DR, Filomela și Anish Gurung la Astur.
+
+**2. La Drunken Rat nu există program, și sarcina care-l cerea n-a fost făcută.** Astur are program pe
+tot noiembrie (9–10 poziții pe zi, făcut între 3 și 4.11). **DR: zero.** Sarcina #1469 a lui Zoltan e
+**întârziată din 04.11 ora 16:00**, nefăcută. El are PIN, se loghează și a văzut-o — deci nu e o
+problemă de acces. Cercul s-a închis exact cum era de temut: sarcina care deblochează toată locația e
+singura care nu s-a făcut.
+
+**3. Iulia nu avea decât o sarcină. Nu e bug, e ce există.**
+
+- Reconcilierea ei **funcționează**: a bifat-o de două ori pe 04.11, la 11:34 și 11:49, valoarea 0,
+  pentru 3 și 4 noiembrie. Deci a și folosit-o.
+- „Sarcina de la 9:30" e **reamintirea** — 30 de minute înainte de termenul de 10:00.
+- **„Fără direcție de unde încarcă poza": sarcina ei cere un NUMĂR, nu o poză.** În Symbai dovada e de
+  un singur fel — `none` / `photo` / `note` / `photo_note` / `number` / `signature`. **Nu există
+  „număr + poză".** Deci ori diferența ca număr, ori poza numărătorii. De ales.
+- **„Restul sarcinilor" nu există pentru ea:** la Astur nu e nicio listă de manager, echivalentul lui
+  #9 de la DR. Tot restul de acolo e pe rolul șefului de bucătărie. *De scris, după ce se știu orele
+  reale ale zilei ei — altfel ar fi ficțiune, ca paginile de post.*
+
+### Reparat pe 05.11: ziua managerului și a bucătarului-șef, pe nume
+
+Rolul `Manager` are **un singur** angajat (Zoltan) și `Sef Bucatarie` tot unul (Lucian). Deci
+atribuirea pe nume nu pierde nimic și scoate dependența de pontaj și de program:
+
+- cele **7 sarcini-șablon** din lista #9 → pe numele lui Zoltan;
+- cele **7 din lista #6** (inclusiv cele trei poze noi) → pe numele lui Lucian.
+
+**Verificat pe 06.11:** Zoltan primește 7 sarcini plus cea întârziată; Lucian primește 7 plus probele
+de laborator. Până acum amândoi primeau zero.
+
+> **E un ocol, nu o soluție, și trebuie spus:** pe nume nu există înlocuitor — dacă Zoltan lipsește,
+> ziua nu trece la altcineva, cum ar trece pe rol plus program. Se revine la țintirea pe rol **când DR
+> are program în Planificator.** Până atunci, mai bine o sarcină care ajunge la un om decât una
+> corectă care nu ajunge la nimeni.
+
 ### Ce ajută totuși logarea permanentă, și e un punct pentru Andrei
 
 Din același ghid, o capcană pe care n-o știam:
