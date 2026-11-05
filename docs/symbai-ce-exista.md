@@ -590,12 +590,20 @@ de laborator. Până acum amândoi primeau zero.
 Andrei: „unde văd ei scorecardul cu salariul și cum îi afectează KPI?" **Nicăieri.** Verificat, nu
 presupus:
 
-- toate uneltele de scorecard (`get_kpi_scorecard`, `save_kpi_scorecard_template`,
-  `approve_kpi_scorecard_bonus`) sunt pe partea de administrator;
-- `list_permission_catalog` citit integral — **278 de permisiuni în 27 de categorii** — și **nu există
-  niciuna** de scorecard, KPI sau bonus. Categoria `tasks` are `tasks_view` pentru sarcinile proprii;
+- **administratorul are pagină: `Personal → Scorecard KPI`**, „vizibil pentru cine are dreptul de
+  salarizare" — din răspunsul echipei Symbai la SYM-00800. Andrei și Alex o văd, fiind pe rolul cu
+  `all`. *`gaseste_in_aplicatie` NU întoarce pagina asta — indexul lui de navigare e mai vechi decât
+  funcția, livrată pe 02.11. Lecție: pentru o funcție nouă, răspunsul echipei la tichet e sursa, nu
+  indexul de navigare.*
+- dar **omul evaluat nu are nicio cale**: toate uneltele (`get_kpi_scorecard`,
+  `save_kpi_scorecard_template`, `approve_kpi_scorecard_bonus`) sunt pe partea de administrator, iar
+  `list_permission_catalog` citit integral — **278 de permisiuni în 27 de categorii** — nu are
+  **niciuna** de scorecard, KPI sau bonus. Categoria `tasks` are `tasks_view` pentru sarcinile proprii;
   echivalent pentru evaluare nu există;
-- `gaseste_in_aplicatie` nu întoarce nicio pagină de scorecard.
+- singura permisiune care deschide pagina e cea de salarizare (cel mai probabil `payroll_import`,
+  „Import Salarizare — importă și vizualizează statele de plată"; cheia exactă nu e confirmată).
+  **Nu se poate da managerului ca soluție:** i-ar deschide statele de plată ale întregii echipe și
+  scorecardurile colegilor, ca să-și vadă al lui. Exact de asta am cerut `kpi_view_own`.
 
 **Deci scorecardul e un raport pentru administrator, nu o unealtă pentru om.** Asta îi taie jumătate
 din rost: pe octombrie Zoltan a avut 56 de puncte din 100 și bonus zero din condițiile de bază — cifra
