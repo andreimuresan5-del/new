@@ -62,6 +62,40 @@ care nu puteau aștepta manualul:
 |---|---|---|
 | **#10 „HACCP și dovezi — bucătăria Astur"**, zilnic, 10:30 | rolul `Bucatar Sef` | poză la fișele de temperatură · poze în frigidere și la termometre · fișa de schimbare a uleiului · **probele de laborator**, pe numele Filomelei, critică, termen 07.11 |
 | **#11 „Ziua managerului — Astur"**, zilnic | **pe numele Iuliei Pascu** | ziua ei întreagă, 6 sarcini — vezi mai jos |
+| **#13 „Închiderea zilei — Astur"**, zilnic, 23:30 | rolul nou `Sef Tura Astur` | 8 pași — vezi mai jos |
+
+### Închiderea zilei la Astur (05.11.2026)
+
+Nu exista deloc: nici Z, nici numărat banii, nici plic. Singurul control de bani era verificarea de
+dimineață a managerului — adică a doua zi, pe ce scrisese altcineva.
+
+**Șefii de tură la Astur sunt Cristi și Luci** (confirmat de Andrei, 05.11.2026):
+**CRISTIAN SILVIU JEBELEAN (id 24)** și **LUCIAN GLAVAN (id 44)**.
+
+> **Atenție la nume:** „Luci" de la Astur e Lucian **Glavan**, ospătar. Nu e Lucian **Curca**, șeful
+> de bucătărie de la Drunken Rat. Două persoane diferite, aceeași poreclă.
+
+| Oră | Pasul | Dovadă | Critic |
+|---|---|---|---|
+| 23:00 | Raportul Z pe casa fiscală | — | **da** |
+| 23:10 | Numără banii din casă și scrie suma | **număr** | **da** |
+| 23:15 | **Casa = POS: scrie diferența, oricât de mică** | **număr** | **da** |
+| 23:20 | Bacșișul pe card plătit cash: bon de ieșire semnat | notă | **da** |
+| 23:20 | **Din partea casei: ce s-a dat azi și cine a aprobat** | notă | |
+| 23:25 | Plicul de depunere: suma scrisă pe plic și poză | **poză** | **da** |
+| 23:30 | Seiful încuiat, cheia la cine are dreptul | — | **da** |
+| 23:30 | Predarea turei, scrisă | notă | |
+
+**Pasul care există numai la Astur: „din partea casei".** Între 15.09 și 23.10 au ieșit 56.321 lei la
+preț de meniu, ~13% din vânzări, ~500.000 lei pe an în ritmul ăsta. Nu e interzis, dar se vedea abia
+peste cinci săptămâni, într-un raport. Acum se scrie în seara în care se întâmplă, cu cine a aprobat.
+
+**Rol nou: `Sef Tura Astur` (id 28), 57 de drepturi.** Nu i-am mutat pe rolul `Sef Tura Sala` de la
+Drunken Rat, ca să nu repet greșeala de la Ana și Adi: ospătarul de la Astur are drepturi de livrări
+pe care cel de la DR poate să nu le aibă. Rolul nou pornește de la **toate cele 49 de drepturi** ale
+ospătarului de la Astur, plus opt pe care închiderea le cere: registrul de casă (vizualizare și
+înregistrare), predarea și notele de tură, pontajul, inventarul și gestionarea bacșișului. **Niciun
+drept pierdut**, prin construcție.
 
 Termenul de 10:30 la bucătărie e pus **înainte de prânzul care face 60%** — de confirmat cu orele
 reale. Escaladarea listei managerului merge direct la administratori, nu prin manager: managerul
