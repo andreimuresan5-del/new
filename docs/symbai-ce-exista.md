@@ -649,6 +649,28 @@ de seară, lista critică proprie). Detaliile: `manual-operare/astur/README.md`.
 instanțele și i-ar fi apărut azi în telefon, exact greșeala de ieri. Am aliniat în schimb instanța de
 06.11 care exista deja, ca să nu vadă mâine titlul vechi lângă cel nou.
 
+### 05.11, seara: patru constatări vechi care nu mai sunt adevărate
+
+Andrei a corectat, și am verificat fiecare în Symbai. **Trei dintre ele deblochează puncte din
+reformă pe care le aveam scrise ca blocate.**
+
+| Ce scria în documente | Ce e acum |
+|---|---|
+| Inventarele se deschid și se abandonează (5–7% din linii numărate) | **30 de sesiuni din 25.09, toate finalizate**, pe bar, bucătării și țigări, ambele locații |
+| `Consumabile` are zero sesiuni de inventar, vreodată | **stocurile introduse la începutul lui octombrie**: 215 produse cu cantitate și cost la DR (erau 74, goale) |
+| Extrasele se opresc la 30.09, reconciliere incertă | **septembrie e 100% reconciliat** (BT, ING, BRD — 754 de tranzacții, toate legate), importat pe 08.10 |
+| Meniul zilei la Astur ~20% din vânzările de luni–vineri | **61,3% miercuri, 04.11** — 126 de porții, 4.470 lei din 7.295 |
+
+**Ce rămâne adevărat, și e important să nu se piardă în veste bună:**
+
+- **Octombrie și noiembrie nu sunt importate pe niciun cont bancar.** Ultima mișcare în Symbai e din
+  8 octombrie. Cât timp lipsesc, cei ~4.800 lei pe lună de card neajuns în cont nu se pot urmări.
+- **Gestiunile de consumabile (28, 29) tot n-au nicio sesiune de inventar.** Stocul a intrat ca
+  intrare, nu ca numărătoare — deci pentru octombrie consumul nu se poate calcula, lipsind
+  numărătoarea de la sfârșit de lună. **Din noiembrie se poate, dacă se numără pe 30.11.** Asta e
+  acum singurul pas care mai lipsește ca indicatorul de consumabile să măsoare consum, nu cumpărare.
+- Indicatorul a ieșit 0,73 lei pe octombrie exact din acest motiv.
+
 ### Ce ajută totuși logarea permanentă, și e un punct pentru Andrei
 
 Din același ghid, o capcană pe care n-o știam:
