@@ -585,6 +585,34 @@ de laborator. Până acum amândoi primeau zero.
 > are program în Planificator.** Până atunci, mai bine o sarcină care ajunge la un om decât una
 > corectă care nu ajunge la nimeni.
 
+### Golul care contează cel mai mult: omul nu-și vede scorecardul (05.11.2026)
+
+Andrei: „unde văd ei scorecardul cu salariul și cum îi afectează KPI?" **Nicăieri.** Verificat, nu
+presupus:
+
+- toate uneltele de scorecard (`get_kpi_scorecard`, `save_kpi_scorecard_template`,
+  `approve_kpi_scorecard_bonus`) sunt pe partea de administrator;
+- `list_permission_catalog` citit integral — **278 de permisiuni în 27 de categorii** — și **nu există
+  niciuna** de scorecard, KPI sau bonus. Categoria `tasks` are `tasks_view` pentru sarcinile proprii;
+  echivalent pentru evaluare nu există;
+- `gaseste_in_aplicatie` nu întoarce nicio pagină de scorecard.
+
+**Deci scorecardul e un raport pentru administrator, nu o unealtă pentru om.** Asta îi taie jumătate
+din rost: pe octombrie Zoltan a avut 56 de puncte din 100 și bonus zero din condițiile de bază — cifra
+aia i-ar fi schimbat purtarea în ziua a doua, nu la sfârșit de lună, când nu se mai poate repara
+nimic.
+
+**Cerut la Symbai: SYM-00826** (sugestie, cu `dedupeKey`). Trei lucruri, în ordinea utilității: o
+pagină „Scorecardul meu" în Symbai Staff, **live pe luna în curs** și nu doar istoric; o permisiune
+separată `kpi_view_own`, ca să se poată da rolului fără a deschide rapoartele financiare ale locației;
+și o notificare la a doua zi consecutivă cu o condiție de bază ratată. În același tichet am cerut și
+ca un scorecard să se poată lega de **o listă explicită de angajați**, nu numai de rol — singura cale
+pentru managerul de la Astur, care e pe rolul de administrator.
+
+**Până vine, canalul e discuția lunară** cu cifrele scoase din `get_kpi_scorecard`. Ceea ce înseamnă
+că, în noiembrie, structura de salariu funcționează ca motivație doar dacă cineva le arată cifrele la
+mijlocul lunii, nu la final.
+
 ### Ce ajută totuși logarea permanentă, și e un punct pentru Andrei
 
 Din același ghid, o capcană pe care n-o știam:
