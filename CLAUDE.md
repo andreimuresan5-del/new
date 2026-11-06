@@ -116,7 +116,12 @@ Context pentru orice sesiune nouă de Claude (Claude Code sau chat). Citește-l 
 ## 8. Întrebări deschise
 
 1. ~~Oferă Symbai o cheie API pentru integrări?~~ **Închisă (02.11.2026): da, și e deja pornită** — conexiunea prin care Claude citește și scrie în Symbai e chiar integrarea. Mitică are nevoie de aceeași conexiune, nu de ceva construit de noi. Rămâne doar unde rulează (întrebarea 2) și cu ce drepturi.
-2. Mitică și Banuț rulează prin Symbai Connect pe calculatorul de birou?
+2. ~~Mitică și Banuț rulează prin Symbai Connect pe calculatorul de birou?~~ **Închisă în mare parte
+   (06.11.2026): da, pe calculatorul lui Alex** (`wad_3b2d61bd…`). În toată firma există **trei**
+   asistenți numiți: „Asistentul lui Muresan" (= Mitică) și **Victor** — amândoi ai lui Alex — plus
+   „Asistentul lui Andrei". **Niciunul nu se numește Banuț**, deci rămâne de lămurit ce e Banuț: o
+   a doua identitate a unuia dintre ei pe WhatsApp, sau ceva din afara Symbai. Detalii, drepturile
+   fiecăruia și starea lui Victor: `docs/symbai-ce-exista.md`, secțiunea 12.
 3. Orele reale ale rutinelor pe fiecare locație.
 4. Cine vede rapoartele financiare (în grupul lui Banuț sunt și alți membri în afară de administratori).
 5. Bugetul de protocol și sponsorizări la Astur.

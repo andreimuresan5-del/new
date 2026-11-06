@@ -824,3 +824,137 @@ asta citește și scrie în Symbai cu drepturile contului. Deci Mitică nu are n
 construită de noi: are nevoie de aceeași conexiune.
 
 Ce rămâne de lămurit e **unde rulează** (întrebarea 2) și **cu ce drepturi**, nu dacă se poate.
+
+## 12. Asistenții: ce există, ce rulează și ce e construit dar stins (06.11.2026)
+
+Verificat la cererea lui Andrei, care voia un asistent per restaurant cu **fir de discuție separat pe
+fiecare angajat** — managerul să nu vadă discuția bucătarului-șef. Toate cifrele de aici sunt citiri,
+nu presupuneri.
+
+### Sunt două sisteme de asistenți, nu unul
+
+**A. Asistenții numiți — ăsta rulează.** Trei în toată firma:
+
+| Nume | Proprietar | Capabilități | Arie | Calculator |
+|---|---|---|---|---|
+| Asistentul lui Muresan | Alex | 39 | branduri [1,3], locații [1,2] | `wad_3b2d61bd…` |
+| **Victor** | **Alex** | **4** | **[] și []** | `wad_3b2d61bd…` |
+| Asistentul lui Andrei | Andrei | 125 | branduri [1,3], locații [1,2] | `wad_a14b9b…` |
+
+Trăiesc în **grupurile din Staff** (tabul `groups`, prezent la toate rolurile), prin participări
+(`asistent_grup`) cu instrucțiuni și plafon de acces **pe fiecare grup**, plus sarcini independente
+programate (`asistent_sarcina`) care livrează în `deliver.groupId`.
+
+**B. Asistentul nativ al aplicației Staff — construit în bază, dar stins.** Și e fix ce cerea Andrei:
+
+- `staff_assistants`: unul **per brand**, cu `system_prompt`, `greeting`, `personality`, `domain`,
+  `language`, `summary_instructions`
+- `role_ids` — cui îi apare · `allowed_routes` — ce ecrane poate atinge ·
+  `allowed_agent_ids` — pare să-l lege de asistenții numiți (deducție din numele coloanei)
+- **`staff_assistant_chat_sessions.employee_id`** — o sesiune de discuție **pe fiecare angajat**
+- `staff_assistant_memory_files` — memorie proprie
+
+Dar: **0 rânduri în toate patru tabelele**; `portal_assistants`, `assistant_skills_config` și
+`kds_assistant_groups` tot 0; **nicio unealtă MCP nu-l configurează** (ies doar
+`get_staff_app_config` și `configure_staff_app_role/roles/defaults`, care fac exclusiv aspectul);
+și **nu apare nici ca tab, nici ca rută** — între cele 41 de taburi configurabile (cu `groups`,
+`tasks`, `manager`, `attendance` și `custom_1…6`) și în toate cele 14 grupe din `menuCatalog` nu e
+nicio poziție de asistent. Singurele urme de „assistant/chat" în configurația reală a unității sunt
+`distribution_assistant` (dispecerat livrări), `marketing_chat` și `ai_marketing`.
+
+**Cerut la Symbai: SYM-00837** (06.11) — asistent per brand, restrâns pe roluri și ecrane, cu fir
+separat per angajat, permisiune proprie (ca `kpi_view_own` din SYM-00826), livrarea unui raport
+programat în firul angajatului, și clarificare pe `allowed_agent_ids`. Prima întrebare din tichet e
+dacă funcția e doar neexpusă la noi sau nelansată.
+
+Mai există un chat AI vechi în aplicație (`assistant_conversations`): 13 conversații, 77 de mesaje,
+toate între **20.05 și 29.07.2026**, nimic după. Abandonat.
+
+### Victor: viu, dar cu aria goală de două luni
+
+Handle `sym_ecb35592`, revizia 3, activ, **al lui Alex**. Identitate: „Asistent financiar pentru
+control, cash-flow, scadențe și rapoarte trimise la momentul cerut." Capabilități: doar `group.read`,
+`group.reply`, `knowledge.read`, `learning.propose` — **zero acces la date**. `brandIds: []`,
+`locationIds: []`.
+
+Are **o participare activă** în grupul „Management" (id 1: Alex + Andrei, 4 mesaje), cu
+`trigger: always`, iar `last_checked_at` e de azi — deci motorul rulează și el ascultă. Dar a rulat
+efectiv **de două ori, ambele pe 08.09.2026**: prima anulată („Configurația sau accesul asistentului
+s-a schimbat"), a doua completă, în care își pune singur diagnosticul:
+
+> „Nu am acces la nicio sursă de vânzări... **Aria mea (`brands`/`locations`) este momentan
+> neconfigurată**, iar instrucțiunile spun explicit că liste goale nu acordă acces la date comerciale."
+
+A spus ce-i trebuie acum două luni și a așteptat. Reparația e de patru câmpuri (arie + citirile
+financiare) — **dar numai Alex o poate face:** toate uneltele cer „propriul asistent", cu `id` din
+`asistenti_lista`, iar lista din conexiunea lui Andrei are un singur asistent, al lui. Nu există
+nicio unealtă care să administreze sau să transfere asistentul altui proprietar (căutat).
+
+**Consecința de arhitectură, mai importantă decât partea tehnică:** asistentul numit se leagă doar
+„într-un grup din care faci parte", deci **proprietarul lui e membru în fiecare fir privat.** Victor
+pe fiecare om = Alex în discuția fiecărui angajat. Asistentul lui Andrei = Andrei. Cu asistentul
+nativ de Staff (B), sesiunea e a angajatului și nu stă nimeni în ea.
+
+### „Să-l învețe Mitică" — ce s-a găsit
+
+Mitică e „Asistentul lui Muresan", al lui Alex. **Zero rulări, zero participări, zero sarcini** în
+motorul de asistenți numiți — lucrează prin discuția de asistent personal. Dovada: singurul lui
+document învățat are `source_turn_id` completat și `source_run_id` null.
+
+Și a învățat **exact un lucru în două luni** — procedură aprobată, 08.10.2026,
+`mapare-gramaj-necunoscut-dupa-pret`:
+
+> „La maparea facturilor furnizor, când gramajul/conținutul unui ambalaj nu apare pe document și nu
+> există istoric confirmat, proprietarul a cerut: «ghidează-te după preț» — factorul se stabilește din
+> prețul pe unitate comparat cu achizițiile confirmate ale aceluiași produs, fără să mai întrebi."
+
+Canalul de transmitere există — Victor **are deja** `knowledge.read` („Consultă documentele
+aprobate") — dar documentul e `audience: private`, legat de id-ul lui Mitică. Ca să treacă la altul
+trebuie scris ca **cunoștință comună** (`group_id: null`). Al doilea canal ar fi `groups.ask`
+(„Întreabă în alte grupuri sau colegi și revine cu răspunsul"), pe care Victor nu o are.
+
+Deci se poate, dar nu e un comutator: **rata de reușită a lui Mitică stă în istoricul discuțiilor lui
+Alex, nu în documente transferabile.** Un singur document scris în două luni.
+
+### Grupurile existente: tiparul e deja folosit
+
+Trei grupuri în toată firma, toate private și nominale:
+
+| id | Nume | Membri | Mesaje | Creat |
+|---|---|---|---|---|
+| 1 | Management (brand 3 / Dumbrăvița) | Alex, Andrei | 4 | 08.09 |
+| 2 | Raportări asistenți (`postingPolicy: admins`) | Alex | 0 | 08.10 |
+| 3 | **Ana, Iulia** | ANA MARIA BOLETA (Șef Tură Sala), Iulia Pascu | 1 | 04.11 |
+
+Grupul 3 e exact forma de care avem nevoie pentru firele private — doi oameni, privat, nominal —
+doar fără asistent legat în el. Deci soluția de ocolire nu e exotică, e tiparul care se folosește deja.
+
+### Ce se poate aranja oricum, fără niciun tichet
+
+Toate ecranele de care are nevoie un manager există ca poziții de meniu în Staff:
+`photo_reception`, `stock_transfer` + `transfers_in_transit` + `transfer_history`,
+`stock_count_manage` + `stock_quick_count` + `stock_count_mine`, `my_tasks`, `team_schedule`,
+`cash_book`, `pnl`, `supplier_invoices_nir`, `purchasing_insights`, `stock_money_overview`. Se
+aranjează cu `configure_staff_app_role`, care schimbă **doar aspectul, nu permisiunile**. Profilul
+potrivit există: `restaurant_manager` — „Cockpit de unitate: încasări, sală, aprobări, oameni în tură,
+stoc și rezervări".
+
+**Două lucruri de reparat, găsite pe drum:**
+- Rolul **`Sef Tura Astur` (id 28)**, făcut pe 05.11, are **meniu gol** în Staff și profilul inferat
+  `accounting_finance` (contabilitate). Ana și Adi n-au nicio poziție de meniu, doar taburile
+  `tasks`, `groups`, `attendance`.
+- La **`Bucatar Sef` Astur (id 18)**, transferurile și gestionarea inventarelor apar în lista
+  `unavailable`: `stock_transfer`, `transfers_in_transit`, `transfer_history`, `stock_count_manage`.
+  Lipsesc drepturile pe rol, deci șeful de bucătărie nu poate face transfer între locații din Staff,
+  oricum i-ar fi aranjat meniul.
+
+### Un risc de notat
+
+Tot ce ține de asistenți depinde de un calculator pornit: asistenții lui Alex pe `wad_3b2d61bd…`, al
+lui Andrei pe `wad_a14b9b…` — care e un **deviceId vechi**; calculatorul actual e
+`wad_3997ef…` (DESKTOP-NSST273), care declară că îl înlocuiește, iar starea iese „online". Merge,
+dar prin lanțul de înlocuire. Sarcinile programate au `recoverMissed`, care recuperează un termen
+ratat cu calculatorul oprit, o singură dată, în cel mult 20 de ore.
+
+**Asta închide și întrebarea 2 din `CLAUDE.md`:** da, asistenții rulează prin Connect, pe
+calculatoarele de birou — ale lui Alex pentru Mitică și Victor.
